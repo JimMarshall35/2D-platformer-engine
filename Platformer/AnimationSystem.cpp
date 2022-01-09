@@ -1,0 +1,28 @@
+#include "AnimationSystem.h"
+#include "Tileset.h"
+#include "ECS.h"
+
+void AnimationSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+{
+	for (auto& [entityID, val] : components.animations) {
+		auto& frames = tileset.AnimationsMap[val.animationName];
+		if (val.isAnimating) {
+			val.timer += delta_t;
+			if (val.timer > 1 / val.fps) {
+				val.timer = 0;
+				val.onframe++;
+
+				if (val.onframe >= val.numframes && val.shouldLoop) {
+					val.onframe = 0;
+				}
+				else if (val.onframe >= val.numframes && !val.shouldLoop) {
+					val.onframe--;
+					val.isAnimating = false;
+				}
+				//std::cout << frames[val.onframe] << std::endl;
+			}
+			components.sprites[entityID].texture = frames[val.onframe];
+		}
+
+	}
+}
