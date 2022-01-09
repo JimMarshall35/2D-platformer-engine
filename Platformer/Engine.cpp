@@ -141,13 +141,13 @@ void Engine::SaveCurrentLevel(std::string filepath)
 void Engine::GotoPlayMode()
 {
 	_CurrentMode = EngineMode::Play;
-	_Player1 = SetupPlayer(glm::vec2(120, 60), glm::vec2(32, 32), glm::vec4(0));
+	//_Player1 = SetupPlayer(glm::vec2(120, 60), glm::vec2(32, 32), glm::vec4(0));
 }
 
 void Engine::GotoEditMode() {
-	DeleteEntity(_Player1);
+	//DeleteEntity(_Player1);
 	_CurrentMode = EngineMode::Edit;
-
+	_EditorCam.FocusPosition = _Components.transforms[_Player1].pos;
 }
 
 #pragma endregion
@@ -158,7 +158,6 @@ EntityID Engine::SetupPlayer(glm::vec2 pos, glm::vec2 scale, glm::vec4 floorColl
 {
 
 	EntityID new_id = CreateEntity({CT_ANIMATION,CT_PHYSICS,CT_SPRITE,CT_PLAYERBEHAVIOR, CT_TRANSFORM});
-	_Components.player_behaviors[new_id] = PlayerBehavior{new_id};
 	_Components.transforms[new_id] = Transform{pos, scale, 0.0f};
 	_Components.sprites[new_id] = Sprite{ _Tileset.AnimationsMap["walk"][0] };
 	_Components.physicses[new_id] = Physics{ glm::vec2(0.0f,0.0f) };
@@ -201,13 +200,14 @@ void Engine::Draw()
 	case EngineMode::Edit:
 
 		DrawBackgroundLayers(_Renderer, _EditorCam);
+		SpritesSystemDraw(_EditorCam);
 		_Editor->DrawEngineOverlay(_Renderer, _EditorCam);
 		_Editor->DoGui();
 
 		break;
 	case EngineMode::Play:
 		DrawBackgroundLayers(_Renderer, _GameCam);
-		SpritesSystemDraw();
+		SpritesSystemDraw(_GameCam);
 		const auto& transform = _Components.transforms[_Player1];
 		const auto& collider = _Components.physicses[_Player1].collider;
 		auto width = transform.scale.x - collider.MinusPixelsLeft - collider.MinusPixelsRight;
@@ -279,11 +279,11 @@ void Engine::DrawBackgroundLayers(const Renderer2D& renderer, const Camera2D& ca
 	}
 }
 
-void Engine::SpritesSystemDraw()
+void Engine::SpritesSystemDraw(const Camera2D& cam)
 {
 	for (auto& [key, value] : _Components.sprites) {
 		Transform& transform = _Components.transforms[key];
-		_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, _GameCam);
+		_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
 	}
 }
 

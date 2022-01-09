@@ -74,9 +74,54 @@ level = {
         }
 	}
 }
+NUM_COMPONENTS = 6
+ComponentType = {
+	CT_TRANSFORM = 1,
+	CT_PHYSICS = 2,
+	CT_HEALTHS = 3,
+	CT_SPRITE = 4,
+	CT_ANIMATION = 5,
+	CT_PLAYERBEHAVIOR = 6
+}
 
+function SetupPlayer(inpos, inscale)
+	local entityID = C_CreateEntity(C_Engine,{
+		ComponentType.CT_TRANSFORM,
+		ComponentType.CT_PHYSICS,
+		ComponentType.CT_PLAYERBEHAVIOR,
+		ComponentType.CT_SPRITE,
+		ComponentType.CT_ANIMATION
+	})
+	C_SetTransformComponent(C_Engine, entityID,{
+		pos = inpos,
+		scale = inscale,
+		rot = 0
+	})
+	C_SetSpriteComponent(C_Engine,entityID,
+		138
+	)
+	C_SetFloorColliderComponent(C_Engine,entityID,
+		11, -- top
+		0, -- bottom
+		8, -- left
+		8 -- right
+	)
+	C_SetAnimationComponent(C_Engine,entityID,{
+		isanimating = 1,
+		name = "walk",
+		numframes = 4,
+		timer = 0,
+		shouldloop = 1,
+		onframe = 0,
+		fps = 10
+	})
+	C_SetEntityPlayer1(C_Engine,entityID)
+	return entityID
+end
 
+C_LoadLevel(C_Engine,level)
+SetupPlayer(
+	{x=120,y=60}, 
+	{x=32,y=32}
+)
 
-print("hello world")
---LoadTilesFromFile(_engine_,32,32,"characters.png")
-LoadLevel(_engine_,level)

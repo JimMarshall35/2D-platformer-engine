@@ -17,7 +17,7 @@ enum class EngineMode {
 	Play
 };
 
-class Engine : ECS
+class Engine : public ECS
 {
 private:
 	std::unique_ptr<IEditorUserInterface> _Editor;
@@ -26,17 +26,18 @@ private:
 	Renderer2D _Renderer;
 	Camera2D _EditorCam;
 	Camera2D _GameCam;
-	EntityID _Player1 = 0;
+	
 	std::unique_ptr<ISystem> _AnimationSystem;
 	std::unique_ptr<ISystem> _PhysicsSystem;
 	std::unique_ptr<ISystem> _PlayerBehaviorSystem;
 	//test
 
-	void SpritesSystemDraw();
+	void SpritesSystemDraw(const Camera2D& cam);
 
 
 	void GotoEditMode();
 public:
+	EntityID _Player1 = 0;
 	// temporary
 	EntityID SetupPlayer(glm::vec2 pos, glm::vec2 scale, glm::vec4 floorCollider);
 	void DestroyPlayer(EntityID&);

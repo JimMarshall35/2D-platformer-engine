@@ -32,7 +32,7 @@ struct FloorCollider {
 };
 
 struct Physics {
-	glm::vec2 velocity;
+	glm::vec2 velocity = glm::vec2(0.0f);
 	glm::vec2 lastPos;
 	bool bottomTouching = false;
 	bool topTouching = false;
@@ -57,7 +57,6 @@ struct Animation {
 };
 
 struct PlayerBehavior {
-	EntityID id;
 	bool leftPressed;
 	bool rightPressed;
 	bool upPressed;
@@ -66,14 +65,14 @@ struct PlayerBehavior {
 	bool jumping;
 	int jumpcounter = 0;
 };
-
+#define NUM_COMPONENTS 6
 enum ComponentType : unsigned int {
-	CT_TRANSFORM,
-	CT_PHYSICS,
-	CT_HEALTHS,
-	CT_SPRITE,
-	CT_ANIMATION,
-	CT_PLAYERBEHAVIOR
+	CT_TRANSFORM = 1,
+	CT_PHYSICS = 2,
+	CT_HEALTHS = 3,
+	CT_SPRITE = 4,
+	CT_ANIMATION = 5,
+	CT_PLAYERBEHAVIOR = 6
 };
 template <typename Type>
 using ComponentMap = std::unordered_map<EntityID, Type>;
@@ -109,8 +108,9 @@ class ECS {
 public:
 	EntityID CreateEntity(std::vector<ComponentType> components);
 	bool DeleteEntity(EntityID id);
+	Components _Components;
 protected:
 	std::unordered_map<EntityID, std::vector<ComponentType>> _Entities;
-	Components _Components;
+	
 
 };
