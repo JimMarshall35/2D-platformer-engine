@@ -109,7 +109,6 @@ public:
 	EntityID CreateEntity(std::vector<ComponentType> components);
 	bool DeleteEntity(EntityID id);
 	Components _Components;
-protected:
 	std::unordered_map<EntityID, std::vector<ComponentType>> _Entities;
 	
 

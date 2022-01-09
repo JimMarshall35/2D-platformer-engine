@@ -56,6 +56,7 @@ private:
 	void PushNewTileLayer(unsigned int width_tiles, unsigned int height_tiles);
 	void DoTileButtonsWindow();
 	void DoLayersWindow();
+	void DoEntitiesWindow();
 	void DoTileSetSelectWindow();
 	void DoToolSelectWindow();
 	void GetNewSelection();

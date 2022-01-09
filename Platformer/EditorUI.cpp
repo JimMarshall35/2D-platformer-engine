@@ -114,6 +114,89 @@ void EditorUserInterface::DoLayersWindow()
 	
 }
 
+void EditorUserInterface::DoEntitiesWindow()
+{
+	Transform* transform = nullptr;
+	Physics* phys = nullptr;
+	Sprite* sprite = nullptr;
+	Animation* anim = nullptr;
+	for (auto& [id, components] : _Engine->_Entities) {
+		
+		if (ImGui::CollapsingHeader(std::to_string(id).c_str(), ImGuiTreeNodeFlags_None))
+		{
+			for (auto& componentType : components) {
+				switch (componentType) {
+				case CT_TRANSFORM:
+					transform = &_Engine->_Components.transforms[id];
+					if (ImGui::TreeNode("Transform")) {
+						ImGui::InputFloat2("position", &transform->pos[0]);
+						ImGui::InputFloat2("scale", &transform->scale[0]);
+						ImGui::InputFloat("rotation", &transform->rot);
+						ImGui::TreePop();
+					}
+					break;
+				case CT_PHYSICS:
+					phys = &_Engine->_Components.physicses[id];
+					if (ImGui::TreeNode("Physics")) {
+						ImGui::InputFloat("collider top", &phys->collider.MinusPixelsTop);
+						ImGui::InputFloat("collider bottom", &phys->collider.MinusPixelsBottom);
+						ImGui::InputFloat("collider left", &phys->collider.MinusPixelsLeft);
+						ImGui::InputFloat("collider right", &phys->collider.MinusPixelsRight);
+						ImGui::InputFloat2("velocity", &phys->velocity[0]);
+						ImGui::InputFloat2("lastpos", &phys->lastPos[0]);
+						ImGui::Checkbox("bottom touching", &phys->bottomTouching);
+						ImGui::Checkbox("top touching", &phys->topTouching);
+						ImGui::Checkbox("left touching", &phys->leftTouching);
+						ImGui::Checkbox("right touching", &phys->rightTouching);
+						
+						ImGui::TreePop();
+					}
+					break;
+				case CT_HEALTHS:
+					ImGui::Text("Healths");
+					break;
+				case CT_SPRITE:
+					sprite = &_Engine->_Components.sprites[id];
+					
+					if (_Engine->_Components.transforms.find(id) != _Engine->_Components.transforms.end()) {
+						transform = &_Engine->_Components.transforms[id];
+						if (ImGui::TreeNode("Sprite")) {
+
+							ImGui::Image((ImTextureID)sprite->texture, ImVec2(transform->scale.x, transform->scale.y));
+							ImGui::TreePop();
+						};
+					}
+					
+					break;
+				case CT_ANIMATION:
+					anim = &_Engine->_Components.animations[id];
+					static char name[200];
+					strcpy_s(name, anim->animationName.c_str());
+					if (ImGui::TreeNode("Animation")) {
+						if (ImGui::InputText("Animation name", name, 200)) {
+							anim->animationName = std::string((const char*)name);
+						}
+						ImGui::InputDouble("fps", &anim->fps);
+						ImGui::InputInt("onframe", &anim->onframe);
+						ImGui::InputInt("numframes", &anim->numframes);
+						ImGui::InputDouble("timer", &anim->timer);
+						ImGui::Checkbox("shouldloop", &anim->shouldLoop);
+						ImGui::Checkbox("isAnimating", &anim->isAnimating);
+						ImGui::TreePop();
+					};
+					break;
+				case CT_PLAYERBEHAVIOR:
+					ImGui::Text("PlayerBehavior");
+					break;
+				default:
+					std::cout << "bad entity id " << id << std::endl;
+					return;
+				}
+			}
+		}
+	}
+}
+
 void EditorUserInterface::DoTileSetSelectWindow()
 {
 	ImGui::Begin("tileset");
@@ -181,6 +264,11 @@ void EditorUserInterface::DoGui()
 		DoLayersWindow();
 		ImGui::End();
 	}
+	if (!_Engine->_Entities.empty()) {
+		ImGui::Begin("entities");
+		DoEntitiesWindow();
+		ImGui::End();
+	}
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -232,9 +320,9 @@ void EditorUserInterface::DrawEngineOverlay(const Renderer2D& renderer, const Ca
 			renderer.DrawWireframeRect(transform.pos, transform.scale, transform.rot, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), camera);
 			if (_Engine->_Components.physicses.find(key) != _Engine->_Components.physicses.end()) {
 				auto& collider = _Engine->_Components.physicses[key].collider;
-				auto width = transform.scale.x - collider.MinusPixelsLeft - collider.MinusPixelsRight;
+				auto width = abs(transform.scale.x) - collider.MinusPixelsLeft - collider.MinusPixelsRight;
 				auto x_offset = collider.MinusPixelsLeft / 2.0f - collider.MinusPixelsRight / 2.0f;
-				auto height = transform.scale.y - collider.MinusPixelsBottom - collider.MinusPixelsTop;
+				auto height = abs(transform.scale.y) - collider.MinusPixelsBottom - collider.MinusPixelsTop;
 				auto y_offset = collider.MinusPixelsTop / 2.0f - collider.MinusPixelsBottom / 2.0f;
 				renderer.DrawSolidRect(transform.pos + vec2(x_offset, y_offset), vec2(width, height), 0, vec4(0.0, 0.5, 0.5, 0.5), camera);
 			}
