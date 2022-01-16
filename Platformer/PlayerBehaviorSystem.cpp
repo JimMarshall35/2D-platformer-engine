@@ -11,7 +11,9 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 	const float jumpmovespeed = 700;
 	const float JumpAmount = 250;
 	const float climbspeed = 50;
-	for (auto& [entityID, value] : components.player_behaviors) {
+
+	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM, CT_PLAYERBEHAVIOR, CT_ANIMATION) {
+		auto& value = components.player_behaviors[entityID];
 		auto& phys = components.physicses[entityID];
 		auto& transform = components.transforms[entityID];
 		auto& animation = components.animations[entityID];

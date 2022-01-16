@@ -114,12 +114,16 @@ void EditorUserInterface::DoLayersWindow()
 	
 }
 
+#define M_PI           3.14159265358979323846  /* pi */
+
+
 void EditorUserInterface::DoEntitiesWindow()
 {
 	Transform* transform = nullptr;
 	Physics* phys = nullptr;
 	Sprite* sprite = nullptr;
 	Animation* anim = nullptr;
+	MovingPlatform* mp = nullptr;
 	for (auto& [id, components] : _Engine->_Entities) {
 		
 		if (ImGui::CollapsingHeader(std::to_string(id).c_str(), ImGuiTreeNodeFlags_None))
@@ -148,7 +152,7 @@ void EditorUserInterface::DoEntitiesWindow()
 						ImGui::Checkbox("top touching", &phys->topTouching);
 						ImGui::Checkbox("left touching", &phys->leftTouching);
 						ImGui::Checkbox("right touching", &phys->rightTouching);
-						
+						ImGui::Checkbox("collidable", &phys->collider.Collidable);
 						ImGui::TreePop();
 					}
 					break;
@@ -186,10 +190,22 @@ void EditorUserInterface::DoEntitiesWindow()
 					};
 					break;
 				case CT_PLAYERBEHAVIOR:
-					ImGui::Text("PlayerBehavior");
+					if (ImGui::TreeNode("PlayerBehavior")) {
+						ImGui::TreePop();
+					}
+					break;
+				case CT_MOVINGPLATFORM:
+					mp = &_Engine->_Components.moving_platforms[id];
+					if (ImGui::TreeNode("MovingPlatform")) {
+						ImGui::InputFloat2("position 1", &mp->point1[0]);
+						ImGui::InputFloat2("position 2", &mp->point2[0]);
+						ImGui::InputDouble("time period", &mp->time_period);
+						ImGui::InputDouble("timer", &mp->timer);
+						ImGui::TreePop();
+					}
 					break;
 				default:
-					std::cout << "bad entity id " << id << std::endl;
+					std::cout << "bad entity id " << id << " component type " << componentType << std::endl;
 					return;
 				}
 			}
@@ -489,7 +505,7 @@ void EditorUserInterface::keyboardButtonCallbackHandler(GLFWwindow* window, int 
 		_Engine->GotoPlayMode();
 	}
 	if (key == GLFW_KEY_S && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
-		_Engine->SaveCurrentLevel("level.lua");
+		_Engine->SaveCurrentLevel("test.lua");
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
 		_Engine->LoadLevel("level.lua");

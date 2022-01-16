@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+
 struct Tile {
 public:
 	Tile(GLuint texture, unsigned int ID);
@@ -13,16 +14,18 @@ public:
 	GLuint Texture = 0;
 	unsigned int ID = 0;
 };
+
 struct ImgFileTilesetData {
 	std::string path;
 	unsigned int firstTileID;
 	glm::ivec2 TileWidthAndHeightPx;
 };
-struct TileSet {
+
+struct TileSet { // should be incorporated into renderer
 	
 	std::vector<Tile> Tiles;
 	glm::ivec2 TileWidthAndHeightPx{ 16,16 };
-	glm::ivec2 TileSetWidthAndHeightTiles{ 16,16 };
+	glm::ivec2 TileSetWidthAndHeightTiles{ 16,16 }; // should be in editorUI
 	int LastId = 1;
 	std::vector<ImgFileTilesetData> FilesList;
 

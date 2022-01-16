@@ -9,10 +9,21 @@ extern "C" {
 
 void LuaLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 {
+    lua_getglobal(_L, "OnSaveLevel");
+    lua_pushstring(_L, filePath.c_str());
+    int r = lua_pcall(_L, 1, 0, 0);
+    CheckLua(_L,r);
 }
 
 bool LuaLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 {
+    std::vector<EntityID> ids;
+    for (auto const& element : engine._Entities) {
+        ids.push_back(element.first);
+    }
+    for (EntityID id : ids) {
+        engine.DeleteEntity(id);
+    }
     engine._TileLayers.clear();
     engine._Tileset.ClearTiles();
     engine._Tileset.AnimationsMap.clear();
@@ -33,22 +44,6 @@ LuaLevelSerializer::~LuaLevelSerializer()
 {
 }
 
-int LuaLevelSerializer::l_LoadTilesFromImageFile(lua_State* L)
-{
-    int n = lua_gettop(L);
-    if (n != 4) {
-        std::cout << "4 arguments required l_LoadTilesFromImageFile" << std::endl;
-        lua_pushboolean(L, false);
-        return 1;
-
-    }
-    Engine* e = (Engine*)lua_touserdata(L, 1);
-    e->_Tileset.TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
-    e->_Tileset.TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
-    bool returnValue = e->_Tileset.LoadTilesFromImgFile(luaL_checkstring(L, 4));
-    lua_pushboolean(L, returnValue);
-    return 1;
-}
 
 int LuaLevelSerializer::l_LoadLevelFromLuaTable(lua_State* L)
 {
@@ -217,6 +212,8 @@ int LuaLevelSerializer::l_SetTransformComponent(lua_State* L)
     return 0;
 }
 
+
+
 int LuaLevelSerializer::l_SetFloorColliderComponent(lua_State* L)
 {
     int n = lua_gettop(L);
@@ -345,6 +342,314 @@ int LuaLevelSerializer::l_SetEntityPlayer1(lua_State* L)
     return 0;
 }
 
+int LuaLevelSerializer::l_SetMovingPlatformComponent(lua_State* L)
+{
+    int n = lua_gettop(L);
+
+    //int num;
+    if (n != 6) {
+        std::cout << "l_SetMovingPlatformComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isinteger(L, 2)) {
+        std::cout << "second parameter should be the entityID to change" << std::endl;
+        return 0;
+    }
+    EntityID id = lua_tointeger(L, 2);
+    if (e->_Components.moving_platforms.find(id) != e->_Components.moving_platforms.end()) {
+        MovingPlatform& mp = e->_Components.moving_platforms[id];
+        lua_getfield(L, 3, "x"); // point1 x
+        lua_getfield(L, 3, "y"); // point1 y
+        mp.point1.x = luaL_checknumber(L, -2);
+        mp.point1.y = luaL_checknumber(L, -1);
+        lua_getfield(L, 4, "x");
+        lua_getfield(L, 4, "y");
+        mp.point2.x = luaL_checknumber(L, -2);
+        mp.point2.y = luaL_checknumber(L, -1);
+        mp.time_period = luaL_checknumber(L, 5);
+        mp.timer = luaL_checknumber(L, 6);
+    }
+    else {
+        std::cout << "you're trying to set an moving platform that hasn't been registered through createEntity" << std::endl;
+    }
+    return 0;
+}
+
+int LuaLevelSerializer::l_LoadTilesetFile(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 4) {
+        std::cout << "4 arguments required l_LoadTileset, engine*, tileset_w, tileset_h, path" << std::endl;
+        lua_pushboolean(L, false);
+        return 1;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    e->_Tileset.TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
+    e->_Tileset.TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
+    std::string path = (std::string)luaL_checkstring(L, 4);
+    e->_Tileset.LoadTilesFromImgFile(path);
+    return 0;
+}
+
+int LuaLevelSerializer::l_LoadTileLayer(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 5) {
+        std::cout << "5 arguments required l_LoadTileset, engine*, widthtiles, heighttiles, t_type, tiles" << std::endl;
+        lua_pushboolean(L, false);
+        return 1;
+    }
+    TileLayer tl;
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    tl.SetWidthAndHeight(luaL_checkinteger(L, 2), luaL_checkinteger(L, 3));
+    tl.Type = (TileLayerType)luaL_checkinteger(L, 4);
+
+    int tiles_size = lua_rawlen(L, -1);
+    tl.Tiles.resize(tiles_size);
+    for (int j = 0; j < tiles_size; j++) {
+        lua_rawgeti(L, -1, j + 1);
+        tl.Tiles[j] = luaL_checkinteger(L, -1);
+        lua_pop(L, 1);
+    }
+    e->_TileLayers.push_back(tl);
+}
+
+int LuaLevelSerializer::l_LoadAnimationFrames(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "3 arguments required l_LoadAnimationFrames: engine*, name, frames" << std::endl;
+        lua_pushboolean(L, false);
+        return 1;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    std::string name =  (std::string)luaL_checkstring(L, 2);
+    
+    int frames_size = lua_rawlen(L, -1);
+    std::vector<unsigned int> anim_frames(frames_size);
+    for (int j = 0; j < frames_size; j++) {
+        lua_rawgeti(L, -1, j + 1);
+        anim_frames[j] = luaL_checkinteger(L, -1);
+        lua_pop(L, 1);
+    }
+    e->_Tileset.AnimationsMap[name] = anim_frames;
+    return 0;
+}
+
+int LuaLevelSerializer::l_GetTileset(lua_State* L)
+{
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    lua_newtable(L);
+    for (int i = 0; i < e->_Tileset.FilesList.size(); i++) {
+        const auto& file = e->_Tileset.FilesList[i];
+        lua_newtable(L);
+        lua_pushstring(L, file.path.c_str());
+        lua_setfield(L, -2, "path");
+        lua_pushinteger(L, file.firstTileID);
+        lua_setfield(L, -2, "firstID");
+        lua_pushinteger(L, file.TileWidthAndHeightPx.x);
+        lua_setfield(L, -2, "tile_width_px");
+        lua_pushinteger(L, file.TileWidthAndHeightPx.y);
+        lua_setfield(L, -2, "tile_height_px");
+        lua_seti(L, -2, i + 1);
+    }
+    return 1;
+}
+
+int LuaLevelSerializer::l_GetEntities(lua_State* L)
+{
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    
+    lua_newtable(L);
+    int onEntity = 1;
+    const Transform* transform;
+    const Physics* phys;
+    const Sprite* sprite;
+    const Animation* anim;
+    const MovingPlatform* mp;
+    for (auto& [entityID, val] : e->_Entities) {
+        lua_newtable(L);
+        lua_newtable(L);
+        for (ComponentType t : val) {
+            
+            switch (t) {
+            case CT_TRANSFORM:
+                transform = &e->_Components.transforms[entityID];
+                lua_newtable(L);
+                // position
+                lua_newtable(L);
+                lua_pushnumber(L, transform->pos.x);
+                lua_setfield(L, -2, "x");
+                lua_pushnumber(L, transform->pos.y);
+                lua_setfield(L, -2, "y");
+                lua_setfield(L, -2, "pos");
+                // scale
+                lua_newtable(L);
+                lua_pushnumber(L, transform->scale.x);
+                lua_setfield(L, -2, "x");
+                lua_pushnumber(L, transform->scale.y);
+                lua_setfield(L, -2, "y");
+                lua_setfield(L, -2, "scale");
+                // rotation
+                lua_pushnumber(L, transform->rot);
+                lua_setfield(L, -2, "rot");
+
+                lua_seti(L, -2, (lua_Integer)CT_TRANSFORM);
+                break;
+
+            case CT_PHYSICS:
+                phys = &e->_Components.physicses[entityID];
+                lua_newtable(L);
+                // collider
+                lua_newtable(L);
+                lua_pushnumber(L, phys->collider.MinusPixelsTop);
+                lua_seti(L, -2, 1);
+                lua_pushnumber(L, phys->collider.MinusPixelsBottom);
+                lua_seti(L, -2, 2);
+                lua_pushnumber(L, phys->collider.MinusPixelsLeft);
+                lua_seti(L, -2, 3);
+                lua_pushnumber(L, phys->collider.MinusPixelsRight);
+                lua_seti(L, -2, 4);
+                lua_setfield(L, -2, "collider");
+                
+                lua_seti(L, -2, (lua_Integer)CT_PHYSICS);
+                break;
+
+            case CT_HEALTHS:
+                lua_newtable(L);
+                lua_seti(L, -2, (lua_Integer)CT_HEALTHS);
+                break;
+
+            case CT_SPRITE:
+                sprite = &e->_Components.sprites[entityID];
+                lua_newtable(L);
+                lua_pushinteger(L, sprite->texture);
+                lua_setfield(L,-2, "texture");
+                lua_seti(L, -2, (lua_Integer)CT_SPRITE);
+                break;
+
+            case CT_ANIMATION:
+                anim = &e->_Components.animations[entityID];
+                lua_newtable(L);
+                lua_pushnumber(L, anim->timer);
+                lua_setfield(L, -2, "timer");
+
+                lua_pushinteger(L, anim->shouldLoop);
+                lua_setfield(L, -2, "shouldloop");
+
+                lua_pushnumber(L, anim->fps);
+                lua_setfield(L, -2, "fps");
+
+                lua_pushinteger(L, anim->numframes);
+                lua_setfield(L, -2, "numframes");
+
+                lua_pushinteger(L, anim->onframe);
+                lua_setfield(L, -2, "onframe");
+
+                lua_pushinteger(L, anim->isAnimating);
+                lua_setfield(L, -2, "isanimating");
+
+                lua_pushstring(L, anim->animationName.c_str());
+                lua_setfield(L, -2, "name");
+
+                lua_seti(L, -2, (lua_Integer)CT_ANIMATION);
+                break;
+
+            case CT_PLAYERBEHAVIOR:
+                lua_newtable(L);
+                lua_seti(L, -2, (lua_Integer)CT_PLAYERBEHAVIOR);
+                break;
+
+            case CT_MOVINGPLATFORM:
+                mp = &e->_Components.moving_platforms[entityID];
+                lua_newtable(L);
+                // point 1
+                lua_newtable(L);
+                lua_pushnumber(L, mp->point1.x);
+                lua_setfield(L, -2, "x");
+                lua_pushnumber(L, mp->point1.y);
+                lua_setfield(L, -2, "y");
+                lua_setfield(L, -2, "p1");
+                // point 2
+                lua_newtable(L);
+                lua_pushnumber(L, mp->point2.x);
+                lua_setfield(L, -2, "x");
+                lua_pushnumber(L, mp->point2.y);
+                lua_setfield(L, -2, "y");
+                lua_setfield(L, -2, "p2");
+                // time period
+                lua_pushnumber(L, mp->time_period);
+                lua_setfield(L, -2, "time_period");
+                // timer
+                lua_pushnumber(L, mp->timer);
+                lua_setfield(L, -2, "timer");
+
+                lua_seti(L, -2, (lua_Integer)CT_MOVINGPLATFORM);
+                break;
+
+            default:
+                break;
+                
+            }
+        }
+        lua_setfield(L, -2, "components");
+        lua_seti(L, -2, onEntity);
+        onEntity++;
+    }
+    return 1;
+}
+
+int LuaLevelSerializer::l_GetAnimations(lua_State* L)
+{
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    lua_newtable(L);
+    int anim_index = 1;
+    for (auto& [key, val] : e->_Tileset.AnimationsMap) {
+        lua_newtable(L);
+        lua_pushstring(L, key.c_str());
+        lua_setfield(L, -2, "name");
+        lua_newtable(L);
+        for (int i = 0; i < val.size(); i++) {
+            auto frame = val[i];
+            lua_pushinteger(L, frame);
+            lua_seti(L, -2, i+1);
+        }
+        lua_setfield(L, -2, "frames");
+        lua_seti(L, -2, anim_index);
+        anim_index++;
+    }
+    return 1;
+}
+
+int LuaLevelSerializer::l_GetTilelayers(lua_State* L)
+{
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    lua_newtable(L);
+    for (int i = 0; i < e->_TileLayers.size(); i++) {
+        const auto& tl = e->_TileLayers[i];
+        lua_newtable(L);
+        lua_pushinteger(L, tl.Type);
+        lua_setfield(L, -2, "t_type");
+        lua_pushinteger(L, tl.GetWidth());
+        lua_setfield(L, -2, "widthtiles");
+        lua_pushinteger(L, tl.GetHeight());
+        lua_setfield(L, -2, "heighttiles");
+        lua_newtable(L);
+        for (int j = 0; j < tl.Tiles.size(); j++) {
+            lua_pushinteger(L, tl.Tiles[j]);
+            lua_seti(L, -2, j + 1);
+        }
+        lua_setfield(L, -2, "tiles");
+        lua_seti(L, -2, i + 1);
+    }
+    return 1;
+}
+
 
 
 bool LuaLevelSerializer::CheckLua(lua_State* L, int returncode)
@@ -359,7 +664,6 @@ bool LuaLevelSerializer::CheckLua(lua_State* L, int returncode)
 
 void LuaLevelSerializer::RegisterLuaAPI()
 {
-    registerFunction(l_LoadTilesFromImageFile, "C_LoadTilesFromFile");
     registerFunction(l_LoadLevelFromLuaTable, "C_LoadLevel");
     registerFunction(l_CreateEntity, "C_CreateEntity");
     registerFunction(l_SetTransformComponent, "C_SetTransformComponent");
@@ -367,6 +671,14 @@ void LuaLevelSerializer::RegisterLuaAPI()
     registerFunction(l_SetAnimationComponent, "C_SetAnimationComponent");
     registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
     registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
+    registerFunction(l_SetMovingPlatformComponent, "C_SetMovingPlatformComponent");
+    registerFunction(l_LoadTilesetFile, "C_LoadTilesetFile");
+    registerFunction(l_LoadTileLayer, "C_LoadTileLayer");
+    registerFunction(l_LoadAnimationFrames, "C_LoadAnimationFrames");
+    registerFunction(l_GetTileset, "C_GetTileset");
+    registerFunction(l_GetEntities, "C_GetEntities");
+    registerFunction(l_GetAnimations, "C_GetAnimations");
+    registerFunction(l_GetTilelayers, "C_GetTilelayers");
 }
 
 inline void LuaLevelSerializer::registerFunction(int(*func)(lua_State* L), std::string func_name)

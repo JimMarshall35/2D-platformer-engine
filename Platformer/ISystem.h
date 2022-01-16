@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Tilelayer.h"
+#define OperateOnComponentGroup(...) for (auto& entityID : ECS::getIntersection(std::vector<ComponentType>({ __VA_ARGS__}), components ))
 class Components;
 class Camera2D;
 class TileSet;

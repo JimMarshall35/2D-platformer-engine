@@ -4,7 +4,8 @@
 
 void AnimationSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
 {
-	for (auto& [entityID, val] : components.animations) {
+	OperateOnComponentGroup(CT_ANIMATION, CT_SPRITE) {
+		auto& val = components.animations[entityID];
 		auto& frames = tileset.AnimationsMap[val.animationName];
 		if (val.isAnimating) {
 			val.timer += delta_t;

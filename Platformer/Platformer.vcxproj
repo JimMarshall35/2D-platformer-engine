@@ -172,6 +172,7 @@
     <ClCompile Include="JSONLevelSerializer.cpp" />
     <ClCompile Include="LuaLevelSerializer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MovingPlaformSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PlayerBehaviorSystem.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="ISystem.h" />
     <ClInclude Include="JSONLevelSerializer.h" />
     <ClInclude Include="LuaLevelSerializer.h" />
+    <ClInclude Include="MovingPlaformSystem.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PlayerBehaviorSystem.h" />
     <ClInclude Include="Renderer2D.h" />

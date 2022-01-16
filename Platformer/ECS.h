@@ -1,6 +1,8 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <unordered_map>
+#include <unordered_set>
+#include <set>
 
 using EntityID = int64_t;
 
@@ -8,14 +10,19 @@ struct Sprite {
 	unsigned int texture;
 };
 
-struct Transform
-{
+struct Transform{
 	glm::vec2 pos;
 	glm::vec2 scale;
 	float rot;
 };
 
-
+struct MovingPlatform {
+	glm::vec2 point1;
+	glm::vec2 point2;
+	double time_period;
+	double timer = 0;
+	glm::vec2 lastpos;
+};
 
 struct Health
 {
@@ -41,7 +48,9 @@ struct Physics {
 	bool rightTouching = false;
 	bool lastLeftTouching = false;
 	bool lastRightTouching = false;
+	bool gravity = true;
 	FloorCollider collider;
+	EntityID movingPlatformId = 0;
 };
 
 
@@ -65,14 +74,16 @@ struct PlayerBehavior {
 	bool jumping;
 	int jumpcounter = 0;
 };
-#define NUM_COMPONENTS 6
+#define NUM_COMPONENTS 8
 enum ComponentType : unsigned int {
+	CT_INVALID = 0,
 	CT_TRANSFORM = 1,
 	CT_PHYSICS = 2,
 	CT_HEALTHS = 3,
 	CT_SPRITE = 4,
 	CT_ANIMATION = 5,
-	CT_PLAYERBEHAVIOR = 6
+	CT_PLAYERBEHAVIOR = 6,
+	CT_MOVINGPLATFORM = 7
 };
 template <typename Type>
 using ComponentMap = std::unordered_map<EntityID, Type>;
@@ -82,6 +93,7 @@ using Healths = ComponentMap<Health>;
 using Sprites = ComponentMap<Sprite>;
 using Animations = ComponentMap<Animation>;
 using PlayerBehaviors = ComponentMap<PlayerBehavior>;
+using MovingPlatforms = ComponentMap<MovingPlatform>;
 
 struct Components
 {
@@ -91,6 +103,7 @@ struct Components
 	Sprites sprites;
 	Animations animations;
 	PlayerBehaviors player_behaviors;
+	MovingPlatforms moving_platforms;
 };
 enum class EntityType {
 	Undefined,
@@ -110,6 +123,7 @@ public:
 	bool DeleteEntity(EntityID id);
 	Components _Components;
 	std::unordered_map<EntityID, std::vector<ComponentType>> _Entities;
-	
 
+	static std::set<EntityID> getKeys(ComponentType type, const Components& components);
+	static std::set<EntityID> getIntersection(const std::vector<ComponentType>& componentTypes, const Components& components);
 };

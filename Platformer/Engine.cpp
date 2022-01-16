@@ -6,6 +6,7 @@
 #include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "PlayerBehaviorSystem.h"
+#include "MovingPlaformSystem.h"
 
 
 
@@ -16,8 +17,9 @@ void Engine::Update(double delta_t)
 {
 	switch (_CurrentMode) {
 	case EngineMode::Play:
-		
+		_MovingPlatformSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_PlayerBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
+		
 		_PhysicsSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_AnimationSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		break;
@@ -208,16 +210,6 @@ void Engine::Draw()
 	case EngineMode::Play:
 		DrawBackgroundLayers(_Renderer, _GameCam);
 		SpritesSystemDraw(_GameCam);
-		const auto& transform = _Components.transforms[_Player1];
-		const auto& collider = _Components.physicses[_Player1].collider;
-		auto width = transform.scale.x - collider.MinusPixelsLeft - collider.MinusPixelsRight;
-		auto x_offset = collider.MinusPixelsLeft / 2.0f - collider.MinusPixelsRight / 2.0f;
-		auto height = transform.scale.y - collider.MinusPixelsBottom - collider.MinusPixelsTop;
-		auto y_offset = collider.MinusPixelsTop / 2.0f - collider.MinusPixelsBottom / 2.0f;
-		//_Editor->DrawEngineOverlay(_Renderer, _GameCam);
-#ifdef TEST_COLLISIONS
-		_Renderer.DrawSolidRect(transform.pos + vec2(x_offset, y_offset), vec2(width, height), 0, vec4(0.0, 0.5, 0.5, 0.5), _GameCam);
-#endif // TEST_COLLISIONS
 		break;
 	}
 }
@@ -255,35 +247,25 @@ void Engine::DrawBackgroundLayers(const Renderer2D& renderer, const Camera2D& ca
 			Tile& t = _Tileset.Tiles[tileIndex - 1];
 			renderer.DrawWholeTexture(worldPos, vec2(_Tileset.TileWidthAndHeightPx), 0.0, t.Texture, camera);
 		}
-#ifdef TEST_COLLISION
-		for (auto i : _TestTiles) {
-			if (i >= 0 && i <= tl.Tiles.size()) {
-				vec2 worldPos;
-				auto xCoord = i % width;
-				auto yCoord = i / width;
-				worldPos.x = (float)xCoord;
-				worldPos.y = (float)yCoord;
-				worldPos *= vec2(_Tileset.TileWidthAndHeightPx);
-				vec4 tileTLBR = vec4(
-					worldPos.y,
-					worldPos.x,
-					worldPos.y + (float)_Tileset.TileWidthAndHeightPx.y,
-					worldPos.x + (float)_Tileset.TileWidthAndHeightPx.x
-				);
-				worldPos += vec2(_Tileset.TileWidthAndHeightPx) * 0.5f;
-				renderer.DrawSolidRect(worldPos, vec2(_Tileset.TileWidthAndHeightPx), 0.0, vec4(0.0, 1.0, 0.0, 0.4), camera);
-			}
 
-		}
-#endif 
 	}
 }
 
 void Engine::SpritesSystemDraw(const Camera2D& cam)
 {
+	using namespace glm;
 	for (auto& [key, value] : _Components.sprites) {
 		Transform& transform = _Components.transforms[key];
-		_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
+		vec4 cameraTLBR = cam.GetTLBR(_Renderer.WindowW, _Renderer.WindowH);
+		vec4 tileTLBR = vec4(
+			transform.pos.y - transform.scale.y * 0.5f,
+			transform.pos.x - transform.scale.x * 0.5f,
+			transform.pos.y + transform.scale.y * 0.5f,
+			transform.pos.x + transform.scale.x * 0.5f
+		);
+		if (AABBCollision(cameraTLBR, tileTLBR)) {
+			_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
+		}
 	}
 }
 
@@ -302,6 +284,7 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer)
 	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem());
 	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
 	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem());
+	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
 }
 
 #pragma endregion

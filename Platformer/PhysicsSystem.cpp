@@ -2,12 +2,16 @@
 #include "Tileset.h"
 #include "ECS.h"
 #include <algorithm>
+#include <iostream>
 
 void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
 {
 	using namespace glm;
-	for (auto& [entityID, phys] : components.physicses) {
+	
+	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM){
+
 		// get relavent components
+		auto& phys = components.physicses[entityID];
 		const auto& collider = phys.collider;
 		
 		auto& transform = components.transforms[entityID];
@@ -26,16 +30,25 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 		auto bottomRight = vec2(pos.x + width / 2.0f, pos.y + height / 2.0f);
 		// bottom / top touching by checking the tile at points just above or below the collider
 		auto bottomMid = vec2(pos.x, pos.y + ((bottomRight.y - topLeft.y) / 2) + 3.0f);
+		EntityID onplatform_id;
 		phys.lastbottomTouching = phys.bottomTouching;
 		if (SolidTileAtCoords(floor(bottomMid.x / 16.0f), floor(bottomMid.y / 16.0f), tilelayers) ||
 			SolidTileAtCoords(floor((bottomRight.x - 0.1) / 16.0f), floor(bottomRight.y / 16.0f), tilelayers) ||
 			SolidTileAtCoords(floor((topLeft.x + 0.1) / 16.0f), floor(bottomMid.y / 16.0f),tilelayers)) {
+			
 			phys.bottomTouching = true;
 			//vel.y = 0;
 		}
 		else {
 			phys.bottomTouching = false;
-			
+			onplatform_id = MovingPlatformAtPos(bottomMid, components);
+			phys.movingPlatformId = onplatform_id;
+		}
+		if (phys.movingPlatformId != 0) {
+			auto& movingPlatform = components.moving_platforms[phys.movingPlatformId];
+			auto& movingPlatformTransform = components.transforms[phys.movingPlatformId];
+			transform.pos += movingPlatformTransform.pos - movingPlatform.lastpos;
+			phys.bottomTouching = true;
 		}
 		// if the collider isn't collidable, continue, having set the bottomTouching of phys
 		if (!collider.Collidable) {
@@ -43,9 +56,12 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 			continue;
 		}
 		//gravity
-		if (!phys.bottomTouching) {
-			vel.y += 500 * delta_t;
+		if (phys.gravity) {
+			if (!phys.bottomTouching) {
+				vel.y += 500 * delta_t;
+			}
 		}
+		
 		// "Smear" the colliders top left and bottom right according to velocity to get bounds of all cells that could possibly collide this frame
 		vec2 expandedBottomRight = bottomRight;
 		vec2 expandedTopLeft = topLeft;
@@ -66,16 +82,11 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 		auto bottomRightCells = ivec2(floor(expandedBottomRight.x / 16.0f), floor(expandedBottomRight.y / 16.0f));
 		// get a rect describing the moving sprite
 		rect dynamic = { topLeft, vec2(width,height),&vel };
-#ifdef  TEST_COLLISION
-		_TestTiles.clear();
-#endif //  TEST_COLLISION
 		// iterate through nearby cells
 		std::vector<CollidedTile> collidedTiles;
 		for (int y = topLeftCells.y; y <= bottomRightCells.y; y++) {
 			for (int x = topLeftCells.x; x <= bottomRightCells.x; x++) {
-#ifdef DEBUG
-				_TestTiles.push_back(y * CollidableLayerWidthAndHeight.x + x);
-#endif // DEBUG
+
 				// immediately discard those that don't contain a solid tile
 				if (!SolidTileAtCoords(x, y, tilelayers)) continue; 
 				// check for collision between the collider and the tile
@@ -89,18 +100,35 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 				}
 			}
 		}
+
+		// moving platforms
+		for (auto& [platformID, val] : components.moving_platforms) {
+			const auto& platform_transform = components.transforms[platformID];
+			// check for collision between the collider and the platform
+			auto tileTL = vec2(platform_transform.pos.x - platform_transform.scale.x / 2.0f, platform_transform.pos.y - platform_transform.scale.y / 2.0f);
+			vec2 cp, cn;
+			float ct;
+			rect tile = { tileTL, platform_transform.scale, nullptr };
+			if (DynamicRectVsRect(&dynamic, delta_t, tile, cp, cn, ct)) {
+				collidedTiles.push_back({ tile, ct });
+				std::cout << "collision cn x: " << cn.x << " y: "<< cn.y << " ct: "<< ct << std::endl;
+			}
+		}
 		// sort collided tiles by contact time
 		std::sort(collidedTiles.begin(), collidedTiles.end(), [](const CollidedTile& a, const CollidedTile& b) {
 			return a.contact_t < b.contact_t;
 			});
-		vec2 cp, cn;
-		float ct;
+
 		// resolve the collisions in their new order
 		for (auto collided : collidedTiles) {
 			ResolveDynamicRectVsRect(&dynamic, delta_t, &collided.rect);
 		}
+		
 		// apply velocity to position
 		transform.pos += vel * (float)delta_t;
+		
+		
+		
 	}
 }
 
@@ -206,10 +234,34 @@ bool PhysicsSystem::ResolveDynamicRectVsRect(rect* r_dynamic, const float fTimeS
 		if (contact_normal.x < 0) r_dynamic->contact[1] = r_static; else nullptr;
 		if (contact_normal.y < 0) r_dynamic->contact[2] = r_static; else nullptr;
 		if (contact_normal.x > 0) r_dynamic->contact[3] = r_static; else nullptr;
+		/*
+		float remainingtime = 1.0f - contact_time;
+		float magnitude = sqrt((r_dynamic->vel->x * r_dynamic->vel->x + r_dynamic->vel->y * r_dynamic->vel->y)) * remainingtime;
+		float dotprod = (r_dynamic->vel->x * contact_normal.y + r_dynamic->vel->y * contact_normal.x) * remainingtime;
+		if (dotprod > 0.0f) dotprod = 1.0f;
+		else if (dotprod < 0.0f) dotprod = -1.0f;
 
-		*r_dynamic->vel += contact_normal * vec2(std::abs(r_dynamic->vel->x), std::abs(r_dynamic->vel->y)) * (1 - contact_time);
+		r_dynamic->vel->x = dotprod * contact_normal.y * magnitude;
+		r_dynamic->vel->y = dotprod * contact_normal.x * magnitude;
+		*/
+
+		*r_dynamic->vel += (contact_normal) * vec2(std::abs(r_dynamic->vel->x), std::abs(r_dynamic->vel->y)) * (1.0f - contact_time);
 		return true;
 	}
 
 	return false;
+}
+
+EntityID PhysicsSystem::MovingPlatformAtPos(const glm::vec2& pos, Components& c) {
+	for (const auto& [key, val] : c.moving_platforms) {
+		const auto& transform = c.transforms[key];
+		glm::vec2 platformMinXY(transform.pos.x - (transform.scale.x / 2.0f), transform.pos.y - (transform.scale.y / 2.0f));
+		glm::vec2 platformMaxXY(transform.pos.x + (transform.scale.x / 2.0f), transform.pos.y + (transform.scale.y / 2.0f));
+		if (pos.x > platformMinXY.x && pos.x < platformMaxXY.x &&
+			pos.y > platformMinXY.y && pos.y < platformMaxXY.y)
+		{
+			return key;
+		}
+	}
+	return 0;
 }

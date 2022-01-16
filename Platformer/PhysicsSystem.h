@@ -23,7 +23,7 @@ private:
 	bool DynamicRectVsRect(
 		const rect* r_dynamic, const float fTimeStep, const rect& r_static,
 		glm::vec2& contact_point, glm::vec2& contact_normal, float& contact_time);
-
+	int64_t MovingPlatformAtPos(const glm::vec2& pos, Components& );
 	bool ResolveDynamicRectVsRect(rect* r_dynamic, const float fTimeStep, rect* r_static);
 };
 

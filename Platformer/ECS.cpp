@@ -1,4 +1,7 @@
 #include "ECS.h"
+#include <algorithm>
+#include <set>
+#include <locale>
 EntityID GetEntityId()
 {
 	static EntityID id = 1;
@@ -27,6 +30,9 @@ EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 			break;
 		case CT_SPRITE:
 			_Components.sprites[id] = Sprite();
+			break;
+		case CT_MOVINGPLATFORM:
+			_Components.moving_platforms[id] = MovingPlatform();
 			break;
 		}
 	}
@@ -57,8 +63,89 @@ bool ECS::DeleteEntity(EntityID id)
 		case CT_SPRITE:
 			_Components.sprites.erase(id);
 			break;
+		case CT_MOVINGPLATFORM:
+			_Components.moving_platforms.erase(id);
+			break;
 		}
 	}
 	_Entities.erase(id);
 	return true;
+}
+
+template<typename TK, typename TV>
+std::vector<TK> extract_keys(std::unordered_map<TK, TV> const& input_map) {
+	std::vector<TK> retval;
+	for (auto const& element : input_map) {
+		retval.push_back(element.first);
+	}
+	return retval;
+}
+
+template<typename TK, typename TV>
+std::vector<TV> extract_values(std::unordered_map<TK, TV> const& input_map) {
+	std::vector<TV> retval;
+	for (auto const& element : input_map) {
+		retval.push_back(element.second);
+	}
+	return retval;
+}
+// Function to convert Vector to Set
+std::set<EntityID> convertToSet(std::vector<EntityID> v)
+{
+	// Declaring the set
+	// using range of vector
+	std::set<EntityID> s(v.begin(), v.end());
+
+	// Return the resultant Set
+	return s;
+}
+
+std::set<EntityID> ECS::getKeys(ComponentType type, const Components& components) {
+	switch (type) {
+	case CT_ANIMATION:
+		return convertToSet(extract_keys<EntityID, Animation>(components.animations));
+		break;
+	case CT_HEALTHS:
+		return convertToSet(extract_keys<EntityID, Health>(components.healths));
+		break;
+	case CT_PHYSICS:
+		return convertToSet(extract_keys<EntityID, Physics>(components.physicses));
+		break;
+	case CT_PLAYERBEHAVIOR:
+		return convertToSet(extract_keys<EntityID, PlayerBehavior>(components.player_behaviors));
+		break;
+	case CT_SPRITE:
+		return convertToSet(extract_keys<EntityID, Sprite>(components.sprites));
+		break;
+	case CT_TRANSFORM:
+		return convertToSet(extract_keys<EntityID, Transform>(components.transforms));
+		break;
+	case CT_MOVINGPLATFORM:
+		return convertToSet(extract_keys<EntityID, MovingPlatform>(components.moving_platforms));
+	}
+}
+
+std::set<EntityID> ECS::getIntersection(const std::vector<ComponentType>& componentTypes, const Components& components)
+{
+	if (componentTypes.size() == 0) return std::set<EntityID>();
+	//if(componentTypes.size() == 0) return std::unordered_set<EntityID>()
+	
+	auto ct = componentTypes[0];
+	
+	std::set<EntityID> lastkeys;
+	lastkeys = getKeys(componentTypes[0], components);
+	if (componentTypes.size() == 1) {
+		return lastkeys;
+	}
+	std::unordered_set<EntityID> rset;
+	for (int i = 1; i < componentTypes.size(); i++) {
+		
+		auto nextkeys = getKeys(componentTypes[i], components);
+		std::set<EntityID> intersect;
+		set_intersection(lastkeys.begin(), lastkeys.end(), nextkeys.begin(), nextkeys.end(),
+			std::inserter(intersect, intersect.begin()));
+		lastkeys = intersect;
+	}
+	return lastkeys;
+	
 }
