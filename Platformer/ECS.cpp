@@ -34,6 +34,12 @@ EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 		case CT_MOVINGPLATFORM:
 			_Components.moving_platforms[id] = MovingPlatform();
 			break;
+		case CT_COLLECTABLE:
+			_Components.collectables[id] = Collectable();
+			break;
+		case CT_ENEMYBEHAVIOR:
+			_Components.enemy_behaviors[id] = EnemyBehavior();
+			break;
 		}
 	}
 	_Entities[id] = components;
@@ -65,6 +71,12 @@ bool ECS::DeleteEntity(EntityID id)
 			break;
 		case CT_MOVINGPLATFORM:
 			_Components.moving_platforms.erase(id);
+			break;
+		case CT_COLLECTABLE:
+			_Components.collectables.erase(id);
+			break;
+		case CT_ENEMYBEHAVIOR:
+			_Components.enemy_behaviors.erase(id);
 			break;
 		}
 	}
@@ -122,6 +134,13 @@ std::set<EntityID> ECS::getKeys(ComponentType type, const Components& components
 		break;
 	case CT_MOVINGPLATFORM:
 		return convertToSet(extract_keys<EntityID, MovingPlatform>(components.moving_platforms));
+		break;
+	case CT_COLLECTABLE:
+		return convertToSet(extract_keys<EntityID, Collectable>(components.collectables));
+		break;
+	case CT_ENEMYBEHAVIOR:
+		return convertToSet(extract_keys<EntityID, EnemyBehavior>(components.enemy_behaviors));
+		break;
 	}
 }
 

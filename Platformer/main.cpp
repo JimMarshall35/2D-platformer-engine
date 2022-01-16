@@ -7,6 +7,7 @@
 #include "ErrorHandling.h"
 #include "JSONLevelSerializer.h"
 #include "LuaLevelSerializer.h"
+#include "LuaVMService.h"
 #include "EditorUI.h"
 
 static bool wantMouseInput = false;
@@ -52,7 +53,8 @@ int main(int argc, char* argv[])
 
 	glClearColor(0.5294, 0.8078, 0.9216, 1.0);
 	double last = glfwGetTime();
-	Engine engine(new EditorUserInterface(), new LuaLevelSerializer());
+	LuaVMService* vmService = new LuaVMService();
+	Engine engine(new EditorUserInterface(vmService), new LuaLevelSerializer(vmService));
 	engine_ptr = &engine;
 	inputInit(window);
 	imguiInit(window);
@@ -86,6 +88,7 @@ int main(int argc, char* argv[])
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
+	delete vmService;
 	return 0;
 }
 

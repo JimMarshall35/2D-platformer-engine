@@ -4,7 +4,12 @@
 #include <queue>
 #include "Engine.h"
 #include "ILevelSerializer.h"
-
+#include "LuaVMService.h"
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+}
 
 void EditorUserInterface::DeleteLastLayer()
 {
@@ -14,7 +19,6 @@ void EditorUserInterface::DeleteLastLayer()
 			_SelectedTileLayer--;
 	}
 	std::cout << "sdjoigsd" << std::endl;
-	
 }
 
 void EditorUserInterface::PushNewTileLayer(unsigned int width_tiles, unsigned int height_tiles)
@@ -157,7 +161,9 @@ void EditorUserInterface::DoEntitiesWindow()
 					}
 					break;
 				case CT_HEALTHS:
-					ImGui::Text("Healths");
+					if (ImGui::TreeNode("Healths")) {
+						ImGui::TreePop();
+					}
 					break;
 				case CT_SPRITE:
 					sprite = &_Engine->_Components.sprites[id];
@@ -204,6 +210,16 @@ void EditorUserInterface::DoEntitiesWindow()
 						ImGui::TreePop();
 					}
 					break;
+				case CT_COLLECTABLE:
+					if (ImGui::TreeNode("Collectable")) {
+						ImGui::TreePop();
+					}
+					break;
+				case CT_ENEMYBEHAVIOR:
+					if (ImGui::TreeNode("EnemyBehavior")) {
+						ImGui::TreePop();
+					}
+					break;
 				default:
 					std::cout << "bad entity id " << id << " component type " << componentType << std::endl;
 					return;
@@ -245,10 +261,10 @@ void EditorUserInterface::DoToolSelectWindow()
 	ImGui::Begin("tool");
 	static const char* current_item = "Draw single tile";
 	if (ImGui::BeginCombo("Tool", current_item)) {
-		for (auto const& [enumval, name]: _EditorToolNameMap) {
-			if (ImGui::Selectable(name)) {
-				current_item = name;
-				_CurrentEditorTool = enumval;
+		for (auto tool : _EditorTools) {
+			if (ImGui::Selectable(tool->name.c_str())) {
+				current_item = tool->name.c_str();
+				_SelectedTool = tool;
 			}
 		}
 		ImGui::EndCombo();
@@ -259,8 +275,18 @@ void EditorUserInterface::DoToolSelectWindow()
 
 
 
+EditorUserInterface::EditorUserInterface(LuaVMService* vm) 
+	: _VM(vm)
+{
+	_VM->DoFile("editortools.lua");
+}
+
+
 EditorUserInterface::~EditorUserInterface()
 {
+	for (auto ptr : _EditorTools) {
+		delete ptr;
+	}
 }
 
 void EditorUserInterface::DoGui()
@@ -347,36 +373,7 @@ void EditorUserInterface::DrawEngineOverlay(const Renderer2D& renderer, const Ca
 	}
 
 
-	vec2 worldPos;
-	auto xCoord = _TileIndexHovvered % width;
-	auto yCoord = _TileIndexHovvered / width;
-	worldPos.x = (float)xCoord;
-	worldPos.y = (float)yCoord;
-	worldPos *= vec2(tileSet.TileWidthAndHeightPx);
-	worldPos += vec2(tileSet.TileWidthAndHeightPx) * 0.5f;
-	switch (_CurrentEditorTool) {
-	case EditorTool::DrawSingleTile:
-		//renderer.DrawSolidRect(worldPos, vec2(tileSet.TileWidthAndHeightPx), 0.0, glm::vec4(0.0, 1.0, 0.0, 0.5), camera);
-		renderer.DrawWireframeRect(worldPos, vec2(tileSet.TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
-		break;
-	case EditorTool::Select:
-		if (_LeftMouseDragging) {
-			glm::vec2 scale;
-			scale.x = _LeftMouseDragStart.x - _LastMouseWorld.x;
-			scale.y = _LeftMouseDragStart.y - _LastMouseWorld.y;
-			renderer.DrawWireframeRect(_LeftMouseDragStart + scale * -0.5f, scale, 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
-		}
-		for (unsigned int tile : _SelectedTiles) {
-			auto xCoord = tile % width;
-			auto yCoord = tile / width;
-			worldPos.x = (float)xCoord;
-			worldPos.y = (float)yCoord;
-			worldPos *= vec2(tileSet.TileWidthAndHeightPx);
-			worldPos += vec2(tileSet.TileWidthAndHeightPx) * 0.5f;
-			renderer.DrawSolidRect(worldPos, vec2(tileSet.TileWidthAndHeightPx), 0, vec4(0.0f, 0.5f, 0.5f, 0.4f), camera);
-		}
-		break;
-	}
+	_SelectedTool->drawOverlay(renderer, camera);
 	
 
 	
@@ -397,17 +394,11 @@ void EditorUserInterface::cursorPositionCallbackHandler(double xpos, double ypos
 		if (x < 0 || x >= tileLayerW || y < 0 || y >= tileLayerH) {
 			return;
 		}
-		switch (_CurrentEditorTool) {
-		case EditorTool::DrawSingleTile:
-			if (_LeftMouseDragging) {
-				_Engine->_TileLayers[_SelectedTileLayer].Tiles[_TileIndexHovvered] = _SelectedTile->ID;
-			}
-			else if (_RightMouseDragging) {
-				_Engine->_TileLayers[_SelectedTileLayer].Tiles[_TileIndexHovvered] = 0;
-			}
-			break;
-		}
+		
 		_TileIndexHovvered = y * tileLayerW + x;
+		if (_SelectedTool->InputRequirement & CursorPositionMove) {
+			_SelectedTool->handleMouseMove(xpos,ypos,imGuiWantsMouse,camera);
+		}
 	}
 }
 
@@ -452,55 +443,14 @@ void EditorUserInterface::mouseButtonCallbackHandler(int button, int action, int
 		_RightMouseDragging = false;
 	}
 
-	if (!imGuiWantsMouse) {
-		switch (_CurrentEditorTool) {
-		case EditorTool::DrawSingleTile:
-			
-			if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-				_Engine->_TileLayers[_SelectedTileLayer].Tiles[_TileIndexHovvered] = _SelectedTile->ID;
-			}
-			else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-				_Engine->_TileLayers[_SelectedTileLayer].Tiles[_TileIndexHovvered] = 0;
-			}
-			
-			break;
-		case EditorTool::Select:
-			if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-				GetNewSelection();
-			}
-			break;
-		case EditorTool::FloodFillTile:
-			FloodFill();
-			break;
-		case EditorTool::DrawSquareOfTile:
-			break;
-		default:
-			throw;
-			break;
-		}
-		
+	if (_SelectedTool->InputRequirement & MouseButton) {
+		_SelectedTool->handleMouseButton(button, action, mods, imGuiWantsMouse, camera);
 	}
 }
 
 void EditorUserInterface::keyboardButtonCallbackHandler(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput)
 {
-	switch (_CurrentEditorTool) {
-	case EditorTool::Select:
-		if (key == GLFW_KEY_C && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
-			CopyTiles();
-		}
-		if (key == GLFW_KEY_X && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
-			CutTiles();
-		}
-		if (key == GLFW_KEY_V && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
-			PasteTiles();
-		}
-		if (key == GLFW_KEY_DELETE && action == GLFW_PRESS) {
-			DeleteSelection();
-		}
-		
-		break;
-	}
+
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		_Engine->GotoPlayMode();
 	}
@@ -508,173 +458,33 @@ void EditorUserInterface::keyboardButtonCallbackHandler(GLFWwindow* window, int 
 		_Engine->SaveCurrentLevel("test.lua");
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
-		_Engine->LoadLevel("level.lua");
+		_Engine->LoadLevel("test.lua");
 	}
-
+	if (_SelectedTool->InputRequirement & KeyboardButton) {
+		_SelectedTool->handleKeyboard(window,key,scancode,action,mods,wantKeyboardInput);
+	}
 }
 
 void EditorUserInterface::frameBufferSizeChangeCallbackHandler(GLFWwindow* window, int newwidth, int newheight, Camera2D& camera)
 {
-	camera.FocusPosition.x = newwidth / 2;
-	camera.FocusPosition.y = newheight / 2;
+	//camera.FocusPosition.x = newwidth / 2;
+	//camera.FocusPosition.y = newheight / 2;
 	WindowH = newheight;
 	WindowW = newwidth;
 }
 
-void EditorUserInterface::GetNewSelection()
+void EditorUserInterface::SetEngine(Engine* engine)
 {
-	using namespace glm;
-	_SelectedTiles.clear();
-	TileSet& tileSet = _Engine->_Tileset;
-	TileLayer& tl = _Engine->_TileLayers[_SelectedTileLayer];
-	auto width = tl.GetWidth();
-	auto height = tl.GetHeight();
-	float lowestX, lowestY, highestX, highestY;
-	if (_LeftMouseDragStart.x <= _LastMouseWorld.x) {
-		lowestX = _LeftMouseDragStart.x;
-		highestX = _LastMouseWorld.x;
-	}
-	else {
-		lowestX = _LastMouseWorld.x;
-		highestX = _LeftMouseDragStart.x;
-	}
+	 _Engine = engine; 
+	 _EditorTools.push_back(new SelectTool(this, engine));
+	 _EditorTools.push_back(new DrawSingleTileTool(this, engine));
+	 _EditorTools.push_back(new FloodFillTool(this, engine));
+	 _SelectedTool = _EditorTools[1];
+	 lua_State* L = _VM->GetL();
 
-	if (_LeftMouseDragStart.y <= _LastMouseWorld.y) {
-		lowestY = _LeftMouseDragStart.y;
-		highestY = _LastMouseWorld.y;
-	}
-	else {
-		lowestY = _LastMouseWorld.y;
-		highestY = _LeftMouseDragStart.y;
-	}
-	vec4 selectionTLBR = vec4(lowestY,lowestX, highestY,highestX);
-	int last_i = 0;
-	_SelectionWidth = 1;
-	for (int i = 0; i < _Engine->_TileLayers[_SelectedTileLayer].Tiles.size(); i++) {
-		vec2 worldPos;
-		auto xCoord = i % width;
-		auto yCoord = i / width;
-		worldPos.x = (float)xCoord;
-		worldPos.y = (float)yCoord;
-		worldPos *= vec2(tileSet.TileWidthAndHeightPx);
-		vec4 tileTLBR = vec4(
-			worldPos.y,
-			worldPos.x,
-			worldPos.y + (float)tileSet.TileWidthAndHeightPx.y,
-			worldPos.x + (float)tileSet.TileWidthAndHeightPx.x
-		);
-		if (_Engine->AABBCollision(tileTLBR, selectionTLBR)) {
-			if (i == last_i + 1) {
-				_SelectionWidth++;
-				if (_SelectionWidth >= width)
-					_SelectionWidth = width;
-			}
-			else {
-				_SelectionWidth = 1;
-			}
-			_SelectedTiles.push_back(i);
-			last_i = i;
-		}
-	}
 }
 
-void EditorUserInterface::CopyTiles()
-{
-	_ClipBoardWidth = _SelectionWidth;
-	_ClipBoardLayer = _SelectedTileLayer;
-	_ClipBoard.clear();
-	for (int tile : _SelectedTiles) {
-		_ClipBoard.push_back(_Engine->_TileLayers[_SelectedTileLayer].Tiles[tile]);
-	}
-}
 
-void EditorUserInterface::CutTiles()
-{
-	_ClipBoardWidth = _SelectionWidth;
-	_ClipBoardLayer = _SelectedTileLayer;
-	_ClipBoard.clear();
-	for (int tile : _SelectedTiles) {
-		_ClipBoard.push_back(_Engine->_TileLayers[_SelectedTileLayer].Tiles[tile]);
-		_Engine->_TileLayers[_SelectedTileLayer].Tiles[tile] = 0;
-		
-	}
-}
-
-void EditorUserInterface::PasteTiles()
-{
-	/*
-		unsigned int* src_ptr = _ClipBoard.data();
-		int startindex = _SelectedTiles[0];
-		int dst_tile = startindex;
-		unsigned int* dst_ptr = &_Engine._TileLayers[_SelectedTileLayer].Tiles.data()[dst_tile];
-		int dst_layer_width = _Engine._TileLayers[_SelectedTileLayer].GetWidth();
-		for (int i = 0; i < (_ClipBoard.size() / _ClipBoardWidth); i++) {
-			memcpy(
-				(void*)(dst_ptr + i*dst_layer_width),
-				(void*)(src_ptr + i*_ClipBoardWidth),
-				sizeof(unsigned int) * _ClipBoardWidth
-			);
-
-		}
-	*/
-	int startindex = _SelectedTiles[0];
-	int dst_tile = startindex;
-	int rows = _ClipBoard.size() / _ClipBoardWidth;
-	int copiedTilesOnRow = 0;
-	int dst_layer_width = _Engine->_TileLayers[_SelectedTileLayer].GetWidth();
-	for (int i = 0; i < _ClipBoard.size(); i++) {
-		_Engine->_TileLayers[_SelectedTileLayer].Tiles[dst_tile] = _ClipBoard[i];
-		copiedTilesOnRow++;
-		if (copiedTilesOnRow >= _ClipBoardWidth) {
-			dst_tile -= _ClipBoardWidth - 1;
-			dst_tile += dst_layer_width;
-			copiedTilesOnRow = 0;
-		}
-		else {
-			dst_tile++;
-		}
-	}
-}
-
-void EditorUserInterface::DeleteSelection()
-{
-	for (int tile : _SelectedTiles) {
-		_Engine->_TileLayers[_SelectedTileLayer].Tiles[tile] = 0;
-	}
-}
-
-void EditorUserInterface::FloodFill()
-{
-	std::queue<unsigned int> q;
-	q.push(_TileIndexHovvered);
-	TileLayer& tl = _Engine->_TileLayers[_SelectedTileLayer];
-	auto tl_w = tl.GetWidth();
-	auto tl_h = tl.GetHeight();
-	while (!q.empty()) {
-		unsigned int current = q.front();
-		q.pop();
-		unsigned int tile = tl.Tiles[current];
-		if (tile != 0) continue;
-		tl.Tiles[current] = _SelectedTile->ID;
-		
-		int topindex, bottomindex, leftindex, rightindex;
-		topindex = current - tl_w;
-		bottomindex = current + tl_w;
-		leftindex = current - 1;
-		rightindex = current + 1;
-		if (topindex > 0) {
-			q.push(topindex);
-		}
-		if (bottomindex < tl.Tiles.size()) {
-			q.push(bottomindex);
-		}
-		//test
-		if(leftindex > 0)
-			q.push(leftindex);
-		if(rightindex < tl.Tiles.size())
-			q.push(rightindex);
-	}
-}
 
 bool EditorUserInterface::FileChosen(std::string path)
 {

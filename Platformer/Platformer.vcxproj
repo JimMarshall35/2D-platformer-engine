@@ -159,6 +159,7 @@
     <ClCompile Include="AnimationSystem.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="ECS.cpp" />
+    <ClCompile Include="EditorUITools.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="ImGuiFileDialog.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="JSONLevelSerializer.cpp" />
     <ClCompile Include="LuaLevelSerializer.cpp" />
+    <ClCompile Include="LuaVMService.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovingPlaformSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
@@ -205,6 +207,7 @@
     <ClInclude Include="ISystem.h" />
     <ClInclude Include="JSONLevelSerializer.h" />
     <ClInclude Include="LuaLevelSerializer.h" />
+    <ClInclude Include="LuaVMService.h" />
     <ClInclude Include="MovingPlaformSystem.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PlayerBehaviorSystem.h" />

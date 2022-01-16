@@ -74,7 +74,15 @@ struct PlayerBehavior {
 	bool jumping;
 	int jumpcounter = 0;
 };
-#define NUM_COMPONENTS 8
+
+struct Collectable {
+
+};
+
+struct EnemyBehavior {
+
+};
+#define NUM_COMPONENTS 10
 enum ComponentType : unsigned int {
 	CT_INVALID = 0,
 	CT_TRANSFORM = 1,
@@ -83,7 +91,10 @@ enum ComponentType : unsigned int {
 	CT_SPRITE = 4,
 	CT_ANIMATION = 5,
 	CT_PLAYERBEHAVIOR = 6,
-	CT_MOVINGPLATFORM = 7
+	CT_MOVINGPLATFORM = 7,
+
+	CT_COLLECTABLE = 8,
+	CT_ENEMYBEHAVIOR = 9
 };
 template <typename Type>
 using ComponentMap = std::unordered_map<EntityID, Type>;
@@ -94,7 +105,8 @@ using Sprites = ComponentMap<Sprite>;
 using Animations = ComponentMap<Animation>;
 using PlayerBehaviors = ComponentMap<PlayerBehavior>;
 using MovingPlatforms = ComponentMap<MovingPlatform>;
-
+using Collectables = ComponentMap<Collectable>;
+using EnemyBehaviors = ComponentMap<EnemyBehavior>;
 struct Components
 {
 	Transforms transforms;
@@ -104,6 +116,8 @@ struct Components
 	Animations animations;
 	PlayerBehaviors player_behaviors;
 	MovingPlatforms moving_platforms;
+	Collectables collectables;
+	EnemyBehaviors enemy_behaviors;
 };
 enum class EntityType {
 	Undefined,

@@ -8,13 +8,13 @@ local obj1 = {
 			["components"] = {
 				[1] = {
 					["rot"] = 0.0;
+					["pos"] = {
+						["x"] = 440.18746948242;
+						["y"] = 176.0;
+					};
 					["scale"] = {
 						["x"] = 32.0;
 						["y"] = 32.0;
-					};
-					["pos"] = {
-						["x"] = 318.86187744141;
-						["y"] = 208.0;
 					};
 				};
 				[2] = {
@@ -26,16 +26,16 @@ local obj1 = {
 					};
 				};
 				[4] = {
-					["texture"] = 140;
+					["texture"] = 145;
 				};
 				[5] = {
-					["numframes"] = 4;
-					["fps"] = 10.0;
-					["name"] = "walk";
-					["isanimating"] = 0;
 					["shouldloop"] = 1;
-					["onframe"] = 2;
-					["timer"] = 0.082889799959958;
+					["name"] = "jump_land";
+					["isanimating"] = 1;
+					["numframes"] = 1;
+					["onframe"] = 0;
+					["fps"] = 5.0;
+					["timer"] = 0.069190499605611;
 				};
 				[6] = {
 				};
@@ -45,13 +45,13 @@ local obj1 = {
 			["components"] = {
 				[1] = {
 					["rot"] = 0.0;
+					["pos"] = {
+						["x"] = 850.16522216797;
+						["y"] = 200.0075378418;
+					};
 					["scale"] = {
 						["x"] = 100.0;
 						["y"] = 16.0;
-					};
-					["pos"] = {
-						["x"] = 891.17510986328;
-						["y"] = 200.01719665527;
 					};
 				};
 				[4] = {
@@ -62,12 +62,12 @@ local obj1 = {
 						["x"] = 900.0;
 						["y"] = 200.0;
 					};
+					["timer"] = 9.7894348938717;
+					["time_period"] = 12.0;
 					["p1"] = {
 						["x"] = 680.0;
 						["y"] = 200.0;
 					};
-					["timer"] = 7.5404640971683;
-					["time_period"] = 12.0;
 				};
 			};
 		};
@@ -75,13 +75,13 @@ local obj1 = {
 			["components"] = {
 				[1] = {
 					["rot"] = 0.0;
+					["pos"] = {
+						["x"] = 1072.4407958984;
+						["y"] = 850.00750732422;
+					};
 					["scale"] = {
 						["x"] = 100.0;
 						["y"] = 16.0;
-					};
-					["pos"] = {
-						["x"] = 730.52679443359;
-						["y"] = 850.01721191406;
 					};
 				};
 				[4] = {
@@ -92,71 +92,34 @@ local obj1 = {
 						["x"] = 500.0;
 						["y"] = 850.0;
 					};
+					["timer"] = 9.7894348938717;
+					["time_period"] = 9.0;
 					["p1"] = {
 						["x"] = 1400.0;
 						["y"] = 850.0;
 					};
-					["timer"] = 7.5404640971683;
-					["time_period"] = 9.0;
 				};
 			};
 		};
 	};
 	["tileset"] = {
 		[1] = {
+			["tile_width_px"] = 16;
 			["tile_height_px"] = 16;
 			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\sheet.png";
 			["firstID"] = 1;
-			["tile_width_px"] = 16;
 		};
 		[2] = {
+			["tile_width_px"] = 32;
 			["tile_height_px"] = 32;
 			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\characters.png";
 			["firstID"] = 137;
-			["tile_width_px"] = 32;
-		};
-	};
-	["animations"] = {
-		[1] = {
-			["name"] = "walk";
-			["frames"] = {
-				[1] = 138;
-				[2] = 139;
-				[3] = 140;
-				[4] = 141;
-			};
-		};
-		[2] = {
-			["name"] = "jump_up";
-			["frames"] = {
-				[1] = 145;
-				[2] = 142;
-				[3] = 143;
-			};
-		};
-		[3] = {
-			["name"] = "jump_down";
-			["frames"] = {
-				[1] = 144;
-			};
-		};
-		[4] = {
-			["name"] = "jump_land";
-			["frames"] = {
-				[1] = 145;
-			};
-		};
-		[5] = {
-			["name"] = "climb";
-			["frames"] = {
-				[1] = 156;
-				[2] = 157;
-				[3] = 158;
-			};
 		};
 	};
 	["tilelayers"] = {
 		[1] = {
+			["widthtiles"] = 100;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -10160,10 +10123,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 0;
-			["widthtiles"] = 100;
-			["heighttiles"] = 100;
 		};
 		[2] = {
+			["widthtiles"] = 100;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -20167,10 +20130,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 1;
-			["widthtiles"] = 100;
-			["heighttiles"] = 100;
 		};
 		[3] = {
+			["widthtiles"] = 100;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -30174,10 +30137,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 4;
-			["widthtiles"] = 100;
-			["heighttiles"] = 100;
 		};
 		[4] = {
+			["widthtiles"] = 100;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -40181,10 +40144,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 0;
-			["widthtiles"] = 100;
-			["heighttiles"] = 100;
 		};
 		[5] = {
+			["widthtiles"] = 100;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -50188,8 +50151,45 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 0;
-			["widthtiles"] = 100;
-			["heighttiles"] = 100;
+		};
+	};
+	["animations"] = {
+		[1] = {
+			["frames"] = {
+				[1] = 138;
+				[2] = 139;
+				[3] = 140;
+				[4] = 141;
+			};
+			["name"] = "walk";
+		};
+		[2] = {
+			["frames"] = {
+				[1] = 145;
+				[2] = 142;
+				[3] = 143;
+			};
+			["name"] = "jump_up";
+		};
+		[3] = {
+			["frames"] = {
+				[1] = 144;
+			};
+			["name"] = "jump_down";
+		};
+		[4] = {
+			["frames"] = {
+				[1] = 145;
+			};
+			["name"] = "jump_land";
+		};
+		[5] = {
+			["frames"] = {
+				[1] = 156;
+				[2] = 157;
+				[3] = 158;
+			};
+			["name"] = "climb";
 		};
 	};
 }

@@ -12,25 +12,104 @@
 
 #include <memory>
 #include "IEditorUI.h"
+#include <iostream>
 
-enum class EditorTool {
-	DrawSingleTile,
-	DrawSquareOfTile,
-	FloodFillTile,
-	Select
+class EditorUserInterface;
+
+enum EditorToolInputRequirement: unsigned int {
+	None = 0,
+	CursorPositionMove = 1,
+	MouseButton = 2,
+	KeyboardButton = 4
 };
+class EditorToolBase {
+public:
+	std::string name;
+	unsigned int InputRequirement = 0;
+	virtual void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) = 0;
+	virtual void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) = 0;
+	virtual void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) = 0;
+	virtual void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) = 0;
+protected:
+	Engine* _Engine;
+	EditorUserInterface* _UI;
+};
+
+
+
 class Engine;
 class Tile;
 class Camera2D;
 class Renderer2D;
+class LuaVMService;
 
 class EditorUserInterface : public IEditorUserInterface
 {
+private:
+
+#pragma region Editor tool internal classes
+
+	class DrawSingleTileTool : public EditorToolBase {
+	public:
+		DrawSingleTileTool(EditorUserInterface* ui, Engine* engine);
+		//used
+		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
+		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override;
+		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override;
+		//unused
+		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override {};
+	};
+
+	class SelectTool : public EditorToolBase {
+	public:
+		SelectTool(EditorUserInterface* ui, Engine* engine);
+		// used
+		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
+		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override;
+		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override;
+		//unused
+		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override {};
+	private:
+		std::vector<unsigned int> _SelectedTiles;
+		unsigned int _SelectionWidth;
+		std::vector<unsigned int> _ClipBoard;
+		unsigned int _ClipBoardWidth;
+		unsigned int _ClipBoardLayer;
+		void GetNewSelection();
+	private:
+		void CopyTiles();
+		void CutTiles();
+		void PasteTiles();
+		void DeleteSelection();
+	};
+
+	class FloodFillTool : public EditorToolBase {
+	public:
+		FloodFillTool(EditorUserInterface* ui, Engine* engine);
+		//used
+		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
+		//unused
+		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override {};
+		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override {};
+		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override {};
+	private:
+		void FloodFill();
+	};
+
+	class LuaScriptedTool : public EditorToolBase {
+	public:
+		LuaScriptedTool(EditorUserInterface* ui, Engine* engine);
+		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
+		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override;
+		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override;
+		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override;
+	};
+
+#pragma endregion
+
 public:
-	EditorUserInterface() {};
+	EditorUserInterface(LuaVMService* vm);
 	~EditorUserInterface();
-	
-	
 	const Tile* GetSelectedTile() { return _SelectedTile; }
 
 #pragma region IEditorUserInterface implementation
@@ -41,12 +120,9 @@ public:
 	void mouseButtonCallbackHandler(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& cam);
 	void keyboardButtonCallbackHandler(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput);
 	void frameBufferSizeChangeCallbackHandler(GLFWwindow* window, int newwidth, int newheight, Camera2D& camera);
-	void SetEngine(Engine* engine) { _Engine = engine; }
+	void SetEngine(Engine* engine);
 #pragma endregion
 
-		
-
-	
 public:
 	int WindowH = 600;
 	int WindowW = 800;
@@ -59,16 +135,16 @@ private:
 	void DoEntitiesWindow();
 	void DoTileSetSelectWindow();
 	void DoToolSelectWindow();
-	void GetNewSelection();
-	void CopyTiles();
-	void CutTiles();
-	void PasteTiles();
-	void DeleteSelection();
-	void FloodFill();
 
+	std::vector<EditorToolBase*> _EditorTools;
+	EditorToolBase* _SelectedTool;
+
+
+	LuaVMService* _VM;
 	std::string _ChosenFilePath;
 	Engine* _Engine;
 	float _TilePickerScale = 2;
+
 	const Tile* _SelectedTile = nullptr;
 	int _SelectedTileLayer = -1;
 
@@ -80,26 +156,12 @@ private:
 	bool* _LayerTabsOpen = nullptr; // using a C style array because std::vector<bool> isn't actually a vector of bools, each "bool" is one bit: incompatible with ImGui
 	int _LayerTabsOpenSize = 0;
 
-	EditorTool _CurrentEditorTool = EditorTool::DrawSingleTile;
 	bool _LeftMouseDragging = false;
 	bool _RightMouseDragging = false;
 	glm::vec2 _LeftMouseDragStart;
 	glm::vec2 _RightMouseDragStart;
 
-	std::vector<unsigned int> _SelectedTiles;
-	unsigned int _SelectionWidth;
 
-	std::vector<unsigned int> _ClipBoard;
-	unsigned int _ClipBoardWidth;
-	unsigned int _ClipBoardLayer;
-
-	const std::map<EditorTool, const char*> _EditorToolNameMap = {
-		{EditorTool::DrawSingleTile, "Draw single tile"},
-		{EditorTool::DrawSquareOfTile, "Draw square of tile"},
-		{EditorTool::Select, "Select"},
-		{EditorTool::FloodFillTile, "Flood fill"}
-
-	};
 private:
 	bool FileChosen(std::string path);
 };
