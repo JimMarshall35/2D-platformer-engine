@@ -22,6 +22,8 @@ enum EditorToolInputRequirement: unsigned int {
 	MouseButton = 2,
 	KeyboardButton = 4
 };
+
+
 class EditorToolBase {
 public:
 	std::string name;
@@ -34,8 +36,6 @@ protected:
 	Engine* _Engine;
 	EditorUserInterface* _UI;
 };
-
-
 
 class Engine;
 class Tile;
