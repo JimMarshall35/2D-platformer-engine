@@ -3,179 +3,59 @@
 #include "Camera2D.h"
 #include "Tileset.h"
 #include <algorithm>
+bool AABBCollision(const Transform& t1, const Transform& t2, const FloorCollider& c1, const FloorCollider& c2)
+{
+	using namespace glm;
+	vec4 bb1, bb2;
+
+	return ((bb1[3] > bb2[1]) && (bb2[3] > bb1[1])) &&
+		((bb1[2] > bb2[0]) && (bb2[2] > bb1[0]));
+}
+
 
 void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
 {
-	const float MAX_X_SPEED = 100;
-	const float movespeed = 700;
-	const float jumpmovespeed = 700;
-	const float JumpAmount = 250;
-	const float climbspeed = 50;
-
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM, CT_PLAYERBEHAVIOR, CT_ANIMATION) {
-		auto& value = components.player_behaviors[entityID];
-		auto& phys = components.physicses[entityID];
-		auto& transform = components.transforms[entityID];
-		auto& animation = components.animations[entityID];
-		auto& collider = phys.collider;
-		_LastVel = phys.velocity;
-		switch (_State) {
-		case Walk:
-			if (value.leftPressed) {
-				animation.isAnimating = true;
-				components.physicses[entityID].velocity.x += -movespeed * delta_t;
-			}
-			else if (value.rightPressed) {
-				animation.isAnimating = true;
-				components.physicses[entityID].velocity.x += movespeed * delta_t;
-			}
-			else {
-				components.physicses[entityID].velocity.x += components.physicses[entityID].velocity.x > 0 ? -1.0 : 1.0;
-				animation.isAnimating = false;
-			}
-			if (value.spacePressed) {
-				value.spacePressed = false;
-				value.jumping = true;
-				value.jumpcounter = 0;
-				phys.velocity.y -= JumpAmount;
-				ChangeState(JumpUp, animation);
-			}
-			else if (!phys.bottomTouching) {
-				ChangeState(JumpDown, animation);
-			}
-			if (IsStandingOnLadder(collider, transform, tilelayers)) {
-				if (value.upPressed) {
-					animation.isAnimating = true;
-					ChangeState(Climb, animation);
-				}
-				if (value.downPressed) {
-					animation.isAnimating = true;
-					ChangeState(Climb, animation);
-				}
-			}
-
-			break;
-		case JumpUp:
-			if (value.leftPressed) {
-				animation.isAnimating = true;
-				components.physicses[entityID].velocity.x += -jumpmovespeed * delta_t;
-			}
-			else if (value.rightPressed) {
-				animation.isAnimating = true;
-				components.physicses[entityID].velocity.x += jumpmovespeed * delta_t;
-			}
-			else {
-				animation.isAnimating = true;
-				components.physicses[entityID].velocity.x += components.physicses[entityID].velocity.x > 0 ? -1.0 : 1.0;
-			}
-			if (phys.velocity.y > 0) {
-				ChangeState(JumpDown, animation);
-			}
-			if (IsStandingOnLadder(collider, transform, tilelayers)) {
-				if (value.upPressed) {
-					ChangeState(Climb, animation);
-				}
-			}
-			break;
-		case JumpDown:
-			if (phys.bottomTouching) {
-				ChangeState(JumpLand, animation);
-			}
-			if (IsStandingOnLadder(collider, transform, tilelayers)) {
-				if (value.upPressed) {
-					ChangeState(Climb, animation);
-				}
-			}
-			break;
-		case JumpLand:
-			if (value.leftPressed || value.rightPressed) {
-				ChangeState(Walk, animation);
-			}
-			if (value.spacePressed) {
-				value.spacePressed = false;
-				value.jumping = true;
-				value.jumpcounter = 0;
-				phys.velocity.y -= JumpAmount;
-				ChangeState(JumpUp, animation);
-			}
-			components.physicses[entityID].velocity.x += components.physicses[entityID].velocity.x > 0 ? -1.0 : 1.0;
-			break;
-		case Climb:
-			collider.Collidable = false;
-			phys.velocity.x = 0;
-			if (value.upPressed) {
-				phys.velocity.y = -climbspeed;
-			}
-			else if (value.downPressed) {
-				phys.velocity.y = climbspeed;;
-			}
-			else {
-				phys.velocity.y = 0;
-			}
-			if (phys.bottomTouching && phys.velocity.y < 0) {
-					ChangeState(Walk, animation);
-					collider.Collidable = true;
-			}
-			if (IsAtLadderBottom(collider, transform, tilelayers)) {
-				ChangeState(Walk, animation);
-				collider.Collidable = true;
-			}
-			break;
+		auto& pb = components.player_behaviors[entityID];
+		auto& ph = components.physicses[entityID];
+		auto& tr = components.transforms[entityID];
+		auto& an = components.animations[entityID];
+		
+		// run state machine
+		PlayerState newstate = _Behaviormap[pb.state]->Update(pb,ph,tr,an,delta_t, tilelayers);
+		assert(newstate > NoState && newstate <= Climb);
+		pb.laststate = pb.state;
+		pb.state = newstate;
+		if (pb.state != pb.laststate) {
+			_Behaviormap[pb.laststate]->OnExit(pb, ph, tr, an, delta_t, tilelayers);
+			_Behaviormap[pb.state]->OnEnter(pb, ph, tr, an, delta_t, tilelayers);
 		}
-		if (value.rightPressed) {
-			if (transform.scale.x < 0) {
-				transform.scale.x *= -1;
+		// do things common to all states
+		if (pb.rightPressed) {
+			if (tr.scale.x < 0) {
+				tr.scale.x *= -1;
 			}
 		}
-		else if (value.leftPressed) {
-			if (transform.scale.x > 0) {
-				transform.scale.x *= -1;
+		else if (pb.leftPressed) {
+			if (tr.scale.x > 0) {
+				tr.scale.x *= -1;
 			}
 		}
-		components.physicses[entityID].velocity.x = std::clamp(components.physicses[entityID].velocity.x, -MAX_X_SPEED, MAX_X_SPEED);
-		camera.FocusPosition = transform.pos;
+		ph.velocity.x = std::clamp(components.physicses[entityID].velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
+		camera.FocusPosition = tr.pos;
+		
 	}
+	
 	
 }
 
-void PlayerBehaviorSystem::ChangeState(AnimationState newState, Animation& animation)
+PlayerBehaviorSystem::PlayerBehaviorSystem()
 {
-	switch (newState)
-	{
-	case Walk:
-		animation.animationName = "walk";
-		animation.numframes = 4;
-		animation.onframe = 0;
-		animation.fps = 10;
-		break;
-	case JumpUp:
-		animation.animationName = "jump_up";
-		animation.numframes = 3;
-		animation.fps = 5;
-		animation.onframe = 0;
-		animation.shouldLoop = false;
-		break;
-	case JumpDown:
-		animation.animationName = "jump_down";
-		animation.numframes = 1;
-		animation.onframe = 0;
-		animation.shouldLoop = true;
-		break;
-	case JumpLand:
-		animation.numframes = 1;
-		animation.onframe = 0;
-		animation.animationName = "jump_land";
-		break;
-	case Climb:
-		animation.animationName = "climb";
-		animation.numframes = 3;
-		animation.onframe = 0;
-		animation.shouldLoop = true;
-		break;
-	default:
-		break;
-	}
-	_State = newState;
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Walk,     std::unique_ptr<IPlayerStateBehavior>(new WalkStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpUp,   std::unique_ptr<IPlayerStateBehavior>(new JumpUpStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpDown, std::unique_ptr<IPlayerStateBehavior>(new JumpDownStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpLand, std::unique_ptr<IPlayerStateBehavior>(new JumpLandStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Climb,    std::unique_ptr<IPlayerStateBehavior>(new ClimbStateBehavior())));
 }
 
 bool PlayerBehaviorSystem::IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers)
@@ -229,4 +109,191 @@ bool PlayerBehaviorSystem::LadderAtCoordinates(const int x, const int y, std::ve
 		}
 	}
 	return false;
+}
+
+PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+{
+	if (pb.leftPressed) {
+		an.isAnimating = true;
+		ph.velocity.x += -pb.movespeed * delta_t;
+	}
+	else if (pb.rightPressed) {
+		an.isAnimating = true;
+		ph.velocity.x += pb.movespeed * delta_t;
+	}
+	else {
+		ph.velocity.x += ph.velocity.x > 0 ? -pb.friction : pb.friction;
+		an.isAnimating = false;
+	}
+	if (pb.spacePressed) {
+		pb.spacePressed = false;
+		pb.jumping = true;
+		pb.jumpcounter = 0;
+		ph.velocity.y -= pb.JumpAmount;
+		return JumpUp;
+	}
+	else if (!ph.bottomTouching) {
+		return JumpDown;
+	}
+	if (IsStandingOnLadder(ph.collider, tr, tilelayers)) {
+		if (pb.upPressed) {
+			an.isAnimating = true;
+			return Climb;
+		}
+		if (pb.downPressed) {
+			an.isAnimating = true;
+			return Climb;
+		}
+	}
+
+	return Walk;
+}
+
+void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	an.animationName = "walk";
+	an.numframes = 4;
+	an.onframe = 0;
+	an.fps = 10;
+}
+
+void PlayerBehaviorSystem::WalkStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	an.isAnimating = true;
+}
+
+PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+{
+	if (pb.leftPressed) {
+		ph.velocity.x += -pb.jumpmovespeed * delta_t;
+	}
+	else if (pb.rightPressed) {
+		ph.velocity.x += pb.jumpmovespeed * delta_t;
+	}
+	else {
+		ph.velocity.x += ph.velocity.x > 0 ? -1.0 : 1.0;
+	}
+	if (ph.velocity.y > 0) {
+		return JumpDown;
+	}
+	if (IsStandingOnLadder(ph.collider, tr, tilelayers)) {
+		if (pb.upPressed) {
+			return Climb;
+		}
+	}
+	return JumpUp;
+}
+
+void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	an.isAnimating = true;
+	an.animationName = "jump_up";
+	an.numframes = 3;
+	an.fps = 5;
+	an.onframe = 0;
+	an.shouldLoop = false;
+}
+
+void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+}
+
+PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+{
+	if (pb.leftPressed) {
+		an.isAnimating = true;
+		ph.velocity.x += -pb.jumpmovespeed * delta_t;
+	}
+	else if (pb.rightPressed) {
+		an.isAnimating = true;
+		ph.velocity.x += pb.jumpmovespeed * delta_t;
+	}
+	if (ph.bottomTouching) {
+		return JumpLand;
+	}
+	if (IsStandingOnLadder(ph.collider, tr, tilelayers)) {
+		if (pb.upPressed) {
+			return Climb;
+		}
+	}
+	return JumpDown;
+}
+
+void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	an.animationName = "jump_down";
+	an.numframes = 1;
+	an.onframe = 0;
+	an.shouldLoop = true;
+}
+
+void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+}
+
+PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	ph.velocity.x += ph.velocity.x > 0 ? -pb.friction : pb.friction;
+	if (pb.leftPressed || pb.rightPressed) {
+		pb.spacePressed = false;
+		return Walk;
+	}
+	if (pb.spacePressed) {
+		pb.spacePressed = false;
+		pb.jumping = true;
+		pb.jumpcounter = 0;
+		ph.velocity.y -= pb.JumpAmount;
+		return JumpUp;
+	}
+	return JumpLand;
+}
+
+void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	an.numframes = 1;
+	an.onframe = 0;
+	an.animationName = "jump_land";
+}
+
+void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+}
+
+PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+{
+	ph.collider.Collidable = false;
+	ph.velocity.x = 0;
+	if (pb.upPressed) {
+		ph.velocity.y = -pb.climbspeed;
+	}
+	else if (pb.downPressed) {
+		ph.velocity.y = pb.climbspeed;;
+	}
+	else {
+		ph.velocity.y = 0;
+	}
+	if (ph.bottomTouching && ph.velocity.y < 0) {
+		ph.collider.Collidable = true;
+		pb.spacePressed = false;
+		return Walk;
+	}
+	if (IsAtLadderBottom(ph.collider, tr, tilelayers)) {
+		pb.spacePressed = false;
+		ph.collider.Collidable = true;
+		return Walk;
+	}
+	return Climb;
+}
+
+void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	
+	an.animationName = "climb";
+	an.numframes = 3;
+	an.onframe = 0;
+	an.shouldLoop = true;
+}
+
+void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
 }

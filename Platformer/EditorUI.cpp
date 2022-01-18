@@ -11,6 +11,7 @@ extern "C" {
 #include <lualib.h>
 }
 
+
 void EditorUserInterface::DeleteLastLayer()
 {
 	if (_Engine->_TileLayers.size() > 1) {
@@ -30,7 +31,10 @@ void EditorUserInterface::PushNewTileLayer(unsigned int width_tiles, unsigned in
 
 void EditorUserInterface::DoTileButtonsWindow() {
 	unsigned int oncol = 0;
-	
+	if (_SelectedTile) {
+		std::string selected_info = "selected texture: " + std::to_string(_SelectedTile->Texture) + " selected ID: " + std::to_string(_SelectedTile->ID);
+		ImGui::Text(selected_info.c_str());
+	}
 	for (Tile& t : _Engine->_Tileset.Tiles) {
 		auto dims = _Engine->_Tileset.GetTileDims(t.ID);
 		int texWidth = dims.x;
@@ -89,13 +93,13 @@ void EditorUserInterface::DoLayersWindow()
 				_SelectedTileLayer = onLayer;
 
 				//
-				const std::string items[] = {  "Decoration","Solid","Kills", "PickUp",  "Ladder"};
+				const std::string items[] = {  "Decoration","Solid","Kills", "PickUp",  "Ladder", "OneWay"};
 				unsigned int& item_current_idx = (unsigned int&)t.Type;
 				
 				const char* previewVal = items[item_current_idx].c_str();
 				if (ImGui::BeginCombo("Layer type", previewVal)) {
 					
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < 6; i++) {
 						const bool is_selected = (item_current_idx == i);
 						if (ImGui::Selectable(items[i].c_str(), is_selected))
 							item_current_idx = i;
@@ -128,6 +132,8 @@ void EditorUserInterface::DoEntitiesWindow()
 	Sprite* sprite = nullptr;
 	Animation* anim = nullptr;
 	MovingPlatform* mp = nullptr;
+	PlayerBehavior* pb = nullptr;
+	std::vector<EntityID> idsToDelete;
 	for (auto& [id, components] : _Engine->_Entities) {
 		
 		if (ImGui::CollapsingHeader(std::to_string(id).c_str(), ImGuiTreeNodeFlags_None))
@@ -197,6 +203,22 @@ void EditorUserInterface::DoEntitiesWindow()
 					break;
 				case CT_PLAYERBEHAVIOR:
 					if (ImGui::TreeNode("PlayerBehavior")) {
+						pb = &_Engine->_Components.player_behaviors[id];
+						ImGui::Checkbox("left pressed", &pb->leftPressed);
+						ImGui::Checkbox("right pressed", &pb->rightPressed);
+						ImGui::Checkbox("up pressed", &pb->upPressed);
+						ImGui::Checkbox("up pressed", &pb->downPressed);
+						ImGui::Checkbox("space pressed", &pb->spacePressed);
+						ImGui::Checkbox("jumping", &pb->jumping);
+						ImGui::InputInt("jump counter", &pb->jumpcounter);
+						ImGui::InputInt("state", (int*)&pb->state);
+						ImGui::InputInt("last state", (int*)&pb->laststate);
+						ImGui::InputFloat("max x speed", &pb->MAX_X_SPEED);
+						ImGui::InputFloat("movement speed", &pb->movespeed);
+						ImGui::InputFloat("jump move speed", &pb->jumpmovespeed);
+						ImGui::InputFloat("jump amount", &pb->JumpAmount);
+						ImGui::InputFloat("climb speed", &pb->climbspeed);
+						ImGui::InputFloat("friction", &pb->friction);
 						ImGui::TreePop();
 					}
 					break;
@@ -225,7 +247,13 @@ void EditorUserInterface::DoEntitiesWindow()
 					return;
 				}
 			}
+			if (ImGui::Button("delete")) {
+				idsToDelete.push_back(id);
+			}
 		}
+	}
+	for (auto id : idsToDelete) {
+		_Engine->DeleteEntity(id);
 	}
 }
 
@@ -279,6 +307,7 @@ EditorUserInterface::EditorUserInterface(LuaVMService* vm)
 	: _VM(vm)
 {
 	_VM->DoFile("editortools.lua");
+	
 }
 
 
@@ -481,6 +510,20 @@ void EditorUserInterface::SetEngine(Engine* engine)
 	 _EditorTools.push_back(new FloodFillTool(this, engine));
 	 _SelectedTool = _EditorTools[1];
 	 lua_State* L = _VM->GetL();
+	 lua_getglobal(L, "EditorTools");
+	 int size = luaL_len(L, -1);
+	 for (int i = 0; i < size; i++) {
+		 lua_geti(L, -1, i + 1);
+		 lua_getfield(L, -1, "name");
+		 std::string name = luaL_checkstring(L, -1);
+		 std::cout << name << std::endl;
+		 lua_pop(L, 1);
+		 lua_getfield(L, -1, "inputRequirements");
+		 EditorToolInputRequirement inpt = (EditorToolInputRequirement)luaL_checkinteger(L, -1);
+		 _EditorTools.push_back(new LuaScriptedTool(this, engine, name,inpt, L));
+		 lua_pop(L, 2);
+	 }
+	 lua_pop(L, 1);
 
 }
 
@@ -495,4 +538,5 @@ bool EditorUserInterface::FileChosen(std::string path)
 	
 	return true;
 }
+
 

@@ -64,7 +64,14 @@ struct Animation {
 	int onframe = 0;
 	
 };
-
+enum PlayerState: unsigned int {
+	NoState,
+	Walk,
+	JumpUp,
+	JumpDown,
+	JumpLand,
+	Climb
+};
 struct PlayerBehavior {
 	bool leftPressed;
 	bool rightPressed;
@@ -73,6 +80,16 @@ struct PlayerBehavior {
 	bool spacePressed;
 	bool jumping;
 	int jumpcounter = 0;
+	PlayerState state = Walk;
+	PlayerState laststate = NoState;
+
+	float MAX_X_SPEED = 100;
+	float movespeed = 700;
+	float jumpmovespeed = 700;
+	float JumpAmount = 250;
+	float climbspeed = 50;
+
+	float friction = 1.0f;
 };
 
 struct Collectable {

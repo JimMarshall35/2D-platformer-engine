@@ -17,3 +17,6 @@ EditorToolInputRequirements = {
 	MouseButton = 2,
 	KeyboardButton = 4
 }
+GLFW_MOUSE_BUTTON_LEFT = 0
+GLFW_RELEASE = 0
+GLFW_PRESS = 1

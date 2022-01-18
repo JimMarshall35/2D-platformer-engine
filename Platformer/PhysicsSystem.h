@@ -1,6 +1,7 @@
 #pragma once
 #include "ISystem.h"
 #include <glm/glm.hpp>
+class Physics;
 class PhysicsSystem :
     public ISystem
 {
@@ -18,7 +19,7 @@ private:
 		rect rect;
 		float contact_t;
 	};
-	bool SolidTileAtCoords(int x, int y, const std::vector<TileLayer>& tileLayers);
+	bool SolidTileAtCoords(int x, int y, const std::vector<TileLayer>& tileLayers, const Physics& phys);
 	bool RayVsRect(const glm::vec2& ray_origin, const glm::vec2& ray_dir, const PhysicsSystem::rect* target, glm::vec2& contact_point, glm::vec2& contact_normal, float& t_hit_near);
 	bool DynamicRectVsRect(
 		const rect* r_dynamic, const float fTimeStep, const rect& r_static,

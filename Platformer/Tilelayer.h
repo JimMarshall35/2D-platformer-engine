@@ -5,7 +5,8 @@ enum TileLayerType : unsigned int {
 	Solid = 1,
 	Kills = 2,
 	PickUp = 3,
-	Ladder = 4
+	Ladder = 4,
+	OneWayUp = 5
 };
 
 struct TileLayer {

@@ -8,13 +8,13 @@ local obj1 = {
 			["components"] = {
 				[1] = {
 					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 440.18746948242;
-						["y"] = 176.0;
-					};
 					["scale"] = {
-						["x"] = 32.0;
 						["y"] = 32.0;
+						["x"] = 32.0;
+					};
+					["pos"] = {
+						["y"] = 176.0;
+						["x"] = 440.18746948242;
 					};
 				};
 				[2] = {
@@ -29,13 +29,13 @@ local obj1 = {
 					["texture"] = 145;
 				};
 				[5] = {
-					["shouldloop"] = 1;
 					["name"] = "jump_land";
-					["isanimating"] = 1;
 					["numframes"] = 1;
 					["onframe"] = 0;
 					["fps"] = 5.0;
+					["shouldloop"] = 1;
 					["timer"] = 0.069190499605611;
+					["isanimating"] = 1;
 				};
 				[6] = {
 				};
@@ -45,28 +45,28 @@ local obj1 = {
 			["components"] = {
 				[1] = {
 					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 850.16522216797;
-						["y"] = 200.0075378418;
-					};
 					["scale"] = {
-						["x"] = 100.0;
 						["y"] = 16.0;
+						["x"] = 100.0;
+					};
+					["pos"] = {
+						["y"] = 200.0075378418;
+						["x"] = 850.16522216797;
 					};
 				};
 				[4] = {
 					["texture"] = 9;
 				};
 				[7] = {
-					["p2"] = {
-						["x"] = 900.0;
-						["y"] = 200.0;
-					};
 					["timer"] = 9.7894348938717;
 					["time_period"] = 12.0;
 					["p1"] = {
-						["x"] = 680.0;
 						["y"] = 200.0;
+						["x"] = 680.0;
+					};
+					["p2"] = {
+						["y"] = 200.0;
+						["x"] = 900.0;
 					};
 				};
 			};
@@ -75,51 +75,35 @@ local obj1 = {
 			["components"] = {
 				[1] = {
 					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 1072.4407958984;
-						["y"] = 850.00750732422;
-					};
 					["scale"] = {
-						["x"] = 100.0;
 						["y"] = 16.0;
+						["x"] = 100.0;
+					};
+					["pos"] = {
+						["y"] = 850.00750732422;
+						["x"] = 1072.4407958984;
 					};
 				};
 				[4] = {
 					["texture"] = 9;
 				};
 				[7] = {
-					["p2"] = {
-						["x"] = 500.0;
-						["y"] = 850.0;
-					};
 					["timer"] = 9.7894348938717;
 					["time_period"] = 9.0;
 					["p1"] = {
-						["x"] = 1400.0;
 						["y"] = 850.0;
+						["x"] = 1400.0;
+					};
+					["p2"] = {
+						["y"] = 850.0;
+						["x"] = 500.0;
 					};
 				};
 			};
 		};
 	};
-	["tileset"] = {
-		[1] = {
-			["tile_width_px"] = 16;
-			["tile_height_px"] = 16;
-			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\sheet.png";
-			["firstID"] = 1;
-		};
-		[2] = {
-			["tile_width_px"] = 32;
-			["tile_height_px"] = 32;
-			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\characters.png";
-			["firstID"] = 137;
-		};
-	};
 	["tilelayers"] = {
 		[1] = {
-			["widthtiles"] = 100;
-			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -10123,10 +10107,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 0;
-		};
-		[2] = {
 			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+		};
+		[2] = {
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -20130,10 +20114,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 1;
-		};
-		[3] = {
 			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+		};
+		[3] = {
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -30137,10 +30121,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 4;
-		};
-		[4] = {
 			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+		};
+		[4] = {
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -40144,10 +40128,10 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 0;
-		};
-		[5] = {
 			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+		};
+		[5] = {
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -50151,6 +50135,22 @@ local obj1 = {
 				[10000] = 0;
 			};
 			["t_type"] = 0;
+			["widthtiles"] = 100;
+			["heighttiles"] = 100;
+		};
+	};
+	["tileset"] = {
+		[1] = {
+			["tile_width_px"] = 16;
+			["firstID"] = 1;
+			["tile_height_px"] = 16;
+			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\sheet.png";
+		};
+		[2] = {
+			["tile_width_px"] = 32;
+			["firstID"] = 137;
+			["tile_height_px"] = 32;
+			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\characters.png";
 		};
 	};
 	["animations"] = {
@@ -50179,11 +50179,20 @@ local obj1 = {
 		};
 		[4] = {
 			["frames"] = {
+				[1] = 207;
+				[2] = 208;
+				[3] = 209;
+				[4] = 210;
+			};
+			["name"] = "slither";
+		};
+		[5] = {
+			["frames"] = {
 				[1] = 145;
 			};
 			["name"] = "jump_land";
 		};
-		[5] = {
+		[6] = {
 			["frames"] = {
 				[1] = 156;
 				[2] = 157;

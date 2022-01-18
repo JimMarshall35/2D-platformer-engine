@@ -6,9 +6,6 @@ class LuaVMService
 {
 public:
 	LuaVMService();
-	
-
-
 	bool DoFile(std::string filePath);
 	void SetGlobalPointer(void* lightUserData, std::string name);
 	bool CallFunction1StringParameterNoReturnVal(std::string funcname, std::string param);

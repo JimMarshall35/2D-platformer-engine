@@ -32,9 +32,9 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 		auto bottomMid = vec2(pos.x, pos.y + ((bottomRight.y - topLeft.y) / 2) + 3.0f);
 		EntityID onplatform_id;
 		phys.lastbottomTouching = phys.bottomTouching;
-		if (SolidTileAtCoords(floor(bottomMid.x / 16.0f), floor(bottomMid.y / 16.0f), tilelayers) ||
-			SolidTileAtCoords(floor((bottomRight.x - 0.1) / 16.0f), floor(bottomRight.y / 16.0f), tilelayers) ||
-			SolidTileAtCoords(floor((topLeft.x + 0.1) / 16.0f), floor(bottomMid.y / 16.0f),tilelayers)) {
+		if (SolidTileAtCoords(floor(bottomMid.x / 16.0f), floor(bottomMid.y / 16.0f), tilelayers,phys) ||
+			SolidTileAtCoords(floor((bottomRight.x - 0.1) / 16.0f), floor(bottomRight.y / 16.0f), tilelayers, phys) ||
+			SolidTileAtCoords(floor((topLeft.x + 0.1) / 16.0f), floor(bottomMid.y / 16.0f),tilelayers, phys)) {
 			
 			phys.bottomTouching = true;
 			//vel.y = 0;
@@ -88,7 +88,7 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 			for (int x = topLeftCells.x; x <= bottomRightCells.x; x++) {
 
 				// immediately discard those that don't contain a solid tile
-				if (!SolidTileAtCoords(x, y, tilelayers)) continue; 
+				if (!SolidTileAtCoords(x, y, tilelayers,phys)) continue; 
 				// check for collision between the collider and the tile
 				auto tileTL = vec2(x * 16.0f, y * 16.0f);
 				vec2 cp, cn;
@@ -132,7 +132,7 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 	}
 }
 
-bool PhysicsSystem::SolidTileAtCoords(int x, int y, const std::vector<TileLayer>& tileLayers )
+bool PhysicsSystem::SolidTileAtCoords(int x, int y, const std::vector<TileLayer>& tileLayers,const Physics& phys)
 {
 	if (x < 0) return true;
 	if (y < 0) return false;
@@ -145,6 +145,16 @@ bool PhysicsSystem::SolidTileAtCoords(int x, int y, const std::vector<TileLayer>
 			if (y >= height) return true;
 			if (tl.Tiles[(width * y) + x] != 0) {
 				return true;
+			}
+		}
+		else if (tl.Type == OneWayUp) {
+
+			int width = tl.GetWidth();
+			int height = tl.GetHeight();
+			if (x >= width) return true;
+			if (y >= height) return true;
+			if (tl.Tiles[(width * y) + x] != 0) {
+				return (true && phys.velocity.y > 0.1) || phys.bottomTouching;
 			}
 		}
 	}

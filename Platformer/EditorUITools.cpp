@@ -1,6 +1,13 @@
 #include "EditorUI.h"
 #include "Engine.h"
 #include <queue>
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+}
+
+#pragma region single tile
 
 EditorUserInterface::DrawSingleTileTool::DrawSingleTileTool(EditorUserInterface* ui, Engine* engine)
 {
@@ -50,6 +57,10 @@ void EditorUserInterface::DrawSingleTileTool::drawOverlay(const Renderer2D& rend
 	worldPos += glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx) * 0.5f;
 	renderer.DrawWireframeRect(worldPos, glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
 }
+
+#pragma endregion
+
+#pragma region select
 
 EditorUserInterface::SelectTool::SelectTool(EditorUserInterface* ui, Engine* engine)
 {
@@ -222,6 +233,10 @@ void EditorUserInterface::SelectTool::DeleteSelection()
 	}
 }
 
+#pragma endregion
+
+#pragma region flood fill
+
 EditorUserInterface::FloodFillTool::FloodFillTool(EditorUserInterface* ui, Engine* engine)
 {
 	InputRequirement |= MouseButton;
@@ -266,5 +281,104 @@ void EditorUserInterface::FloodFillTool::FloodFill()
 			q.push(leftindex);
 		if (rightindex < tl.Tiles.size())
 			q.push(rightindex);
+	}
+}
+
+#pragma endregion
+
+EditorUserInterface::LuaScriptedTool::LuaScriptedTool(EditorUserInterface* ui, Engine* engine, std::string luaName, unsigned int inpt, lua_State* L)
+	:_LuaName(luaName), _L(L)
+{
+	name = luaName;
+	InputRequirement = inpt;
+	_UI = ui;
+}
+
+
+
+void EditorUserInterface::LuaScriptedTool::handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera)
+{
+	if (InputRequirement & MouseButton) {
+		lua_getglobal(_L, "EditorTools");
+		int size = luaL_len(_L, -1);
+		for (int i = 0; i < size; i++) {
+			lua_geti(_L, -1, i + 1);
+			lua_getfield(_L, -1, "name");
+			std::string toolname = luaL_checkstring(_L, -1);
+			lua_pop(_L, 1);
+			if (name == toolname) {
+				lua_getfield(_L, -1, "handlers");
+				lua_geti(_L, -1, (int)MouseButton);
+				lua_pushinteger(_L, button);
+				lua_pushinteger(_L, action);
+				lua_pushinteger(_L, mods);
+				lua_pushboolean(_L, imGuiWantsMouse);
+				lua_pushlightuserdata(_L, (void*)&camera);
+				lua_newtable(_L);
+				lua_pushnumber(_L, _UI->_LastMouseWorld.x);
+				lua_setfield(_L, -2, "x");
+				lua_pushnumber(_L, _UI->_LastMouseWorld.y);
+				lua_setfield(_L, -2, "y");
+				lua_pcall(_L,6,0,0);
+			}
+			lua_pop(_L, 2);
+		}
+		lua_pop(_L, 1);
+	}
+}
+
+void EditorUserInterface::LuaScriptedTool::handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput)
+{
+	if (InputRequirement & KeyboardButton) {
+		lua_getglobal(_L, "EditorTools");
+		int size = luaL_len(_L, -1);
+		for (int i = 0; i < size; i++) {
+			lua_geti(_L, -1, i + 1);
+			lua_getfield(_L, -1, "name");
+			std::string toolname = luaL_checkstring(_L, -1);
+			lua_pop(_L, 1);
+			if (name == toolname) {
+				lua_getfield(_L, -1, "handlers");
+				lua_geti(_L, -1, (int)KeyboardButton);
+				lua_pushinteger(_L, key);
+				lua_pushinteger(_L, scancode);
+				lua_pushinteger(_L, action);
+				lua_pushinteger(_L, mods);
+				lua_pushboolean(_L, wantKeyboardInput);
+				lua_pcall(_L, 5, 0, 0);
+			}
+			lua_pop(_L, 2);
+		}
+		lua_pop(_L, 1);
+	}
+}
+
+void EditorUserInterface::LuaScriptedTool::drawOverlay(const Renderer2D& renderer, const Camera2D& camera)
+{
+	
+}
+
+void EditorUserInterface::LuaScriptedTool::handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera)
+{
+	if (InputRequirement & CursorPositionMove) {
+		lua_getglobal(_L, "EditorTools");
+		int size = luaL_len(_L, -1);
+		for (int i = 0; i < size; i++) {
+			lua_geti(_L, -1, i + 1);
+			lua_getfield(_L, -1, "name");
+			std::string toolname = luaL_checkstring(_L, -1);
+			lua_pop(_L, 1);
+			if (name == toolname) {
+				lua_getfield(_L, -1, "handlers");
+				lua_geti(_L, -1, (int)CursorPositionMove);
+				lua_pushnumber(_L, xpos);
+				lua_pushnumber(_L, ypos);
+				lua_pushboolean(_L, imGuiWantsMouse);
+				lua_pushlightuserdata(_L, &camera);
+				lua_pcall(_L, 4, 0, 0);
+			}
+			lua_pop(_L, 2);
+		}
+		lua_pop(_L, 1);
 	}
 }

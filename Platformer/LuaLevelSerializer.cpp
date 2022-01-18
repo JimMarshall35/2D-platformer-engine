@@ -24,7 +24,7 @@ bool LuaLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
     _VM->SetGlobalPointer((void*)&engine, "C_Engine");
 
     bool r = _VM->CallFunction1StringParameterNoReturnVal("OnLoadLevel", filePath);
-    return r;//CheckLua(_L, r);
+    return r;
 }
 
 LuaLevelSerializer::LuaLevelSerializer(LuaVMService* vmService)

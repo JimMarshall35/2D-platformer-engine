@@ -13,6 +13,28 @@ LuaVMService::LuaVMService()
     RegisterLuaAPI();
 }
 
+void LuaVMService::RegisterLuaAPI()
+{
+    registerFunction(l_LoadLevelFromLuaTable, "C_LoadLevel");
+    registerFunction(l_CreateEntity, "C_CreateEntity");
+    registerFunction(l_SetTransformComponent, "C_SetTransformComponent");
+    registerFunction(l_SetSpriteComponent, "C_SetSpriteComponent");
+    registerFunction(l_SetAnimationComponent, "C_SetAnimationComponent");
+    registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
+    registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
+    registerFunction(l_SetMovingPlatformComponent, "C_SetMovingPlatformComponent");
+    registerFunction(l_LoadTilesetFile, "C_LoadTilesetFile");
+    registerFunction(l_LoadTileLayer, "C_LoadTileLayer");
+    registerFunction(l_LoadAnimationFrames, "C_LoadAnimationFrames");
+    registerFunction(l_GetTileset, "C_GetTileset");
+    registerFunction(l_GetEntities, "C_GetEntities");
+    registerFunction(l_GetAnimations, "C_GetAnimations");
+    registerFunction(l_GetTilelayers, "C_GetTilelayers");
+}
+
+
+#pragma region lua exposed functions
+
 int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
 {
     int n = lua_gettop(L);
@@ -618,9 +640,13 @@ int LuaVMService::l_GetTilelayers(lua_State* L)
     return 1;
 }
 
+#pragma endregion
+
+#pragma region public api
+
 bool LuaVMService::DoFile(std::string filePath)
 {
-    int r = luaL_dofile(_L, "levelloader.lua");
+    int r = luaL_dofile(_L, filePath.c_str());
     return CheckLua(_L, r);
 }
 
@@ -638,7 +664,9 @@ bool LuaVMService::CallFunction1StringParameterNoReturnVal(std::string funcname,
     return CheckLua(_L, r);
 }
 
+#pragma endregion
 
+#pragma region helpers
 
 bool LuaVMService::CheckLua(lua_State* L, int returncode)
 {
@@ -650,27 +678,11 @@ bool LuaVMService::CheckLua(lua_State* L, int returncode)
     return true;
 }
 
-void LuaVMService::RegisterLuaAPI()
-{
-    registerFunction(l_LoadLevelFromLuaTable, "C_LoadLevel");
-    registerFunction(l_CreateEntity, "C_CreateEntity");
-    registerFunction(l_SetTransformComponent, "C_SetTransformComponent");
-    registerFunction(l_SetSpriteComponent, "C_SetSpriteComponent");
-    registerFunction(l_SetAnimationComponent, "C_SetAnimationComponent");
-    registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
-    registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
-    registerFunction(l_SetMovingPlatformComponent, "C_SetMovingPlatformComponent");
-    registerFunction(l_LoadTilesetFile, "C_LoadTilesetFile");
-    registerFunction(l_LoadTileLayer, "C_LoadTileLayer");
-    registerFunction(l_LoadAnimationFrames, "C_LoadAnimationFrames");
-    registerFunction(l_GetTileset, "C_GetTileset");
-    registerFunction(l_GetEntities, "C_GetEntities");
-    registerFunction(l_GetAnimations, "C_GetAnimations");
-    registerFunction(l_GetTilelayers, "C_GetTilelayers");
-}
 
 void LuaVMService::registerFunction(int(*func)(lua_State* L), std::string func_name)
 {
     lua_pushcfunction(_L, func);
     lua_setglobal(_L, func_name.c_str());
 }
+
+#pragma endregion

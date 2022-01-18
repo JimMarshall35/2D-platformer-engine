@@ -8,9 +8,6 @@
 #include "PlayerBehaviorSystem.h"
 #include "MovingPlaformSystem.h"
 
-
-
-
 #pragma region Update
 
 void Engine::Update(double delta_t)
