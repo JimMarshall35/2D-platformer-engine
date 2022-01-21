@@ -29,6 +29,7 @@ private:
 	static int l_GetEntities(lua_State* L);               // lua parameters: engine*
 	static int l_GetAnimations(lua_State* L);             // lua parameters: engine*
 	static int l_GetTilelayers(lua_State* L);             // lua parameters: engine*
+	static int l_SetVelocity(lua_State* L);               // lua parameters: engine*, entityID, velocity | returns void
 
 #pragma endregion
 

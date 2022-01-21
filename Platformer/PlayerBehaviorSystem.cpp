@@ -3,14 +3,6 @@
 #include "Camera2D.h"
 #include "Tileset.h"
 #include <algorithm>
-bool AABBCollision(const Transform& t1, const Transform& t2, const FloorCollider& c1, const FloorCollider& c2)
-{
-	using namespace glm;
-	vec4 bb1, bb2;
-
-	return ((bb1[3] > bb2[1]) && (bb2[3] > bb1[1])) &&
-		((bb1[2] > bb2[0]) && (bb2[2] > bb1[0]));
-}
 
 
 void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)

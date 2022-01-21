@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
+#include <queue>
 
 using EntityID = int64_t;
 
@@ -146,7 +147,7 @@ struct TaggedEntity {
 	std::vector<ComponentType> components;
 };
 
-EntityID GetEntityId();
+
 
 class ECS {
 public:
@@ -157,4 +158,7 @@ public:
 
 	static std::set<EntityID> getKeys(ComponentType type, const Components& components);
 	static std::set<EntityID> getIntersection(const std::vector<ComponentType>& componentTypes, const Components& components);
+private:
+	EntityID GetEntityId();
+	std::queue<EntityID> _DeletedIds;
 };

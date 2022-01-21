@@ -7,6 +7,7 @@
 #include "PhysicsSystem.h"
 #include "PlayerBehaviorSystem.h"
 #include "MovingPlaformSystem.h"
+#include "EnemyBehaviorSystem.h"
 
 #pragma region Update
 
@@ -16,7 +17,7 @@ void Engine::Update(double delta_t)
 	case EngineMode::Play:
 		_MovingPlatformSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_PlayerBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		
+		_EnemyBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_PhysicsSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_AnimationSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		break;
@@ -255,10 +256,10 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 		Transform& transform = _Components.transforms[key];
 		vec4 cameraTLBR = cam.GetTLBR(_Renderer.WindowW, _Renderer.WindowH);
 		vec4 tileTLBR = vec4(
-			transform.pos.y - transform.scale.y * 0.5f,
-			transform.pos.x - transform.scale.x * 0.5f,
-			transform.pos.y + transform.scale.y * 0.5f,
-			transform.pos.x + transform.scale.x * 0.5f
+			transform.pos.y - abs(transform.scale.y * 0.5f),
+			transform.pos.x - abs(transform.scale.x) * 0.5f,
+			transform.pos.y + abs(transform.scale.y) * 0.5f,
+			transform.pos.x + abs(transform.scale.x) * 0.5f
 		);
 		if (AABBCollision(cameraTLBR, tileTLBR)) {
 			_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
@@ -282,6 +283,7 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer)
 	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
 	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem());
 	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
+	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem());
 }
 
 #pragma endregion

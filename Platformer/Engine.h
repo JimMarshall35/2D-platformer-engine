@@ -31,6 +31,7 @@ private:
 	std::unique_ptr<ISystem> _PhysicsSystem;
 	std::unique_ptr<ISystem> _PlayerBehaviorSystem;
 	std::unique_ptr<ISystem> _MovingPlatformSystem;
+	std::unique_ptr<ISystem> _EnemyBehaviorSystem;
 	//test
 
 	void SpritesSystemDraw(const Camera2D& cam);

@@ -160,6 +160,7 @@
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EditorUITools.cpp" />
+    <ClCompile Include="EnemyBehaviorSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="ImGuiFileDialog.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="dirent\dirent.h" />
     <ClInclude Include="ECS.h" />
+    <ClInclude Include="EnemyBehaviorSystem.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="IEditorUI.h" />

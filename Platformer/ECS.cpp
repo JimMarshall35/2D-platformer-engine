@@ -2,11 +2,7 @@
 #include <algorithm>
 #include <set>
 #include <locale>
-EntityID GetEntityId()
-{
-	static EntityID id = 1;
-	return id++;
-}
+
 
 EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 {
@@ -81,6 +77,7 @@ bool ECS::DeleteEntity(EntityID id)
 		}
 	}
 	_Entities.erase(id);
+	_DeletedIds.push(id);
 	return true;
 }
 
@@ -167,4 +164,16 @@ std::set<EntityID> ECS::getIntersection(const std::vector<ComponentType>& compon
 	}
 	return lastkeys;
 	
+}
+
+EntityID ECS::GetEntityId()
+{
+	static EntityID id = 1;
+	if (!_DeletedIds.empty()) {
+		EntityID recycled = _DeletedIds.front();
+		_DeletedIds.pop();
+		return recycled;
+	}
+		
+	return id++;
 }

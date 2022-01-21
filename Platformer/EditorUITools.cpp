@@ -293,16 +293,42 @@ EditorUserInterface::LuaScriptedTool::LuaScriptedTool(EditorUserInterface* ui, E
 	InputRequirement = inpt;
 	_UI = ui;
 }
-
+#include <cstdio>
+static void dumpstack(lua_State* L) {
+	int top = lua_gettop(L);
+	for (int i = 1; i <= top; i++) {
+		printf("%d\t%s\t", i, luaL_typename(L, i));
+		switch (lua_type(L, i)) {
+		case LUA_TNUMBER:
+			printf("%g\n", lua_tonumber(L, i));
+			break;
+		case LUA_TSTRING:
+			printf("%s\n", lua_tostring(L, i));
+			break;
+		case LUA_TBOOLEAN:
+			printf("%s\n", (lua_toboolean(L, i) ? "true" : "false"));
+			break;
+		case LUA_TNIL:
+			printf("%s\n", "nil");
+			break;
+		default:
+			printf("%p\n", lua_topointer(L, i));
+			break;
+		}
+	}
+}
 
 
 void EditorUserInterface::LuaScriptedTool::handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera)
 {
 	if (InputRequirement & MouseButton) {
 		lua_getglobal(_L, "EditorTools");
+		dumpstack(_L);
 		int size = luaL_len(_L, -1);
 		for (int i = 0; i < size; i++) {
+			std::cout << "before " << lua_gettop(_L) << std::endl;
 			lua_geti(_L, -1, i + 1);
+			
 			lua_getfield(_L, -1, "name");
 			std::string toolname = luaL_checkstring(_L, -1);
 			lua_pop(_L, 1);
@@ -320,8 +346,10 @@ void EditorUserInterface::LuaScriptedTool::handleMouseButton(int button, int act
 				lua_pushnumber(_L, _UI->_LastMouseWorld.y);
 				lua_setfield(_L, -2, "y");
 				lua_pcall(_L,6,0,0);
+				lua_pop(_L, 1);
 			}
-			lua_pop(_L, 2);
+			lua_pop(_L, 1);
+			std::cout << "after " << lua_gettop(_L) << std::endl;
 		}
 		lua_pop(_L, 1);
 	}

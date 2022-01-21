@@ -125,7 +125,7 @@ void EditorUserInterface::DoLayersWindow()
 #define M_PI           3.14159265358979323846  /* pi */
 
 
-void EditorUserInterface::DoEntitiesWindow()
+void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelete)
 {
 	Transform* transform = nullptr;
 	Physics* phys = nullptr;
@@ -133,7 +133,7 @@ void EditorUserInterface::DoEntitiesWindow()
 	Animation* anim = nullptr;
 	MovingPlatform* mp = nullptr;
 	PlayerBehavior* pb = nullptr;
-	std::vector<EntityID> idsToDelete;
+	
 	for (auto& [id, components] : _Engine->_Entities) {
 		
 		if (ImGui::CollapsingHeader(std::to_string(id).c_str(), ImGuiTreeNodeFlags_None))
@@ -252,9 +252,9 @@ void EditorUserInterface::DoEntitiesWindow()
 			}
 		}
 	}
-	for (auto id : idsToDelete) {
-		_Engine->DeleteEntity(id);
-	}
+	//for (auto id : idsToDelete) {
+		//_Engine->DeleteEntity(id);
+	//}
 }
 
 void EditorUserInterface::DoTileSetSelectWindow()
@@ -335,13 +335,17 @@ void EditorUserInterface::DoGui()
 		DoLayersWindow();
 		ImGui::End();
 	}
+	std::vector<unsigned int> idsDeleted;
 	if (!_Engine->_Entities.empty()) {
 		ImGui::Begin("entities");
-		DoEntitiesWindow();
+		DoEntitiesWindow(idsDeleted);
 		ImGui::End();
 	}
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	for (auto id : idsDeleted) {
+		_Engine->DeleteEntity(id);
+	}
 }
 
 void EditorUserInterface::IncrementTilePickerScale(float amount)
@@ -400,12 +404,7 @@ void EditorUserInterface::DrawEngineOverlay(const Renderer2D& renderer, const Ca
 			
 		}
 	}
-
-
 	_SelectedTool->drawOverlay(renderer, camera);
-	
-
-	
 }
 
 void EditorUserInterface::cursorPositionCallbackHandler(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera)
@@ -538,5 +537,3 @@ bool EditorUserInterface::FileChosen(std::string path)
 	
 	return true;
 }
-
-

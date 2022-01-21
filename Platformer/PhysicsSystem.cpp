@@ -15,6 +15,7 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 		const auto& collider = phys.collider;
 		
 		auto& transform = components.transforms[entityID];
+		phys.lastPos = transform.pos;
 		
 		// get refererence to phys.velocity for convenience
 		auto& vel = phys.velocity;

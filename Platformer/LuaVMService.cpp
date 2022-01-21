@@ -30,6 +30,7 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_GetEntities, "C_GetEntities");
     registerFunction(l_GetAnimations, "C_GetAnimations");
     registerFunction(l_GetTilelayers, "C_GetTilelayers");
+    registerFunction(l_SetVelocity, "C_SetVelocity");
 }
 
 
@@ -638,6 +639,32 @@ int LuaVMService::l_GetTilelayers(lua_State* L)
         lua_seti(L, -2, i + 1);
     }
     return 1;
+}
+
+int LuaVMService::l_SetVelocity(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "l_SetSpriteComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isinteger(L, 2)) {
+        std::cout << "second parameter should be the entityID to change" << std::endl;
+        return 0;
+    }
+    EntityID id = lua_tointeger(L, 2);
+    glm::vec2 vel;
+    lua_getfield(L, 3, "x");
+    vel.x = luaL_checknumber(L, -1);
+    lua_getfield(L, 3, "y");
+    vel.y = luaL_checknumber(L, -1);
+    e->_Components.physicses[id].velocity = vel;
+    return 0;
 }
 
 #pragma endregion

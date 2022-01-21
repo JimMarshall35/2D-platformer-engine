@@ -93,12 +93,39 @@ function SetupSnake(pos)
 		onframe = 0,
 		fps = 5
 	})
+	C_SetVelocity(C_Engine,entityID,{x=20.0,y=0.0})
 	return entityID
 end
 
+function SetupCoin(pos)
+	local entityID = C_CreateEntity(C_Engine,{
+		ComponentType.CT_TRANSFORM,
+		ComponentType.CT_SPRITE,
+		ComponentType.CT_ANIMATION,
+		ComponentType.CT_COLLECTABLE
+	})
+	C_SetTransformComponent(C_Engine, entityID,{
+		pos = pos,
+		scale = {x=16.0,y=16.0},
+		rot = 0
+	})
+	C_SetSpriteComponent(C_Engine,entityID,
+		128
+	)
+	C_SetAnimationComponent(C_Engine,entityID,{
+		isanimating = 1,
+		name = "coin",
+		numframes = 7,
+		timer = 0,
+		shouldloop = 1,
+		onframe = 0,
+		fps = 10
+	})
+	return entityID
+end
 EditorTools = {
 	{
-		name = "Spawn Player",
+		name = "Spawn Snake",
 		handlers = {
 			[EditorToolInputRequirements.MouseButton] = function(button, action, mods, imGuiWantsMouse, camera, worldpos)
 				if imGuiWantsMouse then 
@@ -116,6 +143,25 @@ EditorTools = {
 			end
 		},
 		inputRequirements =   EditorToolInputRequirements.MouseButton | EditorToolInputRequirements.CursorPositionMove
+	},
+	{
+		name = "Spawn Coin",
+		handlers = {
+			[EditorToolInputRequirements.MouseButton] = function(button, action, mods, imGuiWantsMouse, camera, worldpos)
+				if imGuiWantsMouse then 
+					return
+				end
+				if button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS then
+					SetupCoin(worldpos)
+				end
+			end,
+			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)
+				print("keyboard")
+			end,
+			[EditorToolInputRequirements.CursorPositionMove] = function(xpos,ypos, imGuiWantsMouse, camera)
+				print("move")
+			end
+		},
+		inputRequirements =   EditorToolInputRequirements.MouseButton 
 	}
 }
-print("fnbvuhd")

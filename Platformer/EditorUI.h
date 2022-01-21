@@ -137,7 +137,7 @@ private:
 	void PushNewTileLayer(unsigned int width_tiles, unsigned int height_tiles);
 	void DoTileButtonsWindow();
 	void DoLayersWindow();
-	void DoEntitiesWindow();
+	void DoEntitiesWindow(std::vector<unsigned int>& idsToDelete);
 	void DoTileSetSelectWindow();
 	void DoToolSelectWindow();
 
