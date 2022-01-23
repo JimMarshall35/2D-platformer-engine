@@ -15,7 +15,7 @@ lua scripting for editor tools means the editor can be extended quite a bit
 TODO / ultimate ambitions:
 
 EASY:
-- decouple engine from renderer completely, use DI similar to how the UI, lua scripting service and level serializer are injected 
+- decouple engine from renderer completely, use DI similar to how the UI, lua scripting service and level serializer are injected into the engine ctor
 - fix resizing of layers in editor (layers contents should be preserved if there is a resize)
 - optimize rendering of tile based backgrounds (NOT efficient at all at the moment)
 - fix annoying bug where you must change tile size to the right value manually in edit mode
