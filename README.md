@@ -1,5 +1,7 @@
 # 2D-platformer-engine
 
+another attempt at an engine for 2d games - this time, better. Has a less complicated renderer than the last one and Uses lua much more sparingly. It also uses an ECS based game object system rather than a class hierachy for game objects (should be more efficient on the cache and is DEFINITELY easier to serialize / deserialize. Comes at the cost of information hiding / encapsulation.
+
 an engine for 2d platformers (OpenGL / C++).
 
 still a work in progress. and being regularly worked on
@@ -26,11 +28,12 @@ MEDIUM:
 - Add edit undo / redo functionality to editor (command pattern)
 - investigate possibility of running some of the systems in parrallel - would this be worth it / practical
 - sort out tile sizes in general, allow for possibility of different background layers containing different sized tiles
+- look at a different data structure to store components in ie an array
 
 HARD:
 - lua scripting for several types of component (enemybehavior, moving platform at the very least)
 - make collision detection and physics PERFECT
 - add particle effects system
-- IMPORTANT: add sound 
+- IMPORTANT: add sound (will probably go with the low level library port audio)
 - infinite grid in edit mode?
 - completely revamp collision detection to allow for sloped tiles
