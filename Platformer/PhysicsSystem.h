@@ -2,10 +2,12 @@
 #include "ISystem.h"
 #include <glm/glm.hpp>
 class Physics;
+class Engine;
 class PhysicsSystem :
     public ISystem
 {
 public:
+	PhysicsSystem(Engine* e) :ISystem(e) {}
     void Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers);
 private:
 	struct rect

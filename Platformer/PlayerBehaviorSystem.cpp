@@ -33,15 +33,15 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 				tr.scale.x *= -1;
 			}
 		}
-		ph.velocity.x = std::clamp(components.physicses[entityID].velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
+		ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
 		camera.FocusPosition = tr.pos;
-		
 	}
 	
 	
 }
 
-PlayerBehaviorSystem::PlayerBehaviorSystem()
+PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* e)
+	:ISystem(e)
 {
 	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Walk,     std::unique_ptr<IPlayerStateBehavior>(new WalkStateBehavior())));
 	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpUp,   std::unique_ptr<IPlayerStateBehavior>(new JumpUpStateBehavior())));

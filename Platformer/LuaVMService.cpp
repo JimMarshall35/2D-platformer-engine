@@ -582,7 +582,14 @@ int LuaVMService::l_GetEntities(lua_State* L)
 
                 lua_seti(L, -2, (lua_Integer)CT_MOVINGPLATFORM);
                 break;
-
+            case CT_ENEMYBEHAVIOR:
+                lua_newtable(L);
+                lua_seti(L, -2, (lua_Integer)CT_HEALTHS);
+                break;
+            case CT_COLLECTABLE:
+                lua_newtable(L);
+                lua_seti(L, -2, (lua_Integer)CT_HEALTHS);
+                break;
             default:
                 break;
 

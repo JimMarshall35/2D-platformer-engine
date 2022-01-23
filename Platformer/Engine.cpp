@@ -152,44 +152,6 @@ void Engine::GotoEditMode() {
 
 #pragma endregion
 
-#pragma region temporary functions for testing
-
-EntityID Engine::SetupPlayer(glm::vec2 pos, glm::vec2 scale, glm::vec4 floorCollider)
-{
-
-	EntityID new_id = CreateEntity({CT_ANIMATION,CT_PHYSICS,CT_SPRITE,CT_PLAYERBEHAVIOR, CT_TRANSFORM});
-	_Components.transforms[new_id] = Transform{pos, scale, 0.0f};
-	_Components.sprites[new_id] = Sprite{ _Tileset.AnimationsMap["walk"][0] };
-	_Components.physicses[new_id] = Physics{ glm::vec2(0.0f,0.0f) };
-	_Components.physicses[new_id].collider = FloorCollider{
-		11, // top
-		0,  // bottom
-		8,  // left
-		8   // rigjt
-	};
-	_Components.animations[new_id] = Animation{
-		true, // is animating
-		"walk", // name 
-		(int)_Tileset.AnimationsMap["walk"].size(), // numframes
-		0, // timer
-		10, //fps
-		true, // should loop
-		0 // onframe
-	};
-	return new_id;
-}
-
-void Engine::DestroyPlayer(EntityID& player)
-{
-	_Components.animations.erase(player);
-	_Components.physicses.erase(player);
-	_Components.sprites.erase(player);
-	_Components.transforms.erase(player);
-	_Components.player_behaviors.erase(player);
-	player = 0;
-}
-
-#pragma endregion
 
 #pragma region draw sprites and background
 
@@ -256,7 +218,7 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 		Transform& transform = _Components.transforms[key];
 		vec4 cameraTLBR = cam.GetTLBR(_Renderer.WindowW, _Renderer.WindowH);
 		vec4 tileTLBR = vec4(
-			transform.pos.y - abs(transform.scale.y * 0.5f),
+			transform.pos.y - abs(transform.scale.y) * 0.5f,
 			transform.pos.x - abs(transform.scale.x) * 0.5f,
 			transform.pos.y + abs(transform.scale.y) * 0.5f,
 			transform.pos.x + abs(transform.scale.x) * 0.5f
@@ -279,11 +241,11 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer)
 	_LevelSerializer = std::unique_ptr<ILevelSerializer>(serializer);
 	_GameCam.FocusPosition = glm::vec2(32, 0);
 	_GameCam.Zoom = 2.0f;
-	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem());
-	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
-	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem());
-	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
-	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem());
+	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem(this));
+	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem(this));
+	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem(this));
+	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem(this));
+	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem(this));
 }
 
 #pragma endregion

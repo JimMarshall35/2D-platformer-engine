@@ -32,17 +32,13 @@ private:
 	std::unique_ptr<ISystem> _PlayerBehaviorSystem;
 	std::unique_ptr<ISystem> _MovingPlatformSystem;
 	std::unique_ptr<ISystem> _EnemyBehaviorSystem;
+
 	//test
-
 	void SpritesSystemDraw(const Camera2D& cam);
-
-
 	void GotoEditMode();
 public:
 	EntityID _Player1 = 0;
-	// temporary
-	EntityID SetupPlayer(glm::vec2 pos, glm::vec2 scale, glm::vec4 floorCollider);
-	void DestroyPlayer(EntityID&);
+
 
 	glm::ivec2 CollidableLayerWidthAndHeight;
 	TileSet _Tileset;

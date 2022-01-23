@@ -15,7 +15,7 @@ enum PlayerState : unsigned int;
 class PlayerBehaviorSystem : public ISystem
 {
 public:
-	PlayerBehaviorSystem();
+	PlayerBehaviorSystem(Engine* e);
 	void Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers);
 private:
 	

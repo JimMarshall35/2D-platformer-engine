@@ -374,8 +374,9 @@ void EditorUserInterface::LuaScriptedTool::handleKeyboard(GLFWwindow* window, in
 				lua_pushinteger(_L, mods);
 				lua_pushboolean(_L, wantKeyboardInput);
 				lua_pcall(_L, 5, 0, 0);
+				lua_pop(_L, 1);
 			}
-			lua_pop(_L, 2);
+			lua_pop(_L, 1);
 		}
 		lua_pop(_L, 1);
 	}
@@ -404,8 +405,9 @@ void EditorUserInterface::LuaScriptedTool::handleMouseMove(double xpos, double y
 				lua_pushboolean(_L, imGuiWantsMouse);
 				lua_pushlightuserdata(_L, &camera);
 				lua_pcall(_L, 4, 0, 0);
+				lua_pop(_L, 1);
 			}
-			lua_pop(_L, 2);
+			lua_pop(_L, 1);
 		}
 		lua_pop(_L, 1);
 	}
