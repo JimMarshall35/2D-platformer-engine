@@ -22,4 +22,5 @@ TODO / ultimate ambitions:
 - investigate possibility of running some of the systems in parrallel - would this be worth it / practical
 - add particle effects system
 - add some shader based effects
+- decouple engine from renderer completely, use DI similar to how the UI, lua scripting service and level serializer are injected 
 - IMPORTANT: add sound 
