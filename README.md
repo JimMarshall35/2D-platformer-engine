@@ -14,13 +14,19 @@ lua scripting for editor tools means the editor can be extended quite a bit
 
 TODO / ultimate ambitions:
 
-- lua scripting for several types of component (enemybehavior, moving platform at the very least)
-- optimize rendering of tile based backgrounds (NOT efficient at all at the moment)
-- make collision detection and physics PERFECT
-- Add edit undo / redo functionality to editor (command pattern)
-- fix resizing of layers in editor (layers contents should be preserved if there is a resize)
-- investigate possibility of running some of the systems in parrallel - would this be worth it / practical
-- add particle effects system
-- add some shader based effects
+EASY:
 - decouple engine from renderer completely, use DI similar to how the UI, lua scripting service and level serializer are injected 
+- fix resizing of layers in editor (layers contents should be preserved if there is a resize)
+- optimize rendering of tile based backgrounds (NOT efficient at all at the moment)
+- fix annoying bug where you must change tile size to the right value manually in edit mode
+
+MEDIUM:
+- add some shader based effects
+- Add edit undo / redo functionality to editor (command pattern)
+- investigate possibility of running some of the systems in parrallel - would this be worth it / practical
+
+HARD:
+- lua scripting for several types of component (enemybehavior, moving platform at the very least)
+- make collision detection and physics PERFECT
+- add particle effects system
 - IMPORTANT: add sound 
