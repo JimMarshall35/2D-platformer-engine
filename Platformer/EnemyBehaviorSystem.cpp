@@ -37,13 +37,15 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 			phys.velocity.x *= -1.0;
 			tr.scale.x *= -1.0f;
 		}
+		float velx = phys.velocity.x * delta_t;
+		float vely = phys.velocity.x * delta_t;
 		vec2 physicsBR(
-			(tr.pos.x + (tr.scale.x * 0.5)) - phys.collider.MinusPixelsRight,
-			(tr.pos.y + (tr.scale.y * 0.5)) - phys.collider.MinusPixelsBottom
+			((tr.pos.x + velx) + (abs(tr.scale.x) * 0.5)) - phys.collider.MinusPixelsRight,
+			((tr.pos.y + vely) + (tr.scale.y * 0.5)) - phys.collider.MinusPixelsBottom
 		);
 		vec2 physicsTL(
-			(tr.pos.x - (tr.scale.x * 0.5)) + phys.collider.MinusPixelsRight,
-			(tr.pos.y - (tr.scale.y * 0.5)) + phys.collider.MinusPixelsBottom
+			((tr.pos.x + velx) - (abs(tr.scale.x) * 0.5)) + phys.collider.MinusPixelsRight,
+			((tr.pos.y + vely) - (tr.scale.y * 0.5)) + phys.collider.MinusPixelsBottom
 		);
 		vec4 myTLBR(
 			physicsTL.y,
@@ -54,13 +56,15 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 		EntityID player1ID = _Engine->_Player1;
 		auto& player_tr = components.transforms[player1ID];
 		auto& player_ph = components.physicses[player1ID];
+		float pvelx = player_ph.velocity.x * delta_t;
+		float pvely = player_ph.velocity.y * delta_t;
 		vec2 physicsBR_p1(
-			(player_tr.pos.x + (player_tr.scale.x * 0.5)) - player_ph.collider.MinusPixelsRight,
-			(player_tr.pos.y + (player_tr.scale.y * 0.5)) - player_ph.collider.MinusPixelsBottom
+			((player_tr.pos.x + pvelx) + (abs(player_tr.scale.x) * 0.5)) - player_ph.collider.MinusPixelsRight,
+			((player_tr.pos.y + pvely) + (player_tr.scale.y * 0.5)) - player_ph.collider.MinusPixelsBottom
 		);
 		vec2 physicsTL_p1(
-			(player_tr.pos.x - (player_tr.scale.x * 0.5)) + player_ph.collider.MinusPixelsRight,
-			(player_tr.pos.y - (player_tr.scale.y * 0.5)) + player_ph.collider.MinusPixelsBottom
+			((player_tr.pos.x + pvelx) - (abs(player_tr.scale.x) * 0.5)) + player_ph.collider.MinusPixelsRight,
+			((player_tr.pos.y + pvely) - (player_tr.scale.y * 0.5)) + player_ph.collider.MinusPixelsBottom
 		);
 		vec4 p1TLBR(
 			physicsTL_p1.y,
@@ -68,8 +72,9 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 			physicsBR_p1.y,
 			physicsBR_p1.x
 		);
+		auto& player_pb = components.player_behaviors[player1ID];
 		if (AABBCollision(myTLBR, p1TLBR)) {
-			std::cout << "collision" << std::endl;
+			player_pb.colliding_enemy = entityID;
 		}
 	}
 }

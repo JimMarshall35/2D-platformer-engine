@@ -584,11 +584,11 @@ int LuaVMService::l_GetEntities(lua_State* L)
                 break;
             case CT_ENEMYBEHAVIOR:
                 lua_newtable(L);
-                lua_seti(L, -2, (lua_Integer)CT_HEALTHS);
+                lua_seti(L, -2, (lua_Integer)CT_ENEMYBEHAVIOR);
                 break;
             case CT_COLLECTABLE:
                 lua_newtable(L);
-                lua_seti(L, -2, (lua_Integer)CT_HEALTHS);
+                lua_seti(L, -2, (lua_Integer)CT_COLLECTABLE);
                 break;
             default:
                 break;

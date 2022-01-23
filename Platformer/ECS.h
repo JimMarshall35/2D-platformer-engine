@@ -91,6 +91,8 @@ struct PlayerBehavior {
 	float climbspeed = 50;
 
 	float friction = 1.0f;
+
+	EntityID colliding_enemy = 0;
 };
 
 struct Collectable {

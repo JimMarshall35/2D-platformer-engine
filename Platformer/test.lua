@@ -3,68 +3,55 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
-	["tileset"] = {
-		[1] = {
-			["tile_height_px"] = 16;
-			["firstID"] = 1;
-			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\sheet.png";
-			["tile_width_px"] = 16;
-		};
-		[2] = {
-			["tile_height_px"] = 32;
-			["firstID"] = 137;
-			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\characters.png";
-			["tile_width_px"] = 32;
-		};
-	};
 	["animations"] = {
 		[1] = {
+			["name"] = "walk";
 			["frames"] = {
 				[1] = 138;
 				[2] = 139;
 				[3] = 140;
 				[4] = 141;
 			};
-			["name"] = "walk";
 		};
 		[2] = {
+			["name"] = "jump_up";
 			["frames"] = {
 				[1] = 145;
 				[2] = 142;
 				[3] = 143;
 			};
-			["name"] = "jump_up";
 		};
 		[3] = {
+			["name"] = "jump_down";
+			["frames"] = {
+				[1] = 144;
+			};
+		};
+		[4] = {
+			["name"] = "slither";
 			["frames"] = {
 				[1] = 207;
 				[2] = 208;
 				[3] = 209;
 				[4] = 210;
 			};
-			["name"] = "slither";
-		};
-		[4] = {
-			["frames"] = {
-				[1] = 144;
-			};
-			["name"] = "jump_down";
 		};
 		[5] = {
+			["name"] = "jump_land";
 			["frames"] = {
 				[1] = 145;
 			};
-			["name"] = "jump_land";
 		};
 		[6] = {
+			["name"] = "climb";
 			["frames"] = {
 				[1] = 156;
 				[2] = 157;
 				[3] = 158;
 			};
-			["name"] = "climb";
 		};
 		[7] = {
+			["name"] = "coin";
 			["frames"] = {
 				[1] = 128;
 				[2] = 129;
@@ -74,22 +61,35 @@ local obj1 = {
 				[6] = 133;
 				[7] = 134;
 			};
-			["name"] = "coin";
+		};
+	};
+	["tileset"] = {
+		[1] = {
+			["tile_width_px"] = 16;
+			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\sheet.png";
+			["tile_height_px"] = 16;
+			["firstID"] = 1;
+		};
+		[2] = {
+			["tile_width_px"] = 32;
+			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\characters.png";
+			["tile_height_px"] = 32;
+			["firstID"] = 137;
 		};
 	};
 	["entities"] = {
 		[1] = {
 			["components"] = {
 				[1] = {
+					["rot"] = 0.0;
 					["scale"] = {
 						["x"] = -32.0;
 						["y"] = 32.0;
 					};
 					["pos"] = {
-						["x"] = 1126.0684814453;
+						["x"] = 1126.6284179688;
 						["y"] = 192.0;
 					};
-					["rot"] = 0.0;
 				};
 				[2] = {
 					["collider"] = {
@@ -105,11 +105,11 @@ local obj1 = {
 				[5] = {
 					["numframes"] = 1;
 					["fps"] = 10.0;
-					["onframe"] = 0;
-					["isanimating"] = 1;
-					["timer"] = 0.038293999852613;
-					["shouldloop"] = 1;
 					["name"] = "jump_land";
+					["shouldloop"] = 1;
+					["timer"] = 0.040228700032458;
+					["isanimating"] = 1;
+					["onframe"] = 0;
 				};
 				[6] = {
 				};
@@ -118,21 +118,21 @@ local obj1 = {
 		[2] = {
 			["components"] = {
 				[1] = {
+					["rot"] = 0.0;
 					["scale"] = {
 						["x"] = 100.0;
 						["y"] = 16.0;
 					};
 					["pos"] = {
-						["x"] = 727.92004394531;
-						["y"] = 200.0072479248;
+						["x"] = 704.44519042969;
+						["y"] = 200.00202941895;
 					};
-					["rot"] = 0.0;
 				};
 				[4] = {
 					["texture"] = 9;
 				};
 				[7] = {
-					["timer"] = 62.29053867684;
+					["timer"] = 63.403795477411;
 					["time_period"] = 12.0;
 					["p1"] = {
 						["x"] = 680.0;
@@ -148,21 +148,21 @@ local obj1 = {
 		[3] = {
 			["components"] = {
 				[1] = {
+					["rot"] = 0.0;
 					["scale"] = {
 						["x"] = 100.0;
 						["y"] = 16.0;
 					};
 					["pos"] = {
-						["x"] = 839.69372558594;
-						["y"] = 850.0;
+						["x"] = 1013.2182006836;
+						["y"] = 849.99993896484;
 					};
-					["rot"] = 0.0;
 				};
 				[4] = {
 					["texture"] = 9;
 				};
 				[7] = {
-					["timer"] = 62.29053867684;
+					["timer"] = 63.403795477411;
 					["time_period"] = 9.0;
 					["p1"] = {
 						["x"] = 1400.0;
@@ -178,15 +178,15 @@ local obj1 = {
 		[4] = {
 			["components"] = {
 				[1] = {
+					["rot"] = 0.0;
 					["scale"] = {
 						["x"] = 32.0;
 						["y"] = 32.0;
 					};
 					["pos"] = {
-						["x"] = 1045.8763427734;
-						["y"] = 48.0498046875;
+						["x"] = 1052.6284179688;
+						["y"] = 48.0;
 					};
-					["rot"] = 0.0;
 				};
 				[2] = {
 					["collider"] = {
@@ -196,19 +196,19 @@ local obj1 = {
 						[4] = 8.0;
 					};
 				};
-				[3] = {
-				};
 				[4] = {
 					["texture"] = 207;
 				};
 				[5] = {
 					["numframes"] = 4;
 					["fps"] = 5.0;
-					["onframe"] = 0;
-					["isanimating"] = 1;
-					["timer"] = 0.0;
-					["shouldloop"] = 1;
 					["name"] = "slither";
+					["shouldloop"] = 1;
+					["timer"] = 0.0;
+					["isanimating"] = 1;
+					["onframe"] = 0;
+				};
+				[9] = {
 				};
 			};
 		};
@@ -10218,8 +10218,8 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+			["widthtiles"] = 100;
 		};
 		[2] = {
 			["t_type"] = 1;
@@ -20225,8 +20225,8 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+			["widthtiles"] = 100;
 		};
 		[3] = {
 			["t_type"] = 4;
@@ -30232,8 +30232,8 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+			["widthtiles"] = 100;
 		};
 		[4] = {
 			["t_type"] = 0;
@@ -40239,8 +40239,8 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+			["widthtiles"] = 100;
 		};
 		[5] = {
 			["t_type"] = 0;
@@ -50246,8 +50246,8 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["widthtiles"] = 100;
 			["heighttiles"] = 100;
+			["widthtiles"] = 100;
 		};
 		[6] = {
 			["t_type"] = 5;
@@ -55253,8 +55253,8 @@ local obj1 = {
 				[4999] = 0;
 				[5000] = 0;
 			};
-			["widthtiles"] = 100;
 			["heighttiles"] = 50;
+			["widthtiles"] = 100;
 		};
 	};
 }

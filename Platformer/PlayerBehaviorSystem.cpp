@@ -4,7 +4,7 @@
 #include "Tileset.h"
 #include <algorithm>
 
-
+#define KNOCKBACK_AMOUNT 300.0;
 void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
 {
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM, CT_PLAYERBEHAVIOR, CT_ANIMATION) {
@@ -12,9 +12,21 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 		auto& ph = components.physicses[entityID];
 		auto& tr = components.transforms[entityID];
 		auto& an = components.animations[entityID];
+
+		PlayerState newstate;
+		if (pb.colliding_enemy != 0) {
+			auto& enemy_tr = components.transforms[pb.colliding_enemy];
+			float xdir = tr.pos.x - enemy_tr.pos.x > 0 ? 1.0 : -1.0;
+
+			pb.colliding_enemy = 0;
+			ph.velocity.x = xdir * KNOCKBACK_AMOUNT;
+			newstate = JumpUp;
+		}
+		else {
+			// run state machine
+			newstate = _Behaviormap[pb.state]->Update(pb, ph, tr, an, delta_t, tilelayers);
+		}
 		
-		// run state machine
-		PlayerState newstate = _Behaviormap[pb.state]->Update(pb,ph,tr,an,delta_t, tilelayers);
 		assert(newstate > NoState && newstate <= Climb);
 		pb.laststate = pb.state;
 		pb.state = newstate;
@@ -34,6 +46,9 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 			}
 		}
 		ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
+		
+		
+		
 		camera.FocusPosition = tr.pos;
 	}
 	
@@ -118,10 +133,7 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(PlayerBehavior& pb, 
 		an.isAnimating = false;
 	}
 	if (pb.spacePressed) {
-		pb.spacePressed = false;
-		pb.jumping = true;
-		pb.jumpcounter = 0;
-		ph.velocity.y -= pb.JumpAmount;
+		
 		return JumpUp;
 	}
 	else if (!ph.bottomTouching) {
@@ -184,10 +196,16 @@ void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(PlayerBehavior& pb, Phys
 	an.fps = 5;
 	an.onframe = 0;
 	an.shouldLoop = false;
+
+	pb.spacePressed = false;
+	pb.jumping = true;
+	pb.jumpcounter = 0;
+	ph.velocity.y -= pb.JumpAmount;
 }
 
 void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
 {
+	pb.jumping = false;
 }
 
 PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
@@ -231,10 +249,7 @@ PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(PlayerBehavior& 
 		return Walk;
 	}
 	if (pb.spacePressed) {
-		pb.spacePressed = false;
-		pb.jumping = true;
-		pb.jumpcounter = 0;
-		ph.velocity.y -= pb.JumpAmount;
+		
 		return JumpUp;
 	}
 	return JumpLand;
