@@ -45,7 +45,7 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 		);
 		vec2 physicsTL(
 			((tr.pos.x + velx) - (abs(tr.scale.x) * 0.5)) + phys.collider.MinusPixelsRight,
-			((tr.pos.y + vely) - (tr.scale.y * 0.5)) + phys.collider.MinusPixelsBottom
+			((tr.pos.y + vely) - (tr.scale.y * 0.5)) + phys.collider.MinusPixelsTop
 		);
 		vec4 myTLBR(
 			physicsTL.y,
@@ -64,7 +64,7 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 		);
 		vec2 physicsTL_p1(
 			((player_tr.pos.x + pvelx) - (abs(player_tr.scale.x) * 0.5)) + player_ph.collider.MinusPixelsRight,
-			((player_tr.pos.y + pvely) - (player_tr.scale.y * 0.5)) + player_ph.collider.MinusPixelsBottom
+			((player_tr.pos.y + pvely) - (player_tr.scale.y * 0.5)) + player_ph.collider.MinusPixelsTop
 		);
 		vec4 p1TLBR(
 			physicsTL_p1.y,

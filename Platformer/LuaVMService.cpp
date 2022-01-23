@@ -507,6 +507,13 @@ int LuaVMService::l_GetEntities(lua_State* L)
                 lua_pushnumber(L, phys->collider.MinusPixelsRight);
                 lua_seti(L, -2, 4);
                 lua_setfield(L, -2, "collider");
+                // velocity
+                lua_newtable(L);
+                lua_pushnumber(L, phys->velocity.x);
+                lua_setfield(L, -2, "x");
+                lua_pushnumber(L, phys->velocity.y);
+                lua_setfield(L, -2, "y");
+                lua_setfield(L, -2, "velocity");
 
                 lua_seti(L, -2, (lua_Integer)CT_PHYSICS);
                 break;

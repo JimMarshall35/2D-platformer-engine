@@ -4,7 +4,9 @@
 #include "Tileset.h"
 #include <algorithm>
 
-#define KNOCKBACK_AMOUNT 300.0;
+#define KNOCKBACK_AMOUNTX 200.0;
+#define KNOCKBACK_AMOUNTY 1000.0;
+
 void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
 {
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM, CT_PLAYERBEHAVIOR, CT_ANIMATION) {
@@ -19,15 +21,17 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 			float xdir = tr.pos.x - enemy_tr.pos.x > 0 ? 1.0 : -1.0;
 
 			pb.colliding_enemy = 0;
-			ph.velocity.x = xdir * KNOCKBACK_AMOUNT;
-			newstate = JumpUp;
+			ph.velocity.x = xdir * KNOCKBACK_AMOUNTX;
+
+			newstate = KnockBack; // TODO : make knocked back state. Add a whole series of "events" like this that happen outside the normal state machine
+			                   // knocked back, powerups, died, ect.
 		}
 		else {
 			// run state machine
 			newstate = _Behaviormap[pb.state]->Update(pb, ph, tr, an, delta_t, tilelayers);
 		}
 		
-		assert(newstate > NoState && newstate <= Climb);
+		assert(newstate > NoState && newstate <= KnockBack);
 		pb.laststate = pb.state;
 		pb.state = newstate;
 		if (pb.state != pb.laststate) {
@@ -45,7 +49,8 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 				tr.scale.x *= -1;
 			}
 		}
-		ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
+		if (pb.state != KnockBack)
+			ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
 		
 		
 		
@@ -58,11 +63,12 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* e)
 	:ISystem(e)
 {
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Walk,     std::unique_ptr<IPlayerStateBehavior>(new WalkStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpUp,   std::unique_ptr<IPlayerStateBehavior>(new JumpUpStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpDown, std::unique_ptr<IPlayerStateBehavior>(new JumpDownStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpLand, std::unique_ptr<IPlayerStateBehavior>(new JumpLandStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Climb,    std::unique_ptr<IPlayerStateBehavior>(new ClimbStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Walk,      std::unique_ptr<IPlayerStateBehavior>(new WalkStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpUp,    std::unique_ptr<IPlayerStateBehavior>(new JumpUpStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpDown,  std::unique_ptr<IPlayerStateBehavior>(new JumpDownStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpLand,  std::unique_ptr<IPlayerStateBehavior>(new JumpLandStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Climb,     std::unique_ptr<IPlayerStateBehavior>(new ClimbStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(KnockBack, std::unique_ptr<IPlayerStateBehavior>(new KnockbackStateBehavior())));
 }
 
 bool PlayerBehaviorSystem::IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers)
@@ -302,5 +308,24 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(PlayerBehavior& pb, Physi
 }
 
 void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+}
+
+PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	pb.knockback_timer += delta_t;
+	if (pb.knockback_timer >= knockback_time) {
+		return Walk;
+	}
+	return KnockBack;
+}
+
+void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+{
+	pb.knockback_timer = 0;
+
+}
+
+void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
 {
 }

@@ -66,6 +66,15 @@ private:
 		virtual void OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers) override;
 	};
 
+	class KnockbackStateBehavior : public IPlayerStateBehavior {
+		// Inherited via IPlayerStateBehavior
+		virtual PlayerState Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers) override;
+		virtual void OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers) override;
+		virtual void OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers) override;
+	private:
+		const double knockback_time = 0.250;
+	};
+
 	std::unordered_map<PlayerState, std::unique_ptr<IPlayerStateBehavior>> _Behaviormap;
 	 
 };

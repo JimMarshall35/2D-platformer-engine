@@ -34,6 +34,7 @@ function OnLoadLevel(path)
 				C_SetTransformComponent(C_Engine, id, val)
 			elseif key == ComponentType.CT_PHYSICS then
 				C_SetFloorColliderComponent(C_Engine, id, val.collider[1],val.collider[2],val.collider[3],val.collider[4])
+				C_SetVelocity(C_Engine, id, {x = val.velocity.x, y = val.velocity.y})
 			elseif key == ComponentType.CT_HEALTHS then
 			elseif key == ComponentType.CT_SPRITE then
 				C_SetSpriteComponent(C_Engine, id, val.texture)

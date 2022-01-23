@@ -71,7 +71,8 @@ enum PlayerState: unsigned int {
 	JumpUp,
 	JumpDown,
 	JumpLand,
-	Climb
+	Climb,
+	KnockBack
 };
 struct PlayerBehavior {
 	bool leftPressed;
@@ -93,6 +94,8 @@ struct PlayerBehavior {
 	float friction = 1.0f;
 
 	EntityID colliding_enemy = 0;
+
+	double knockback_timer = 0.0;
 };
 
 struct Collectable {
