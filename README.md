@@ -19,11 +19,13 @@ EASY:
 - fix resizing of layers in editor (layers contents should be preserved if there is a resize)
 - optimize rendering of tile based backgrounds (NOT efficient at all at the moment)
 - fix annoying bug where you must change tile size to the right value manually in edit mode
+- wrap some renderer functions in lua so that lua script based tools can draw on the editor overlay like the hard coded tools do
 
 MEDIUM:
 - add some shader based effects
 - Add edit undo / redo functionality to editor (command pattern)
 - investigate possibility of running some of the systems in parrallel - would this be worth it / practical
+- sort out tile sizes in general, allow for possibility of different background layers containing different sized tiles
 
 HARD:
 - lua scripting for several types of component (enemybehavior, moving platform at the very least)
@@ -31,3 +33,4 @@ HARD:
 - add particle effects system
 - IMPORTANT: add sound 
 - infinite grid in edit mode?
+- completely revamp collision detection to allow for sloped tiles
