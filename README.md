@@ -30,3 +30,4 @@ HARD:
 - make collision detection and physics PERFECT
 - add particle effects system
 - IMPORTANT: add sound 
+- infinite grid in edit mode?
