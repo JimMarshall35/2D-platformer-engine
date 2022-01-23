@@ -1,6 +1,6 @@
 # 2D-platformer-engine
 
-another attempt at an engine for 2d games - this time, better. Has a less complicated renderer than the last one and Uses lua much more sparingly. It also uses an ECS based game object system rather than a class hierachy for game objects (should be more efficient on the cache and is DEFINITELY easier to serialize / deserialize and is also composable ie new entity types can be composed out of components to some extent without the need to create a new class. comes at the cost of information hiding / encapsulation.
+another attempt at an engine for 2d games - this time, better. Has a less complicated renderer than the last one and Uses lua much more sparingly. It also uses an ECS based game object system rather than a class hierachy deriving from GemeObject (should be more efficient on the cache and is DEFINITELY easier to serialize / deserialize). Another benefit is that it's composable ie new entity types can be composed out of components to some extent without the need to create a new class. comes at the cost of information hiding / encapsulation.
 
 an engine for 2d platformers (OpenGL / C++).
 
@@ -10,7 +10,7 @@ Built in level editor (ImGUi UI)
 
 strictly ECS based game object storage architecture https://en.wikipedia.org/wiki/Entity_component_system
 
-Games are saved as lua tables, loaded by a lua script which can be altered to easily procedurally generate levels
+Games are saved as lua tables, loaded by a lua script which can be altered to easily procedurally generate levels using lua
 
 lua scripting for editor tools means the editor can be extended quite a bit
 
