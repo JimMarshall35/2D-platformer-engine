@@ -10,5 +10,16 @@ strictly ECS based game object storage architecture https://en.wikipedia.org/wik
 
 Games are saved as lua tables, loaded by a lua script which can be altered to easily procedurally generate levels
 
-lua scripting for editor tools
+lua scripting for editor tools means the editor can be extended quite a bit
 
+TODO / ultimate ambitions:
+
+- lua scripting for several types of component (enemybehavior, moving platform at the very least)
+- optimize rendering of tile based backgrounds (NOT efficient at all at the moment)
+- make collision detection and physics PERFECT
+- Add edit undo functionality to editor (command pattern)
+- fix resizing of layers in editor (layers contents should be preserved if there is a resize)
+- investigate possibility of running some of the systems in parrallel - would this be worth it / practical
+- add particle effects system
+- add some shader based effects
+- IMPORTANT: add sound 
