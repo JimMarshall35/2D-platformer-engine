@@ -1,6 +1,6 @@
 # 2D-platformer-engine
 
-another attempt at an engine for 2d games - this time, better. Has a less complicated renderer than the last one and Uses lua much more sparingly. It also uses an ECS based game object system rather than a class hierachy for game objects (should be more efficient on the cache and is DEFINITELY easier to serialize / deserialize. Comes at the cost of information hiding / encapsulation.
+another attempt at an engine for 2d games - this time, better. Has a less complicated renderer than the last one and Uses lua much more sparingly. It also uses an ECS based game object system rather than a class hierachy for game objects (should be more efficient on the cache and is DEFINITELY easier to serialize / deserialize and is also composable ie new entity types can be composed out of components to some extent without the need to create a new class. comes at the cost of information hiding / encapsulation.
 
 an engine for 2d platformers (OpenGL / C++).
 
