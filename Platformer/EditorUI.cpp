@@ -259,7 +259,8 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 				case CT_EXPLODINGSPRITE:
 					es = &_Engine->_Components.exploding_sprites[id];
 					if (ImGui::TreeNode("Exploding sprite")) {
-						ImGui::InputFloat("explode timer", &es->explodeTimer);
+						//ImGui::InputFloat("explode timer", &es->explodeTimer);
+						ImGui::SliderFloat("explode timer", &es->explodeTimer, 0.0, es->explodeTime);
 						ImGui::InputFloat("explode time", &es->explodeTime);
 						ImGui::Checkbox("finished exploding", &es->finishedExploding);
 						ImGui::Checkbox("should draw", &es->shoulddraw);
@@ -280,9 +281,9 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 			}
 		}
 	}
-	//for (auto id : idsToDelete) {
-		//_Engine->DeleteEntity(id);
-	//}
+	for (auto id : idsToDelete) {
+		_Engine->DeleteEntity(id);
+	}
 }
 
 void EditorUserInterface::DoTileSetSelectWindow()

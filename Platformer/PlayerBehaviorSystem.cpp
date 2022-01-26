@@ -311,16 +311,21 @@ PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(Components& compone
 	auto& ph = components.physicses[id];
 	auto& pb = components.player_behaviors[id];
 	auto& tr = components.transforms[id];
+	auto& an = components.animations[id];
+
 	ph.collider.Collidable = false;
 	ph.velocity.x = 0;
 	if (pb.upPressed) {
 		ph.velocity.y = -pb.climbspeed;
+		an.isAnimating = true;
 	}
 	else if (pb.downPressed) {
-		ph.velocity.y = pb.climbspeed;;
+		ph.velocity.y = pb.climbspeed;
+		an.isAnimating = true;
 	}
 	else {
 		ph.velocity.y = 0;
+		an.isAnimating = false;
 	}
 	if (ph.bottomTouching && ph.velocity.y < 0) {
 		ph.collider.Collidable = true;
@@ -346,6 +351,8 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(Components& components, f
 
 void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& an = components.animations[id];
+	an.isAnimating = true;
 }
 
 PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)

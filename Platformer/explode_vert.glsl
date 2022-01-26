@@ -1,7 +1,7 @@
 #version 460 core
 
-#define QUAD_ROWS 10
-#define QUAD_COLS 10
+#define QUAD_ROWS 32
+#define QUAD_COLS 32
 #define NUM_QUADS QUAD_COLS * QUAD_ROWS
 #define TAU 6.2831853076
 

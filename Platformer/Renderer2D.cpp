@@ -7,8 +7,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/random.hpp>
 
-#define EXPLODE_QUADS_ROWS 10
-#define EXPLODE_QUADS_COLS 10
+#define EXPLODE_QUADS_ROWS 32
+#define EXPLODE_QUADS_COLS 32
 #define EXPLODE_QUADS_TOTAL EXPLODE_QUADS_ROWS*EXPLODE_QUADS_COLS
 void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, GLuint texture, const Camera2D& cam) const
 {
