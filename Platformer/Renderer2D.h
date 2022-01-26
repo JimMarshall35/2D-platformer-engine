@@ -27,19 +27,22 @@ private:
 	void setExplodeDirectionsUniform(const Shader& explodeShader) const;
 	void seedExplodeDirections();
 	void seedExplodeRotations();
+	void seedExplodeSpeeds();
 private:
 	GLuint _WireFrameSquareVAO;
 	GLuint _TextureVAO;
 	GLuint _SolidSquareVAO;
 	GLuint _ExplodeVAO;
+	GLuint uboHandle;
 	unsigned int _WindowW = 800;
 	unsigned int _WindowH = 600;
 	
 	Shader _TextureShader;
 	Shader _WireframeShader;
 	Shader _ExplodeShader;
-
+	void setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirections, const std::vector<float>& explodeRotations, const std::vector<float>& explodeSpeeds);
 	std::vector<glm::vec2> _ExplodeDirections;
 	std::vector<float> _ExplodeRotations;
+	std::vector<float> _ExplodeSpeeds;
 };
 

@@ -7,9 +7,9 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/random.hpp>
 
-#define EXPLODE_QUAD_ROWS 10
-#define EXPLODE_QUAD_COLS 10
-#define EXPLODE_QUAD_TOTAL EXPLODE_QUAD_ROWS*EXPLODE_QUAD_COLS
+#define EXPLODE_QUADS_ROWS 10
+#define EXPLODE_QUADS_COLS 10
+#define EXPLODE_QUADS_TOTAL EXPLODE_QUADS_ROWS*EXPLODE_QUADS_COLS
 void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, GLuint texture, const Camera2D& cam) const
 {
 	GLClearErrors();
@@ -67,6 +67,7 @@ void Renderer2D::DrawSolidRect(glm::vec2 pos, glm::vec2 scale, float rotation, g
 
 void Renderer2D::DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam, float time) const
 {
+	GLClearErrors();
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(pos, 0.0f));
 	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -75,14 +76,17 @@ void Renderer2D::DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rota
 	_ExplodeShader.use();
 	_ExplodeShader.setMat4("projection", cam.GetProjectionMatrix(WindowW, WindowH));
 	_ExplodeShader.setMat4("model", model);
-	setExplodeDirectionsUniform(_ExplodeShader);
+	//setExplodeDirectionsUniform(_ExplodeShader);
 	_ExplodeShader.setFloat("time", time);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboHandle);
+
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	
-	glBindVertexArray(_SolidSquareVAO);
-	glDrawArrays(GL_TRIANGLES, 0, EXPLODE_QUAD_TOTAL*6);
+	glBindVertexArray(_ExplodeVAO);
+	glDrawArrays(GL_TRIANGLES, 0, EXPLODE_QUADS_TOTAL*6);
+	GLPrintErrors();
 }
 
 void Renderer2D::Init()
@@ -144,12 +148,21 @@ void Renderer2D::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	// exploding texture
+	generateExplodeVAO();
+
+	// load shaders
 	_TextureShader.LoadFromFile("vert.glsl", "frag.glsl");
 	_WireframeShader.LoadFromFile("wireframe_vert.glsl", "wireframe_frag.glsl");
 	_ExplodeShader.LoadFromFile("explode_vert.glsl", "explode_frag.glsl");
 	GLPrintErrors("Init");
-	generateExplodeVAO();
+	
 	seedExplodeDirections();
+	seedExplodeRotations();
+	seedExplodeSpeeds();
+	setExplodeShaderUBO(_ExplodeDirections,_ExplodeRotations,_ExplodeSpeeds);
+	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
 	
 }
 
@@ -166,58 +179,58 @@ void Renderer2D::generateExplodeVAO()
 	vec2 uvTopLeft(0.0, 1.0);
 	std::vector<ExplodingVert> verts;
 	//int quad_index = 0;
-	for (int r = 0; r < EXPLODE_QUAD_ROWS; r++) {
-		for (int c = 0; c < EXPLODE_QUAD_COLS; c++) {
+	for (int r = 0; r < EXPLODE_QUADS_ROWS; r++) {
+		for (int c = 0; c < EXPLODE_QUADS_COLS; c++) {
 			// top left
 			verts.push_back(ExplodingVert{
 				posTopLeft,
 				uvTopLeft,
-				r* EXPLODE_QUAD_ROWS + c
+				r* EXPLODE_QUADS_ROWS + c
 			});
 			// top right
 			verts.push_back(ExplodingVert{
-				posTopLeft + vec2(1.0 / (float)EXPLODE_QUAD_COLS, 0),
-				uvTopLeft + vec2(1.0 / (float)EXPLODE_QUAD_COLS, 0),
-				r * EXPLODE_QUAD_ROWS + c
+				posTopLeft + vec2(1.0 / (float)EXPLODE_QUADS_COLS, 0),
+				uvTopLeft + vec2(1.0 / (float)EXPLODE_QUADS_COLS, 0),
+				r * EXPLODE_QUADS_ROWS + c
 			});
 			// bottom left
 			verts.push_back(ExplodingVert{
-				posTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUAD_ROWS),
-				uvTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUAD_ROWS),
-				r * EXPLODE_QUAD_ROWS + c
+				posTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUADS_ROWS),
+				uvTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUADS_ROWS),
+				r * EXPLODE_QUADS_ROWS + c
 			});
 			// top right
 			verts.push_back(ExplodingVert{
-				posTopLeft + vec2(1.0 / (float)EXPLODE_QUAD_COLS, 0),
-				uvTopLeft + vec2(1.0 / (float)EXPLODE_QUAD_COLS, 0),
-				r * EXPLODE_QUAD_ROWS + c
+				posTopLeft + vec2(1.0 / (float)EXPLODE_QUADS_COLS, 0),
+				uvTopLeft + vec2(1.0 / (float)EXPLODE_QUADS_COLS, 0),
+				r * EXPLODE_QUADS_ROWS + c
 			});
 			// bottom right
 			verts.push_back(ExplodingVert{
-				posTopLeft + vec2(1.0 / (float)EXPLODE_QUAD_COLS, -1.0 / (float)EXPLODE_QUAD_ROWS),
-				uvTopLeft + vec2(1.0 / (float)EXPLODE_QUAD_COLS, -1.0 / (float)EXPLODE_QUAD_ROWS),
-				r * EXPLODE_QUAD_ROWS + c
+				posTopLeft + vec2(1.0 / (float)EXPLODE_QUADS_COLS, -1.0 / (float)EXPLODE_QUADS_ROWS),
+				uvTopLeft + vec2(1.0 / (float)EXPLODE_QUADS_COLS, -1.0 / (float)EXPLODE_QUADS_ROWS),
+				r * EXPLODE_QUADS_ROWS + c
 			});
 			// bottom left
 			verts.push_back(ExplodingVert{
-				posTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUAD_ROWS),
-				uvTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUAD_ROWS),
-				r * EXPLODE_QUAD_ROWS + c
+				posTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUADS_ROWS),
+				uvTopLeft + vec2(0,-1.0 / (float)EXPLODE_QUADS_ROWS),
+				r * EXPLODE_QUADS_ROWS + c
 			});
 
-			posTopLeft.x += 1.0 / (float)EXPLODE_QUAD_COLS;
-			uvTopLeft.x += 1.0 / (float)EXPLODE_QUAD_COLS;
+			posTopLeft.x += 1.0 / (float)EXPLODE_QUADS_COLS;
+			uvTopLeft.x += 1.0 / (float)EXPLODE_QUADS_COLS;
 		}
 		posTopLeft.x = -0.5f;
 		uvTopLeft.x = 0.0f;
-		posTopLeft.y -= 1.0 / (float)EXPLODE_QUAD_ROWS;
-		uvTopLeft.y -= 1.0 / (float)EXPLODE_QUAD_ROWS;
+		posTopLeft.y -= 1.0 / (float)EXPLODE_QUADS_ROWS;
+		uvTopLeft.y -= 1.0 / (float)EXPLODE_QUADS_ROWS;
 	}
 	unsigned int explodeVBO;
 	glGenVertexArrays(1, &_ExplodeVAO);
 	glGenBuffers(1, &explodeVBO);
 
-	glBindVertexArray(_SolidSquareVAO);
+	glBindVertexArray(_ExplodeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, explodeVBO);
 
 	glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(ExplodingVert), verts.data(), GL_STATIC_DRAW);
@@ -237,26 +250,64 @@ void Renderer2D::generateExplodeVAO()
 
 void Renderer2D::setExplodeDirectionsUniform(const Shader& explodeShader) const
 {
-	for (int i = 0; i < EXPLODE_QUAD_TOTAL; i++) {
+	for (int i = 0; i < EXPLODE_QUADS_TOTAL; i++) {
 		std::string iAsString = std::to_string(i);
 		explodeShader.setVec2("directions[" + iAsString + "]", _ExplodeDirections[i]);
 
 	}
-	//std::cout << "this is my united states of whatever" << std::endl;
 }
 
 void Renderer2D::seedExplodeDirections()
 {
-	_ExplodeDirections.resize(EXPLODE_QUAD_TOTAL);
-	for (int i = 0; i < EXPLODE_QUAD_TOTAL; i++) {
+	_ExplodeDirections.resize(EXPLODE_QUADS_TOTAL);
+	for (int i = 0; i < EXPLODE_QUADS_TOTAL; i++) {
 		_ExplodeDirections[i] = glm::circularRand(1.0);
 	}
+
 }
 
 void Renderer2D::seedExplodeRotations()
 {
-	_ExplodeDirections.resize(EXPLODE_QUAD_TOTAL);
-	for (int i = 0; i < EXPLODE_QUAD_TOTAL; i++) {
-		_ExplodeDirections[i] = glm::circularRand(1.0);
+	_ExplodeRotations.resize(EXPLODE_QUADS_TOTAL);
+	for (int i = 0; i < EXPLODE_QUADS_TOTAL; i++) {
+		_ExplodeRotations[i] = 0;
 	}
+}
+#define RandomFloatBetween(min,max) ((((float) rand()) / (float) RAND_MAX)*(max-min)) + min
+void Renderer2D::seedExplodeSpeeds()
+{
+	_ExplodeSpeeds.resize(EXPLODE_QUADS_TOTAL);
+	for (int i = 0; i < EXPLODE_QUADS_TOTAL; i++) {
+		_ExplodeSpeeds[i] = RandomFloatBetween(50.0f,300.0f);
+	}
+}
+
+
+void Renderer2D::setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirections, const std::vector<float>& explodeRotations, const std::vector<float>& explodeSpeeds)
+{
+	// TODO: make a more general version, templated version of this code for setting ubo's and add it to Shader
+	GLClearErrors();
+	_ExplodeShader.use();
+	auto programHandle = _ExplodeShader.ID;
+	GLuint blockIndex = glGetUniformBlockIndex(programHandle, "ParticleAttributesBlock");
+	GLint blockSize;
+	glGetActiveUniformBlockiv(programHandle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+	GLbyte* blockBuffer = new GLbyte[blockSize];
+#define NUM_PARTICLE_ATTRIBUTES 3
+	const GLchar* names[] = { "directions", "rotations", "speeds"};
+	GLuint indices[NUM_PARTICLE_ATTRIBUTES];
+	glGetUniformIndices(programHandle, NUM_PARTICLE_ATTRIBUTES, names, indices);
+	GLint offset[4];
+	glGetActiveUniformsiv(programHandle, NUM_PARTICLE_ATTRIBUTES, indices, GL_UNIFORM_OFFSET, offset);
+	memcpy(blockBuffer + offset[0], explodeDirections.data(), explodeDirections.size()*sizeof(glm::vec2));
+	memcpy(blockBuffer + offset[1], explodeRotations.data(), explodeRotations.size() * sizeof(GLfloat));
+	memcpy(blockBuffer + offset[2], explodeSpeeds.data(), explodeSpeeds.size() * sizeof(GLfloat));
+
+
+	glGenBuffers(1, &uboHandle);
+	glBindBuffer(GL_UNIFORM_BUFFER, uboHandle);
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBuffer, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboHandle);
+	delete[] blockBuffer;
+	GLPrintErrors();
 }
