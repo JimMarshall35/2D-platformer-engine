@@ -26,7 +26,6 @@ private:
 	void generateExplodeVAO();
 	void setExplodeDirectionsUniform(const Shader& explodeShader) const;
 	void seedExplodeDirections();
-	void seedExplodeRotations();
 private:
 	GLuint _WireFrameSquareVAO;
 	GLuint _TextureVAO;
@@ -40,6 +39,5 @@ private:
 	Shader _ExplodeShader;
 
 	std::vector<glm::vec2> _ExplodeDirections;
-	std::vector<float> _ExplodeRotations;
 };
 

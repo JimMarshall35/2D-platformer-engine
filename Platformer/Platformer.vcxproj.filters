@@ -108,6 +108,15 @@
     <ClCompile Include="PhysicsSystem.cpp">
       <Filter>Source Files\systems</Filter>
     </ClCompile>
+    <ClCompile Include="CollectableSystem.cpp">
+      <Filter>Source Files\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplodingSpriteUpdateSystem.cpp">
+      <Filter>Source Files\systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorUI.h">
@@ -213,6 +222,15 @@
       <Filter>Header Files\systems</Filter>
     </ClInclude>
     <ClInclude Include="ISystem.h">
+      <Filter>Header Files\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="CollectableSystem.h">
+      <Filter>Header Files\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExplodingSpriteUpdateSystem.h">
       <Filter>Header Files\systems</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,12 +4,7 @@
 #include <iostream>
 #include "Engine.h"
 
-bool AABBCollision(const glm::vec4& bb1, const glm::vec4& bb2)
-{
-	return ((bb1[3] > bb2[1]) && (bb2[3] > bb1[1])) &&
-		((bb1[2] > bb2[0]) && (bb2[2] > bb1[0]));
-}
-
+#include "AABB.h"
 void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
 {
 	using namespace glm;
@@ -47,35 +42,40 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 			((tr.pos.x + velx) - (abs(tr.scale.x) * 0.5)) + phys.collider.MinusPixelsRight,
 			((tr.pos.y + vely) - (tr.scale.y * 0.5)) + phys.collider.MinusPixelsTop
 		);
-		vec4 myTLBR(
-			physicsTL.y,
-			physicsTL.x,
-			physicsBR.y,
-			physicsBR.x
-		);
+		
 		EntityID player1ID = _Engine->_Player1;
-		auto& player_tr = components.transforms[player1ID];
-		auto& player_ph = components.physicses[player1ID];
-		float pvelx = player_ph.velocity.x * delta_t;
-		float pvely = player_ph.velocity.y * delta_t;
-		vec2 physicsBR_p1(
-			((player_tr.pos.x + pvelx) + (abs(player_tr.scale.x) * 0.5)) - player_ph.collider.MinusPixelsRight,
-			((player_tr.pos.y + pvely) + (player_tr.scale.y * 0.5)) - player_ph.collider.MinusPixelsBottom
-		);
-		vec2 physicsTL_p1(
-			((player_tr.pos.x + pvelx) - (abs(player_tr.scale.x) * 0.5)) + player_ph.collider.MinusPixelsRight,
-			((player_tr.pos.y + pvely) - (player_tr.scale.y * 0.5)) + player_ph.collider.MinusPixelsTop
-		);
-		vec4 p1TLBR(
-			physicsTL_p1.y,
-			physicsTL_p1.x,
-			physicsBR_p1.y,
-			physicsBR_p1.x
-		);
-		auto& player_pb = components.player_behaviors[player1ID];
-		if (AABBCollision(myTLBR, p1TLBR)) {
-			player_pb.colliding_enemy = entityID;
+		if (player1ID != 0) {
+			vec4 myTLBR(
+				physicsTL.y,
+				physicsTL.x,
+				physicsBR.y,
+				physicsBR.x
+			);
+			auto& player_tr = components.transforms[player1ID];
+			auto& player_ph = components.physicses[player1ID];
+			float pvelx = player_ph.velocity.x * delta_t;
+			float pvely = player_ph.velocity.y * delta_t;
+			vec2 physicsBR_p1(
+				((player_tr.pos.x + pvelx) + (abs(player_tr.scale.x) * 0.5)) - player_ph.collider.MinusPixelsRight,
+				((player_tr.pos.y + pvely) + (player_tr.scale.y * 0.5)) - player_ph.collider.MinusPixelsBottom
+			);
+			vec2 physicsTL_p1(
+				((player_tr.pos.x + pvelx) - (abs(player_tr.scale.x) * 0.5)) + player_ph.collider.MinusPixelsRight,
+				((player_tr.pos.y + pvely) - (player_tr.scale.y * 0.5)) + player_ph.collider.MinusPixelsTop
+			);
+			vec4 p1TLBR(
+				physicsTL_p1.y,
+				physicsTL_p1.x,
+				physicsBR_p1.y,
+				physicsBR_p1.x
+			);
+			auto& player_pb = components.player_behaviors[player1ID];
+			auto& player_health = components.healths[player1ID];
+			if (AABBCollision(myTLBR, p1TLBR)) {
+				player_pb.colliding_enemy = entityID;
+			}
 		}
+		
 	}
 }
 

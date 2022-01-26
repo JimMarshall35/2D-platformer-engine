@@ -6,6 +6,7 @@ extern "C" {
 #include <lauxlib.h>
 #include <lualib.h>
 }
+#include <cstdio>
 
 #pragma region single tile
 
@@ -286,6 +287,8 @@ void EditorUserInterface::FloodFillTool::FloodFill()
 
 #pragma endregion
 
+#pragma region lua scripted tool
+
 EditorUserInterface::LuaScriptedTool::LuaScriptedTool(EditorUserInterface* ui, Engine* engine, std::string luaName, unsigned int inpt, lua_State* L)
 	:_LuaName(luaName), _L(L)
 {
@@ -293,7 +296,7 @@ EditorUserInterface::LuaScriptedTool::LuaScriptedTool(EditorUserInterface* ui, E
 	InputRequirement = inpt;
 	_UI = ui;
 }
-#include <cstdio>
+
 static void dumpstack(lua_State* L) {
 	int top = lua_gettop(L);
 	for (int i = 1; i <= top; i++) {
@@ -328,7 +331,7 @@ void EditorUserInterface::LuaScriptedTool::handleMouseButton(int button, int act
 		for (int i = 0; i < size; i++) {
 			std::cout << "before " << lua_gettop(_L) << std::endl;
 			lua_geti(_L, -1, i + 1);
-			
+
 			lua_getfield(_L, -1, "name");
 			std::string toolname = luaL_checkstring(_L, -1);
 			lua_pop(_L, 1);
@@ -345,7 +348,7 @@ void EditorUserInterface::LuaScriptedTool::handleMouseButton(int button, int act
 				lua_setfield(_L, -2, "x");
 				lua_pushnumber(_L, _UI->_LastMouseWorld.y);
 				lua_setfield(_L, -2, "y");
-				lua_pcall(_L,6,0,0);
+				lua_pcall(_L, 6, 0, 0);
 				lua_pop(_L, 1);
 			}
 			lua_pop(_L, 1);
@@ -384,7 +387,7 @@ void EditorUserInterface::LuaScriptedTool::handleKeyboard(GLFWwindow* window, in
 
 void EditorUserInterface::LuaScriptedTool::drawOverlay(const Renderer2D& renderer, const Camera2D& camera)
 {
-	
+
 }
 
 void EditorUserInterface::LuaScriptedTool::handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera)
@@ -412,3 +415,6 @@ void EditorUserInterface::LuaScriptedTool::handleMouseMove(double xpos, double y
 		lua_pop(_L, 1);
 	}
 }
+
+#pragma endregion
+

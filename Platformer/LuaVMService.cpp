@@ -31,6 +31,11 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_GetAnimations, "C_GetAnimations");
     registerFunction(l_GetTilelayers, "C_GetTilelayers");
     registerFunction(l_SetVelocity, "C_SetVelocity");
+    registerFunction(l_SetCollectableType, "C_SetCollectableType");
+    registerFunction(l_SetCollectableValInt, "C_SetCollectableValueInt");
+    registerFunction(l_SetCollectableValFloat, "C_SetCollectableValueFloat");
+    registerFunction(l_SetCollectableValString, "C_SetCollectableValueString");
+
 }
 
 
@@ -518,9 +523,9 @@ int LuaVMService::l_GetEntities(lua_State* L)
                 lua_seti(L, -2, (lua_Integer)CT_PHYSICS);
                 break;
 
-            case CT_HEALTHS:
+            case CT_HEALTH:
                 lua_newtable(L);
-                lua_seti(L, -2, (lua_Integer)CT_HEALTHS);
+                lua_seti(L, -2, (lua_Integer)CT_HEALTH);
                 break;
 
             case CT_SPRITE:
@@ -678,6 +683,97 @@ int LuaVMService::l_SetVelocity(lua_State* L)
     lua_getfield(L, 3, "y");
     vel.y = luaL_checknumber(L, -1);
     e->_Components.physicses[id].velocity = vel;
+    return 0;
+}
+
+int LuaVMService::l_SetCollectableType(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "l_SetSpriteComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isinteger(L, 2)) {
+        std::cout << "second parameter should be the entityID to change" << std::endl;
+        return 0;
+    }
+    EntityID id = lua_tointeger(L, 2);
+    CollectableType type = (CollectableType)lua_tointeger(L, 3);
+
+    e->_Components.collectables[id].type = type;
+    return 0;
+}
+
+int LuaVMService::l_SetCollectableValInt(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "l_SetSpriteComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isinteger(L, 2)) {
+        std::cout << "second parameter should be the entityID to change" << std::endl;
+        return 0;
+    }
+    EntityID id = lua_tointeger(L, 2);
+    int val = lua_tointeger(L, 3);
+
+    e->_Components.collectables[id].val_i = val;
+    return 0;
+}
+
+int LuaVMService::l_SetCollectableValFloat(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "l_SetSpriteComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isinteger(L, 2)) {
+        std::cout << "second parameter should be the entityID to change" << std::endl;
+        return 0;
+    }
+    EntityID id = lua_tointeger(L, 2);
+    float val = lua_tonumber(L, 3);
+
+    e->_Components.collectables[id].val_f = val;
+    return 0;
+}
+
+int LuaVMService::l_SetCollectableValString(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "l_SetSpriteComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isinteger(L, 2)) {
+        std::cout << "second parameter should be the entityID to change" << std::endl;
+        return 0;
+    }
+    EntityID id = lua_tointeger(L, 2);
+
+    e->_Components.collectables[id].val_str = lua_tostring(L, 3);
     return 0;
 }
 

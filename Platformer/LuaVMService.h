@@ -30,6 +30,10 @@ private:
 	static int l_GetAnimations(lua_State* L);             // lua parameters: engine*
 	static int l_GetTilelayers(lua_State* L);             // lua parameters: engine*
 	static int l_SetVelocity(lua_State* L);               // lua parameters: engine*, entityID, velocity | returns void
+	static int l_SetCollectableType(lua_State* L);        // lua parameters: engine*, entityID, type | returns void
+	static int l_SetCollectableValInt(lua_State* L);      // lua parameters: engine*, entityID, val | returns void
+	static int l_SetCollectableValFloat(lua_State* L);    // lua parameters: engine*, entityID, val | returns void
+	static int l_SetCollectableValString(lua_State* L);   // lua parameters: engine*, entityID, val | returns void
 
 #pragma endregion
 

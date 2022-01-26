@@ -1,5 +1,6 @@
-NUM_COMPONENTS = 10
+NUM_COMPONENTS = 11
 ComponentType = {
+	CT_INVALID = 0,
 	CT_TRANSFORM = 1,
 	CT_PHYSICS = 2,
 	CT_HEALTHS = 3,
@@ -9,7 +10,13 @@ ComponentType = {
 	CT_MOVINGPLATFORM = 7,
 	
 	CT_COLLECTABLE = 8,
-	CT_ENEMYBEHAVIOR = 9
+	CT_ENEMYBEHAVIOR = 9,
+	
+	CT_EXPLODINGSPRITE = 10
+}
+CollectableType = {
+	None = 0,
+	Coin = 1
 }
 EditorToolInputRequirements = {
 	None = 0,

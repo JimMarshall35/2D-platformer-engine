@@ -133,6 +133,9 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 	Animation* anim = nullptr;
 	MovingPlatform* mp = nullptr;
 	PlayerBehavior* pb = nullptr;
+	Collectable* co = nullptr;
+	ExplodingSprite* es = nullptr;
+	Health* h = nullptr;
 	
 	for (auto& [id, components] : _Engine->_Entities) {
 		
@@ -166,8 +169,11 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 						ImGui::TreePop();
 					}
 					break;
-				case CT_HEALTHS:
+				case CT_HEALTH:
+					h = &_Engine->_Components.healths[id];
 					if (ImGui::TreeNode("Healths")) {
+						ImGui::InputInt("max", &h->max);
+						ImGui::InputInt("current", &h->current);
 						ImGui::TreePop();
 					}
 					break;
@@ -179,10 +185,10 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 						if (ImGui::TreeNode("Sprite")) {
 
 							ImGui::Image((ImTextureID)sprite->texture, ImVec2(transform->scale.x, transform->scale.y));
+							ImGui::Checkbox("should draw", &sprite->shoulddraw);
 							ImGui::TreePop();
 						};
 					}
-					
 					break;
 				case CT_ANIMATION:
 					anim = &_Engine->_Components.animations[id];
@@ -219,6 +225,7 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 						ImGui::InputFloat("jump amount", &pb->JumpAmount);
 						ImGui::InputFloat("climb speed", &pb->climbspeed);
 						ImGui::InputFloat("friction", &pb->friction);
+						ImGui::InputInt("coins collected", &pb->coins_collected);
 						ImGui::TreePop();
 					}
 					break;
@@ -233,12 +240,33 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 					}
 					break;
 				case CT_COLLECTABLE:
+					co = &_Engine->_Components.collectables[id];
 					if (ImGui::TreeNode("Collectable")) {
+						ImGui::InputInt("type", (int*)&co->type);
+						switch (co->type) {
+						case CollectableType::Coin:
+							ImGui::InputInt("value", &co->val_i);
+							break;
+						}
 						ImGui::TreePop();
 					}
 					break;
 				case CT_ENEMYBEHAVIOR:
 					if (ImGui::TreeNode("EnemyBehavior")) {
+						ImGui::TreePop();
+					}
+					break;
+				case CT_EXPLODINGSPRITE:
+					es = &_Engine->_Components.exploding_sprites[id];
+					if (ImGui::TreeNode("Exploding sprite")) {
+						ImGui::InputFloat("explode timer", &es->explodeTimer);
+						ImGui::InputFloat("explode time", &es->explodeTime);
+						ImGui::Checkbox("finished exploding", &es->finishedExploding);
+						ImGui::Checkbox("should draw", &es->shoulddraw);
+						if (_Engine->_Components.transforms.find(id) != _Engine->_Components.transforms.end()) {
+							transform = &_Engine->_Components.transforms[id];
+							ImGui::Image((ImTextureID)es->texture, ImVec2(transform->scale.x, transform->scale.y));
+						}
 						ImGui::TreePop();
 					}
 					break;

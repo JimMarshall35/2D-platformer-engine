@@ -1,8 +1,10 @@
 #include "PlayerBehaviorSystem.h"
-#include "ECS.h"
+
 #include "Camera2D.h"
 #include "Tileset.h"
 #include <algorithm>
+#include <iostream>
+#include "Engine.h"
 
 #define KNOCKBACK_AMOUNTX 200.0;
 #define KNOCKBACK_AMOUNTY 1000.0;
@@ -15,28 +17,17 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 		auto& tr = components.transforms[entityID];
 		auto& an = components.animations[entityID];
 
-		PlayerState newstate;
-		if (pb.colliding_enemy != 0) {
-			auto& enemy_tr = components.transforms[pb.colliding_enemy];
-			float xdir = tr.pos.x - enemy_tr.pos.x > 0 ? 1.0 : -1.0;
-
-			pb.colliding_enemy = 0;
-			ph.velocity.x = xdir * KNOCKBACK_AMOUNTX;
-
-			newstate = KnockBack; // TODO : make knocked back state. Add a whole series of "events" like this that happen outside the normal state machine
-			                   // knocked back, powerups, died, ect.
-		}
-		else {
-			// run state machine
-			newstate = _Behaviormap[pb.state]->Update(pb, ph, tr, an, delta_t, tilelayers);
-		}
 		
-		assert(newstate > NoState && newstate <= KnockBack);
+		PlayerState newstate;
+		
+		// run state machine
+		newstate = _Behaviormap[pb.state]->Update(components,delta_t,camera,tileset,tilelayers,entityID);
+		assert(newstate > NoState && newstate <= Dead);
 		pb.laststate = pb.state;
 		pb.state = newstate;
 		if (pb.state != pb.laststate) {
-			_Behaviormap[pb.laststate]->OnExit(pb, ph, tr, an, delta_t, tilelayers);
-			_Behaviormap[pb.state]->OnEnter(pb, ph, tr, an, delta_t, tilelayers);
+			_Behaviormap[pb.laststate]->OnExit(components, delta_t, camera, tileset, tilelayers, entityID);
+			_Behaviormap[pb.state]->OnEnter(components, delta_t, camera, tileset, tilelayers, entityID);
 		}
 		// do things common to all states
 		if (pb.rightPressed) {
@@ -63,12 +54,13 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* e)
 	:ISystem(e)
 {
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Walk,      std::unique_ptr<IPlayerStateBehavior>(new WalkStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpUp,    std::unique_ptr<IPlayerStateBehavior>(new JumpUpStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpDown,  std::unique_ptr<IPlayerStateBehavior>(new JumpDownStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(JumpLand,  std::unique_ptr<IPlayerStateBehavior>(new JumpLandStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(Climb,     std::unique_ptr<IPlayerStateBehavior>(new ClimbStateBehavior())));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<IPlayerStateBehavior>>(KnockBack, std::unique_ptr<IPlayerStateBehavior>(new KnockbackStateBehavior())));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(Walk,      std::unique_ptr<PlayerStateBehaviorBase>(new WalkStateBehavior(_Engine))));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(JumpUp,    std::unique_ptr<PlayerStateBehaviorBase>(new JumpUpStateBehavior(_Engine))));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(JumpDown,  std::unique_ptr<PlayerStateBehaviorBase>(new JumpDownStateBehavior(_Engine))));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(JumpLand,  std::unique_ptr<PlayerStateBehaviorBase>(new JumpLandStateBehavior(_Engine))));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(Climb,     std::unique_ptr<PlayerStateBehaviorBase>(new ClimbStateBehavior(_Engine))));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(KnockBack, std::unique_ptr<PlayerStateBehaviorBase>(new KnockbackStateBehavior(_Engine))));
+	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>>(Dead,      std::unique_ptr<PlayerStateBehaviorBase>(new DeadStateBehavior(_Engine))));
 }
 
 bool PlayerBehaviorSystem::IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers)
@@ -124,8 +116,16 @@ bool PlayerBehaviorSystem::LadderAtCoordinates(const int x, const int y, std::ve
 	return false;
 }
 
-PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	PlayerState statefrombase = PlayerStateBehaviorBase::Update(components, delta_t, camera, tileset, tilelayers, id);
+	if (statefrombase != NoState) 
+		return statefrombase;
+
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& an = components.animations[id];
+	auto& tr = components.transforms[id];
 	if (pb.leftPressed) {
 		an.isAnimating = true;
 		ph.velocity.x += -pb.movespeed * delta_t;
@@ -159,21 +159,30 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(PlayerBehavior& pb, 
 	return Walk;
 }
 
-void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& an = components.animations[id];
 	an.animationName = "walk";
 	an.numframes = 4;
 	an.onframe = 0;
 	an.fps = 10;
 }
 
-void PlayerBehaviorSystem::WalkStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::WalkStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& an = components.animations[id];
 	an.isAnimating = true;
 }
 
-PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	PlayerState statefrombase = PlayerStateBehaviorBase::Update(components, delta_t, camera, tileset, tilelayers, id);
+	if (statefrombase != NoState)
+		return statefrombase;
+
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& tr = components.transforms[id];
 	if (pb.leftPressed) {
 		ph.velocity.x += -pb.jumpmovespeed * delta_t;
 	}
@@ -194,8 +203,12 @@ PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(PlayerBehavior& pb
 	return JumpUp;
 }
 
-void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& an = components.animations[id];
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+
 	an.isAnimating = true;
 	an.animationName = "jump_up";
 	an.numframes = 3;
@@ -209,13 +222,22 @@ void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(PlayerBehavior& pb, Phys
 	ph.velocity.y -= pb.JumpAmount;
 }
 
-void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& pb = components.player_behaviors[id];
 	pb.jumping = false;
 }
 
-PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	PlayerState statefrombase = PlayerStateBehaviorBase::Update(components, delta_t, camera, tileset, tilelayers, id);
+	if (statefrombase != NoState)
+		return statefrombase;
+
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& an = components.animations[id];
+	auto& tr = components.transforms[id];
 	if (pb.leftPressed) {
 		an.isAnimating = true;
 		ph.velocity.x += -pb.jumpmovespeed * delta_t;
@@ -235,20 +257,27 @@ PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(PlayerBehavior& 
 	return JumpDown;
 }
 
-void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& an = components.animations[id];
 	an.animationName = "jump_down";
 	an.numframes = 1;
 	an.onframe = 0;
 	an.shouldLoop = true;
 }
 
-void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
 }
 
-PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	PlayerState statefrombase = PlayerStateBehaviorBase::Update(components, delta_t, camera, tileset, tilelayers, id);
+	if (statefrombase != NoState)
+		return statefrombase;
+
+	auto& ph = components.physicses[id];
+	auto& pb = components.player_behaviors[id];
 	ph.velocity.x += ph.velocity.x > 0 ? -pb.friction : pb.friction;
 	if (pb.leftPressed || pb.rightPressed) {
 		pb.spacePressed = false;
@@ -261,19 +290,27 @@ PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(PlayerBehavior& 
 	return JumpLand;
 }
 
-void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& an = components.animations[id];
 	an.numframes = 1;
 	an.onframe = 0;
 	an.animationName = "jump_land";
 }
 
-void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
 }
 
-PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tilelayers)
+PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	PlayerState statefrombase = PlayerStateBehaviorBase::Update(components, delta_t, camera, tileset, tilelayers, id);
+	if (statefrombase != NoState)
+		return statefrombase;
+
+	auto& ph = components.physicses[id];
+	auto& pb = components.player_behaviors[id];
+	auto& tr = components.transforms[id];
 	ph.collider.Collidable = false;
 	ph.velocity.x = 0;
 	if (pb.upPressed) {
@@ -298,34 +335,116 @@ PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(PlayerBehavior& pb,
 	return Climb;
 }
 
-void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
-	
+	auto& an = components.animations[id];
 	an.animationName = "climb";
 	an.numframes = 3;
 	an.onframe = 0;
 	an.shouldLoop = true;
 }
 
-void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
 }
 
-PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	auto& pb = components.player_behaviors[id];
+	auto& sp = components.sprites[id];
+
+	pb.colliding_enemy = 0;
+	PlayerState statefrombase = PlayerStateBehaviorBase::Update(components, delta_t, camera, tileset, tilelayers, id);
+	if (statefrombase != NoState)
+		return statefrombase;
+
 	pb.knockback_timer += delta_t;
+	pb.knockback_blink_timer += delta_t;
+
+	if (pb.knockback_blink_timer >= knockback_flash_time) {
+		pb.knockback_blink_timer = 0;
+		if (sp.shoulddraw) {
+			sp.shoulddraw = false;
+		}
+		else {
+			sp.shoulddraw = true;
+		}
+	}
+
 	if (pb.knockback_timer >= knockback_time) {
 		return Walk;
 	}
 	return KnockBack;
 }
 
-void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
-	pb.knockback_timer = 0;
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& tr = components.transforms[id];
+	auto& h = components.healths[id];
 
+	auto& enemy_tr = components.transforms[pb.colliding_enemy];
+	float xdir = tr.pos.x - enemy_tr.pos.x > 0 ? 1.0 : -1.0;
+
+	pb.colliding_enemy = 0;
+	ph.velocity.x = xdir * KNOCKBACK_AMOUNTX;
+
+	components.player_behaviors[id].knockback_timer = 0;
+	components.player_behaviors[id].knockback_blink_timer = 0;
 }
 
-void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(PlayerBehavior& pb, Physics& ph, Transform& tr, Animation& an, double delta_t, std::vector<TileLayer>& tileLayers)
+void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
 {
+	components.sprites[id].shoulddraw = true;
+}
+
+PlayerState PlayerBehaviorSystem::PlayerStateBehaviorBase::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+{
+	// check state transitions that are possible from all states
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& an = components.animations[id];
+	auto& tr = components.transforms[id];
+	auto& health = components.healths[id];
+	if (health.current == 0) {
+		return Dead;
+	}
+	if (pb.colliding_enemy != 0) {
+		health.current--;
+		return KnockBack;
+	}
+	return NoState;
+}
+
+PlayerState PlayerBehaviorSystem::DeadStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+{
+	const auto& es = components.exploding_sprites[id];
+	auto& ph = components.physicses[id];
+	ph.velocity = glm::vec2(0.0, 0.0);
+	if (es.finishedExploding) {
+		return Walk;
+	}
+	return Dead;
+}
+
+void PlayerBehaviorSystem::DeadStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+{
+	const auto& sp = components.sprites[id];
+	_Engine->AddComponentToEntity<ExplodingSprite>(components.exploding_sprites, ExplodingSprite{ sp.texture },id);
+	_Engine->RemoveComponentFromEntity<Sprite>(components.sprites, id);
+}
+
+void PlayerBehaviorSystem::DeadStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+{
+	const auto& es = components.exploding_sprites[id];
+	// set colliding_enemy to zero so that player isn't knocked back when they come to life
+	auto& pb = components.player_behaviors[id];
+	pb.colliding_enemy = 0;
+	// switch exploding sprite for normal one
+	_Engine->AddComponentToEntity<Sprite>(components.sprites, Sprite{ es.texture }, id);
+	_Engine->RemoveComponentFromEntity<ExplodingSprite>(components.exploding_sprites, id);
+	//refill health
+	auto& health = components.healths[id];
+	health.current = health.max;
 }

@@ -112,6 +112,8 @@ function SetupCoin(pos)
 	C_SetSpriteComponent(C_Engine,entityID,
 		128
 	)
+	C_SetCollectableType(C_Engine, entityID, CollectableType.Coin)
+	C_SetCollectableValueInt(C_Engine, entityID, 1)
 	C_SetAnimationComponent(C_Engine,entityID,{
 		isanimating = 1,
 		name = "coin",

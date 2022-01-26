@@ -4,11 +4,21 @@
 #include <unordered_set>
 #include <set>
 #include <queue>
+#include <iostream>
 
 using EntityID = int64_t;
 
 struct Sprite {
 	unsigned int texture;
+	bool shoulddraw = true;
+};
+
+struct ExplodingSprite {
+	unsigned int texture;
+	bool shoulddraw = true;
+	float explodeTimer = 0;
+	float explodeTime = 3.0;
+	bool finishedExploding = false;
 };
 
 struct Transform{
@@ -27,8 +37,8 @@ struct MovingPlatform {
 
 struct Health
 {
-	int max;
-	int current;
+	int max = 5;
+	int current = 5;
 };
 
 struct FloorCollider {
@@ -72,7 +82,8 @@ enum PlayerState: unsigned int {
 	JumpDown,
 	JumpLand,
 	Climb,
-	KnockBack
+	KnockBack, 
+	Dead
 };
 struct PlayerBehavior {
 	bool leftPressed;
@@ -96,29 +107,46 @@ struct PlayerBehavior {
 	EntityID colliding_enemy = 0;
 
 	double knockback_timer = 0.0;
+	double knockback_blink_timer = 0.0;
+
+	int coins_collected = 0;
+};
+
+enum class CollectableType {
+	None = 0,
+	Coin = 1
 };
 
 struct Collectable {
-
+	CollectableType type;
+	union {
+		int val_i;
+		float val_f;
+		const char* val_str;
+	};
 };
 
 struct EnemyBehavior {
 
 };
-#define NUM_COMPONENTS 10
+
+#define NUM_COMPONENTS 11
 enum ComponentType : unsigned int {
 	CT_INVALID = 0,
 	CT_TRANSFORM = 1,
 	CT_PHYSICS = 2,
-	CT_HEALTHS = 3,
+	CT_HEALTH = 3,
 	CT_SPRITE = 4,
 	CT_ANIMATION = 5,
 	CT_PLAYERBEHAVIOR = 6,
 	CT_MOVINGPLATFORM = 7,
 
 	CT_COLLECTABLE = 8,
-	CT_ENEMYBEHAVIOR = 9
+	CT_ENEMYBEHAVIOR = 9,
+
+	CT_EXPLODINGSPRITE = 10
 };
+
 template <typename Type>
 using ComponentMap = std::unordered_map<EntityID, Type>;
 using Transforms = ComponentMap<Transform>;
@@ -130,6 +158,8 @@ using PlayerBehaviors = ComponentMap<PlayerBehavior>;
 using MovingPlatforms = ComponentMap<MovingPlatform>;
 using Collectables = ComponentMap<Collectable>;
 using EnemyBehaviors = ComponentMap<EnemyBehavior>;
+using ExplodingSprites = ComponentMap<ExplodingSprite>;
+
 struct Components
 {
 	Transforms transforms;
@@ -141,21 +171,64 @@ struct Components
 	MovingPlatforms moving_platforms;
 	Collectables collectables;
 	EnemyBehaviors enemy_behaviors;
+	ExplodingSprites exploding_sprites;
 };
+
 enum class EntityType {
 	Undefined,
 	Player,
 
 };
+
 struct TaggedEntity {
 	EntityID id;
 	std::vector<ComponentType> components;
 };
 
-
-
 class ECS {
 public:
+	template<typename T>
+	void AddComponentToEntity(ComponentMap<T>& componentmap, T val, EntityID id){
+		// get the corresponding enum value
+		ComponentType enum_value;
+		if (std::is_same<T, Sprite>::value) {
+			enum_value = CT_SPRITE;
+		}
+		else if (std::is_same<T, ExplodingSprite>::value) {
+			enum_value = CT_EXPLODINGSPRITE;
+		}
+		// remove from list of entities
+		std::vector<ComponentType>& v = _Entities[id];
+		if (std::find(v.begin(), v.end(), enum_value) == v.end()) {
+			v.push_back(enum_value);
+		}
+		else {
+			std::cerr << "component " << enum_value << " already present on entity "<<id << std::endl;
+			return;
+		}
+		componentmap[id] = val;
+	}
+	template<typename T>
+	void RemoveComponentFromEntity(ComponentMap<T>& componentmap, EntityID id) {
+		ComponentType enum_value;
+		if (std::is_same<T, Sprite>::value) {
+			enum_value = CT_SPRITE;
+		}
+		else if (std::is_same<T, ExplodingSprite>::value) {
+			enum_value = CT_EXPLODINGSPRITE;
+		}
+
+		std::vector<ComponentType>& v = _Entities[id];
+		auto it = std::find(v.begin(), v.end(), enum_value);
+		if (it == v.end()) {
+			std::cout << "component  " << enum_value << " not present on entity "<< id<< " so can't delete" << std::endl;
+		}
+		else {
+			v.erase(it);
+		}
+
+		componentmap.erase(id);
+	}
 	EntityID CreateEntity(std::vector<ComponentType> components);
 	bool DeleteEntity(EntityID id);
 	Components _Components;

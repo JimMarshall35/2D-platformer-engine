@@ -7,10 +7,9 @@
 #include "Camera2D.h"
 #include "ECS.h"
 #include "ISystem.h"
+
 class IEditorUserInterface;
 class ILevelSerializer;
-
-
 
 enum class EngineMode {
 	Edit,
@@ -32,9 +31,11 @@ private:
 	std::unique_ptr<ISystem> _PlayerBehaviorSystem;
 	std::unique_ptr<ISystem> _MovingPlatformSystem;
 	std::unique_ptr<ISystem> _EnemyBehaviorSystem;
+	std::unique_ptr<ISystem> _CollectableSystem;
+	std::unique_ptr<ISystem> _ExplodingSpritesSystem;
 
-	//test
 	void SpritesSystemDraw(const Camera2D& cam);
+	void ExplodingSpritesSystemDraw(const Camera2D& cam);
 	void GotoEditMode();
 public:
 	EntityID _Player1 = 0;

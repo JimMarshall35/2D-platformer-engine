@@ -252,11 +252,3 @@ void Renderer2D::seedExplodeDirections()
 		_ExplodeDirections[i] = glm::circularRand(1.0);
 	}
 }
-
-void Renderer2D::seedExplodeRotations()
-{
-	_ExplodeDirections.resize(EXPLODE_QUAD_TOTAL);
-	for (int i = 0; i < EXPLODE_QUAD_TOTAL; i++) {
-		_ExplodeDirections[i] = glm::circularRand(1.0);
-	}
-}

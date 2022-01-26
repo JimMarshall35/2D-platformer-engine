@@ -8,6 +8,8 @@
 #include "PlayerBehaviorSystem.h"
 #include "MovingPlaformSystem.h"
 #include "EnemyBehaviorSystem.h"
+#include "CollectableSystem.h"
+#include "ExplodingSpriteUpdateSystem.h"
 
 #pragma region Update
 
@@ -18,8 +20,10 @@ void Engine::Update(double delta_t)
 		_MovingPlatformSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_PlayerBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_EnemyBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
+		_CollectableSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_PhysicsSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		_AnimationSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
+		_ExplodingSpritesSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
 		break;
 	}
 }
@@ -152,7 +156,6 @@ void Engine::GotoEditMode() {
 
 #pragma endregion
 
-
 #pragma region draw sprites and background
 
 void Engine::Draw()
@@ -163,6 +166,7 @@ void Engine::Draw()
 
 		DrawBackgroundLayers(_Renderer, _EditorCam);
 		SpritesSystemDraw(_EditorCam);
+		ExplodingSpritesSystemDraw(_EditorCam);
 		_Editor->DrawEngineOverlay(_Renderer, _EditorCam);
 		_Editor->DoGui();
 
@@ -170,6 +174,8 @@ void Engine::Draw()
 	case EngineMode::Play:
 		DrawBackgroundLayers(_Renderer, _GameCam);
 		SpritesSystemDraw(_GameCam);
+		ExplodingSpritesSystemDraw(_GameCam);
+		glm::vec2 playerpos = _Components.transforms[_Player1].pos;
 		break;
 	}
 }
@@ -215,6 +221,8 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 {
 	using namespace glm;
 	for (auto& [key, value] : _Components.sprites) {
+		if (!value.shoulddraw)
+			continue;
 		Transform& transform = _Components.transforms[key];
 		vec4 cameraTLBR = cam.GetTLBR(_Renderer.WindowW, _Renderer.WindowH);
 		vec4 tileTLBR = vec4(
@@ -226,6 +234,17 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 		if (AABBCollision(cameraTLBR, tileTLBR)) {
 			_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
 		}
+	}
+}
+
+void Engine::ExplodingSpritesSystemDraw(const Camera2D& cam)
+{
+	for (auto& [key, value] : _Components.exploding_sprites) {
+		if (!value.shoulddraw)
+			continue;
+		auto& tr = _Components.transforms[key];
+		auto& es = _Components.exploding_sprites[key];
+		_Renderer.DrawExplodingTexture(tr.pos, tr.scale, tr.rot, es.texture, cam, es.explodeTimer);
 	}
 }
 
@@ -246,6 +265,8 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer)
 	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem(this));
 	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem(this));
 	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem(this));
+	_CollectableSystem = std::unique_ptr<ISystem>(new CollectableSystem(this));
+	_ExplodingSpritesSystem = std::unique_ptr<ISystem>(new ExplodingSpriteUpdateSystem(this));
 }
 
 #pragma endregion

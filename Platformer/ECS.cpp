@@ -15,7 +15,7 @@ EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 		case CT_ANIMATION:
 			_Components.animations[id] = Animation();
 			break;
-		case CT_HEALTHS:
+		case CT_HEALTH:
 			_Components.healths[id] = Health();
 			break;
 		case CT_PHYSICS:
@@ -36,6 +36,8 @@ EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 		case CT_ENEMYBEHAVIOR:
 			_Components.enemy_behaviors[id] = EnemyBehavior();
 			break;
+		case CT_EXPLODINGSPRITE:
+			_Components.exploding_sprites[id] = ExplodingSprite();
 		}
 	}
 	_Entities[id] = components;
@@ -53,7 +55,7 @@ bool ECS::DeleteEntity(EntityID id)
 		case CT_ANIMATION:
 			_Components.animations.erase(id);
 			break;
-		case CT_HEALTHS:
+		case CT_HEALTH:
 			_Components.healths.erase(id);
 			break;
 		case CT_PHYSICS:
@@ -73,6 +75,9 @@ bool ECS::DeleteEntity(EntityID id)
 			break;
 		case CT_ENEMYBEHAVIOR:
 			_Components.enemy_behaviors.erase(id);
+			break;
+		case CT_EXPLODINGSPRITE:
+			_Components.exploding_sprites.erase(id);
 			break;
 		}
 	}
@@ -114,7 +119,7 @@ std::set<EntityID> ECS::getKeys(ComponentType type, const Components& components
 	case CT_ANIMATION:
 		return convertToSet(extract_keys<EntityID, Animation>(components.animations));
 		break;
-	case CT_HEALTHS:
+	case CT_HEALTH:
 		return convertToSet(extract_keys<EntityID, Health>(components.healths));
 		break;
 	case CT_PHYSICS:
@@ -138,13 +143,15 @@ std::set<EntityID> ECS::getKeys(ComponentType type, const Components& components
 	case CT_ENEMYBEHAVIOR:
 		return convertToSet(extract_keys<EntityID, EnemyBehavior>(components.enemy_behaviors));
 		break;
+	case CT_EXPLODINGSPRITE:
+		return convertToSet(extract_keys<EntityID, ExplodingSprite>(components.exploding_sprites));
+		break;
 	}
 }
 
 std::set<EntityID> ECS::getIntersection(const std::vector<ComponentType>& componentTypes, const Components& components)
 {
 	if (componentTypes.size() == 0) return std::set<EntityID>();
-	//if(componentTypes.size() == 0) return std::unordered_set<EntityID>()
 	
 	auto ct = componentTypes[0];
 	

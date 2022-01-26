@@ -9,7 +9,6 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 	using namespace glm;
 	
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM){
-
 		// get relavent components
 		auto& phys = components.physicses[entityID];
 		const auto& collider = phys.collider;
@@ -112,7 +111,6 @@ void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& came
 			rect tile = { tileTL, platform_transform.scale, nullptr };
 			if (DynamicRectVsRect(&dynamic, delta_t, tile, cp, cn, ct)) {
 				collidedTiles.push_back({ tile, ct });
-				std::cout << "collision cn x: " << cn.x << " y: "<< cn.y << " ct: "<< ct << std::endl;
 			}
 		}
 		// sort collided tiles by contact time
