@@ -85,16 +85,25 @@ enum PlayerState: unsigned int {
 	KnockBack, 
 	Dead
 };
-struct PlayerBehavior {
-	bool leftPressed;
-	bool rightPressed;
-	bool upPressed;
-	bool downPressed;
-	bool spacePressed;
-	bool jumping;
+
+template< typename StateEnum>
+struct Behavior {
+	StateEnum state;
+	StateEnum laststate;
+};
+struct PlayerBehavior : Behavior<PlayerState>
+{
+	PlayerBehavior() {
+		state = Walk;
+		laststate = NoState;
+	}
+	bool leftPressed = false;
+	bool rightPressed = false;
+	bool upPressed = false;
+	bool downPressed = false;
+	bool spacePressed = false;
+	bool jumping = false;
 	int jumpcounter = 0;
-	PlayerState state = Walk;
-	PlayerState laststate = NoState;
 
 	float MAX_X_SPEED = 100;
 	float movespeed = 700;

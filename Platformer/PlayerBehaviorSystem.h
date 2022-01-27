@@ -3,17 +3,12 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <unordered_map>
-struct Animation;
-struct Transform;
-struct FloorCollider;
-struct Transform;
-struct PlayerBehavior;
-struct Physics;
+#include "StateMachineSystem.h"
 using EntityID = int64_t;
 
 enum PlayerState : unsigned int;
 
-class PlayerBehaviorSystem : public ISystem
+class PlayerBehaviorSystem : public StateMachineSystem<PlayerState>
 {
 public:
 	PlayerBehaviorSystem(Engine* e);
@@ -24,65 +19,55 @@ private:
 	static bool LadderAtCoordinates(const int x, const int y, std::vector<TileLayer>& tileLayers);
 	static bool IsAtLadderBottom(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers);
 
-	
-	class PlayerStateBehaviorBase {
-	public:
-		PlayerStateBehaviorBase(Engine* e){_Engine = e;}
-		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id);
-		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) = 0;
-		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) = 0;
-	protected:
-		Engine* _Engine;
-	};
 
-	class WalkStateBehavior : public PlayerStateBehaviorBase {
+	class WalkStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		WalkStateBehavior(Engine* e):PlayerStateBehaviorBase(e){}
+		WalkStateBehavior(Engine* e):StateBehaviorBase<PlayerState>(e){}
 		// Inherited via PlayerStateBehaviorBase
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 	};
 
-	class JumpUpStateBehavior : public PlayerStateBehaviorBase {
+	class JumpUpStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		JumpUpStateBehavior(Engine* e) :PlayerStateBehaviorBase(e) {}
+		JumpUpStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 	};
 
-	class JumpDownStateBehavior : public PlayerStateBehaviorBase {
+	class JumpDownStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		JumpDownStateBehavior(Engine* e) :PlayerStateBehaviorBase(e) {}
+		JumpDownStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 	};
 
-	class JumpLandStateBehavior : public PlayerStateBehaviorBase {
+	class JumpLandStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		JumpLandStateBehavior(Engine* e) :PlayerStateBehaviorBase(e) {}
+		JumpLandStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 	};
 
-	class ClimbStateBehavior : public PlayerStateBehaviorBase {
+	class ClimbStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		ClimbStateBehavior(Engine* e) :PlayerStateBehaviorBase(e) {}
+		ClimbStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 	};
 
-	class KnockbackStateBehavior : public PlayerStateBehaviorBase {
+	class KnockbackStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		KnockbackStateBehavior(Engine* e) :PlayerStateBehaviorBase(e) {}
+		KnockbackStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
@@ -92,15 +77,15 @@ private:
 		const double knockback_flash_time = 0.05;
 	};
 
-	class DeadStateBehavior : public PlayerStateBehaviorBase {
+	class DeadStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		DeadStateBehavior(Engine* e) :PlayerStateBehaviorBase(e) {}
+		DeadStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via PlayerStateBehaviorBase
 		virtual PlayerState Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
 		virtual void OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id) override;
-	};
+	};	 
 
-	std::unordered_map<PlayerState, std::unique_ptr<PlayerStateBehaviorBase>> _Behaviormap;
-	 
+	// Inherited via StateMachineSystem
+	virtual bool DoGlobalTransitions(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id, PlayerState& newstate) override;
 };

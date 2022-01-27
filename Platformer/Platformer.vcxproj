@@ -221,6 +221,7 @@
     <ClInclude Include="PlayerBehaviorSystem.h" />
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="StateMachineSystem.h" />
     <ClInclude Include="stb\stb_image.h" />
     <ClInclude Include="stb\stb_image_resize.h" />
     <ClInclude Include="Tilelayer.h" />
