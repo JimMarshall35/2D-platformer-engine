@@ -11,6 +11,7 @@
 #include "CollectableSystem.h"
 #include "ExplodingSpriteUpdateSystem.h"
 
+
 #pragma region Update
 
 void Engine::Update(double delta_t)
@@ -104,6 +105,13 @@ void Engine::KeyBoardButtonCallbackHandler(GLFWwindow* window, int key, int scan
 			if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
 				value.spacePressed = true;
 			} 
+
+			if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) {
+				value.attackPressed = true;
+			}
+			else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) {
+				value.attackPressed = false;
+			}
 		}
 		if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 			GotoEditMode();

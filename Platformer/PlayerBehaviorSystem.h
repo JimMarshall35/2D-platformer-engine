@@ -12,7 +12,7 @@ class PlayerBehaviorSystem : public StateMachineSystem<PlayerState>
 {
 public:
 	PlayerBehaviorSystem(Engine* engine);
-	void Update(float delta_t, Camera2D& camera, Engine& engine);
+	void Update(float delta_t, Camera2D& camera, Engine& engine) override;
 private:
 	
 	static bool IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers);
@@ -85,6 +85,15 @@ private:
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 	};	 
+
+	class StabStateBehavior : public StateBehaviorBase<PlayerState> {
+	public:
+		StabStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
+		// Inherited via StateBehaviorBase
+		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
+		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
+		virtual void OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
+	};
 
 	// Inherited via StateMachineSystem
 	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, PlayerState& newstate) override;

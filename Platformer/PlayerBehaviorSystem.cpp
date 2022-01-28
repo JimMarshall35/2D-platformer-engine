@@ -21,7 +21,7 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 		
 		_EntityID = entityID;
 		_CurrentBehaviorComponent = &pb;
-		StateMachineSystem::Update(delta_t, camera, engine);
+		StateMachineSystem::RunStateMachine(delta_t, camera, engine);
 		
 		// do things common to all states
 		if (pb.rightPressed) {
@@ -34,7 +34,7 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 				tr.scale.x *= -1;
 			}
 		}
-		if (pb.state != KnockBack)
+		if (pb.state != KnockBack && pb.state != Stabbing) 
 			ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
 
 		camera.FocusPosition = tr.pos;
@@ -54,6 +54,8 @@ PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
 	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior(_Engine)));
 	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior(_Engine)));
 	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior(_Engine)));
+
 }
 
 bool PlayerBehaviorSystem::IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers)
@@ -159,13 +161,14 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camer
 	}
 	if (IsStandingOnLadder(ph.collider, tr, tilelayers)) {
 		if (pb.upPressed) {
-			an.isAnimating = true;
 			return Climb;
 		}
 		if (pb.downPressed) {
-			an.isAnimating = true;
 			return Climb;
 		}
+	}
+	if (pb.attackPressed) {
+		return Stabbing;
 	}
 
 	return Walk;
@@ -179,6 +182,7 @@ void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(float delta_t, Camera2D& c
 	an.numframes = 4;
 	an.onframe = 0;
 	an.fps = 10;
+	an.shouldLoop = true;
 }
 
 void PlayerBehaviorSystem::WalkStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
@@ -211,6 +215,9 @@ PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(float delta_t, Cam
 		if (pb.upPressed) {
 			return Climb;
 		}
+	}
+	if (pb.attackPressed) {
+		return Stabbing;
 	}
 	return JumpUp;
 }
@@ -266,6 +273,9 @@ PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(float delta_t, C
 			return Climb;
 		}
 	}
+	if (pb.attackPressed) {
+		return Stabbing;
+	}
 	return JumpDown;
 }
 
@@ -281,6 +291,8 @@ void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(float delta_t, Camera2
 
 void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	
+	
 }
 
 PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
@@ -290,12 +302,14 @@ PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(float delta_t, C
 	auto& pb = components.player_behaviors[id];
 	ph.velocity.x += ph.velocity.x > 0 ? -pb.friction : pb.friction;
 	if (pb.leftPressed || pb.rightPressed) {
-		pb.spacePressed = false;
 		return Walk;
 	}
 	if (pb.spacePressed) {
 		
 		return JumpUp;
+	}
+	if (pb.attackPressed) {
+		return Stabbing;
 	}
 	return JumpLand;
 }
@@ -311,6 +325,8 @@ void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(float delta_t, Camera2
 
 void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& pb = engine._Components.player_behaviors[id];
+	
 }
 
 PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
@@ -336,14 +352,10 @@ PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(float delta_t, Came
 		ph.velocity.y = 0;
 		an.isAnimating = false;
 	}
-	if (ph.bottomTouching && ph.velocity.y < 0) {
-		ph.collider.Collidable = true;
-		pb.spacePressed = false;
+	if (!IsStandingOnLadder(ph.collider,tr,tilelayers)) {
 		return Walk;
 	}
 	if (IsAtLadderBottom(ph.collider, tr, tilelayers)) {
-		pb.spacePressed = false;
-		ph.collider.Collidable = true;
 		return Walk;
 	}
 	return Climb;
@@ -355,6 +367,7 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(float delta_t, Camera2D& 
 	auto& an = components.animations[id];
 	an.animationName = "climb";
 	an.numframes = 3;
+	
 	an.onframe = 0;
 	an.shouldLoop = true;
 }
@@ -363,7 +376,11 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(float delta_t, Camera2D& c
 {
 	auto& components = engine._Components;
 	auto& an = components.animations[id];
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
 	an.isAnimating = true;
+	pb.spacePressed = false;
+	ph.collider.Collidable = true;
 }
 
 PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
@@ -450,4 +467,41 @@ void PlayerBehaviorSystem::DeadStateBehavior::OnExit(float delta_t, Camera2D& ca
 	//refill health
 	auto& health = components.healths[id];
 	health.current = health.max;
+}
+
+PlayerState PlayerBehaviorSystem::StabStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
+{
+	auto& components = engine._Components;
+	auto& an = components.animations[id];
+	if (an.isAnimating) {
+		return Stabbing;
+	}
+	else {
+		return Walk;
+	}
+}
+
+void PlayerBehaviorSystem::StabStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
+{
+	auto& components = engine._Components;
+	auto& an = components.animations[id];
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	pb.attackPressed = false;
+	an.animationName = "stab";
+	an.numframes = 3;
+	an.onframe = 0;
+	an.shouldLoop = false;
+	an.isAnimating = true;
+	an.fps = 8;
+	ph.velocity.x = 0;
+}
+
+void PlayerBehaviorSystem::StabStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
+{
+	auto& components = engine._Components;
+	auto& sp = components.sprites[id];
+	auto& an = components.animations[id];
+	sp.texture = 138;
+	an.animationName = "walk";
 }

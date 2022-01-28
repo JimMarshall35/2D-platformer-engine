@@ -83,7 +83,8 @@ enum PlayerState: unsigned int {
 	JumpLand = 4,
 	Climb = 5,
 	KnockBack = 6, 
-	Dead = 7
+	Dead = 7,
+	Stabbing = 8
 };
 
 template< typename StateEnum>
@@ -102,6 +103,7 @@ struct PlayerBehavior : BehaviorComponent<PlayerState>
 	bool upPressed = false;
 	bool downPressed = false;
 	bool spacePressed = false;
+	bool attackPressed = false;
 	bool jumping = false;
 	int jumpcounter = 0;
 

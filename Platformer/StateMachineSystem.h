@@ -36,8 +36,8 @@ public:
 	/// <param name="newstate"> outputs a new state </param>
 	/// <returns> bool representing whether there should be a transition to a new state </returns>
 	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, PlayerState& newstate) = 0;
-
-	virtual void Update(float delta_t, Camera2D& camera, Engine& engine) override {
+	virtual void Update(float delta_t, Camera2D& camera, Engine& engine) = 0;
+	virtual void RunStateMachine(float delta_t, Camera2D& camera, Engine& engine) {
 
 		StateEnum& state = _CurrentBehaviorComponent->state;
 		StateEnum& laststate = _CurrentBehaviorComponent->laststate;
