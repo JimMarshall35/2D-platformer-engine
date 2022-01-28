@@ -5,11 +5,12 @@
 #include "Engine.h"
 
 #include "AABB.h"
-void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+void EnemyBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
 	using namespace glm;
 	const float speed = 20;
-	
+	auto& components = engine._Components;
+	auto& tilelayers = engine._TileLayers;
 	OperateOnComponentGroup(CT_ENEMYBEHAVIOR, CT_TRANSFORM, CT_PHYSICS) {
 		auto& enemy = components.enemy_behaviors[entityID];
 		auto& tr = components.transforms[entityID];
@@ -43,7 +44,7 @@ void EnemyBehaviorSystem::Update(Components& components, float delta_t, Camera2D
 			((tr.pos.y + vely) - (tr.scale.y * 0.5)) + phys.collider.MinusPixelsTop
 		);
 		
-		EntityID player1ID = _Engine->_Player1;
+		EntityID player1ID = engine._Player1;
 		if (player1ID != 0) {
 			vec4 myTLBR(
 				physicsTL.y,

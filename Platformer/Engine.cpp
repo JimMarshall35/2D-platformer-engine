@@ -17,13 +17,13 @@ void Engine::Update(double delta_t)
 {
 	switch (_CurrentMode) {
 	case EngineMode::Play:
-		_MovingPlatformSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		_PlayerBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		_EnemyBehaviorSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		_CollectableSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		_PhysicsSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		_AnimationSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
-		_ExplodingSpritesSystem->Update(_Components, delta_t, _GameCam, _Tileset, _TileLayers);
+		_MovingPlatformSystem->Update(delta_t, _GameCam, *this);
+		_PlayerBehaviorSystem->Update(delta_t, _GameCam, *this);
+		_EnemyBehaviorSystem->Update(delta_t, _GameCam, *this);
+		_CollectableSystem->Update(delta_t, _GameCam, *this);
+		_PhysicsSystem->Update(delta_t, _GameCam, *this);
+		_AnimationSystem->Update(delta_t, _GameCam, *this);
+		_ExplodingSpritesSystem->Update(delta_t, _GameCam, *this);
 		break;
 	}
 }
@@ -260,13 +260,13 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer)
 	_LevelSerializer = std::unique_ptr<ILevelSerializer>(serializer);
 	_GameCam.FocusPosition = glm::vec2(32, 0);
 	_GameCam.Zoom = 2.0f;
-	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem(this));
-	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem(this));
+	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem());
+	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
 	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem(this));
-	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem(this));
-	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem(this));
-	_CollectableSystem = std::unique_ptr<ISystem>(new CollectableSystem(this));
-	_ExplodingSpritesSystem = std::unique_ptr<ISystem>(new ExplodingSpriteUpdateSystem(this));
+	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
+	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem());
+	_CollectableSystem = std::unique_ptr<ISystem>(new CollectableSystem());
+	_ExplodingSpritesSystem = std::unique_ptr<ISystem>(new ExplodingSpriteUpdateSystem());
 }
 
 #pragma endregion

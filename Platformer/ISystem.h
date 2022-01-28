@@ -8,8 +8,5 @@ class TileSet;
 class Engine;
 class ISystem {
 public:
-	ISystem(Engine* e) { _Engine = e; };
-	virtual void Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers ) = 0;
-protected:
-	Engine* _Engine;
+	virtual void Update(float delta_t, Camera2D& camera, Engine& engine ) = 0;
 };

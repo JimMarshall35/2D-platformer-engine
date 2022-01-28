@@ -2,15 +2,17 @@
 #include "Engine.h"
 #include "AABB.h"
 
-void CollectableSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+void CollectableSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
 	using namespace glm;
+	auto& components = engine._Components;
+
 	std::vector<EntityID> todelete;
 	OperateOnComponentGroup(CT_COLLECTABLE, CT_TRANSFORM) {
 		auto& tr = components.transforms[entityID];
 		auto& co = components.collectables[entityID];
 		
-		EntityID player1ID = _Engine->_Player1;
+		EntityID player1ID = engine._Player1;
 		if (player1ID != 0) {
 			vec4 myTLBR(
 				tr.pos.y - (tr.scale.y * 0.5f),
@@ -51,12 +53,6 @@ void CollectableSystem::Update(Components& components, float delta_t, Camera2D& 
 		}
 	}
 	for (auto id : todelete) {
-		_Engine->DeleteEntity(id);
+		engine.DeleteEntity(id);
 	}
-}
-
-CollectableSystem::CollectableSystem(Engine* e)
-	:ISystem(e)
-{
-
 }

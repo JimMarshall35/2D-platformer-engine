@@ -1,9 +1,12 @@
 #include "AnimationSystem.h"
 #include "Tileset.h"
-#include "ECS.h"
+#include "Engine.h"
 
-void AnimationSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+
+void AnimationSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
+	auto& components = engine._Components;
+	auto& tileset = engine._Tileset;
 	OperateOnComponentGroup(CT_ANIMATION, CT_SPRITE) {
 		auto& val = components.animations[entityID];
 		auto& frames = tileset.AnimationsMap[val.animationName];

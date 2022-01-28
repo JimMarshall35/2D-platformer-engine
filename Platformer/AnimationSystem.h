@@ -5,7 +5,6 @@ class AnimationSystem :
     public ISystem
 {
 public:
-    AnimationSystem(Engine* e) :ISystem(e) {}
-    void Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers);
+    void Update(float delta_t, Camera2D& camera, Engine& engine);
 };
 

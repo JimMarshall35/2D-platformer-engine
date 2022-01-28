@@ -1,13 +1,14 @@
 #include "PhysicsSystem.h"
 #include "Tileset.h"
-#include "ECS.h"
+#include "Engine.h"
 #include <algorithm>
 #include <iostream>
 
-void PhysicsSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+void PhysicsSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
 	using namespace glm;
-	
+	auto& components = engine._Components;
+	auto& tilelayers = engine._TileLayers;
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM){
 		// get relavent components
 		auto& phys = components.physicses[entityID];

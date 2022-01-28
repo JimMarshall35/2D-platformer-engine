@@ -1,14 +1,14 @@
 #include "MovingPlaformSystem.h"
-#include "ECS.h"
+#include "Engine.h"
 #include "Tileset.h"
-#include "ECS.h"
 #include <algorithm>
 #include <iostream>
 #define M_PI           3.14159265358979323846  /* pi */
 
-void MovingPlaformSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+void MovingPlaformSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
 	using namespace glm;
+	auto& components = engine._Components;
 	for(auto& [entityID,val] : components.moving_platforms) {
 			/**/
 		auto& movingPlatform = components.moving_platforms[entityID];

@@ -76,22 +76,22 @@ struct Animation {
 	
 };
 enum PlayerState: unsigned int {
-	NoState,
-	Walk,
-	JumpUp,
-	JumpDown,
-	JumpLand,
-	Climb,
-	KnockBack, 
-	Dead
+	NoState = 0,
+	Walk = 1,
+	JumpUp = 2,
+	JumpDown = 3,
+	JumpLand = 4,
+	Climb = 5,
+	KnockBack = 6, 
+	Dead = 7
 };
 
 template< typename StateEnum>
-struct Behavior {
+struct BehaviorComponent {
 	StateEnum state;
-	StateEnum laststate;
+	StateEnum laststate; // must be initialized with an enum of the value 0
 };
-struct PlayerBehavior : Behavior<PlayerState>
+struct PlayerBehavior : BehaviorComponent<PlayerState>
 {
 	PlayerBehavior() {
 		state = Walk;

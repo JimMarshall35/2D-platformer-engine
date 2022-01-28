@@ -1,7 +1,9 @@
 #include "ExplodingSpriteUpdateSystem.h"
 #include "Engine.h"
-void ExplodingSpriteUpdateSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+void ExplodingSpriteUpdateSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
+	auto& components = engine._Components;
+
 	OperateOnComponentGroup(CT_EXPLODINGSPRITE) {
 		auto& es = components.exploding_sprites[entityID];
 		if (!es.finishedExploding) {
@@ -13,7 +15,3 @@ void ExplodingSpriteUpdateSystem::Update(Components& components, float delta_t, 
 	}
 }
 
-ExplodingSpriteUpdateSystem::ExplodingSpriteUpdateSystem(Engine* e)
-	:ISystem(e)
-{
-}

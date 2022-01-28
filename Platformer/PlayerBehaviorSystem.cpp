@@ -9,8 +9,9 @@
 #define KNOCKBACK_AMOUNTX 200.0;
 #define KNOCKBACK_AMOUNTY 1000.0;
 
-void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers)
+void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
+	auto& components = engine._Components;
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM, CT_PLAYERBEHAVIOR, CT_ANIMATION) {
 		auto& pb = components.player_behaviors[entityID];
 		auto& ph = components.physicses[entityID];
@@ -20,7 +21,7 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 		
 		_EntityID = entityID;
 		_CurrentBehaviorComponent = &pb;
-		StateMachineSystem::Update(components, delta_t, camera, tileset, tilelayers);
+		StateMachineSystem::Update(delta_t, camera, engine);
 		
 		// do things common to all states
 		if (pb.rightPressed) {
@@ -42,16 +43,17 @@ void PlayerBehaviorSystem::Update(Components& components, float delta_t, Camera2
 	
 }
 
-PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* e)
-	:StateMachineSystem(e)
+PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
+	:StateMachineSystem(engine)
 {
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(Walk,      std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior(_Engine))));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(JumpUp,    std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior(_Engine))));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(JumpDown,  std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior(_Engine))));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(JumpLand,  std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior(_Engine))));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(Climb,     std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior(_Engine))));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(KnockBack, std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior(_Engine))));
-	_Behaviormap.insert(std::make_pair<PlayerState, std::unique_ptr<StateBehaviorBase<PlayerState>>>(Dead,      std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior(_Engine))));
+	_Behaviormap.push_back(nullptr);
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior(_Engine)));
 }
 
 bool PlayerBehaviorSystem::IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers)
@@ -87,14 +89,15 @@ bool PlayerBehaviorSystem::IsAtLadderBottom(const FloorCollider& collider, const
 	return !LadderAtCoordinates(floor(bottomMid.x / 16.0f), floor(bottomMid.y / 16.0f), tileLayers);
 }
 
-bool PlayerBehaviorSystem::DoGlobalTransitions(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id, PlayerState& newstate)
+bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, PlayerState& newstate)
 {
+	auto& components = engine._Components;
 	// check state transitions that are possible from all states
-	auto& pb = components.player_behaviors[id];
-	auto& ph = components.physicses[id];
-	auto& an = components.animations[id];
-	auto& tr = components.transforms[id];
-	auto& health = components.healths[id];
+	auto& pb = components.player_behaviors[_EntityID];
+	auto& ph = components.physicses[_EntityID];
+	auto& an = components.animations[_EntityID];
+	auto& tr = components.transforms[_EntityID];
+	auto& health = components.healths[_EntityID];
 	if (health.current == 0 && pb.state != Dead && pb.laststate != Dead) {
 		newstate = Dead;
 		return true;
@@ -127,8 +130,10 @@ bool PlayerBehaviorSystem::LadderAtCoordinates(const int x, const int y, std::ve
 	return false;
 }
 
-PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
+	auto& tilelayers = engine._TileLayers;
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& an = components.animations[id];
@@ -166,8 +171,9 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(Components& componen
 	return Walk;
 }
 
-void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	an.animationName = "walk";
 	an.numframes = 4;
@@ -175,14 +181,17 @@ void PlayerBehaviorSystem::WalkStateBehavior::OnEnter(Components& components, fl
 	an.fps = 10;
 }
 
-void PlayerBehaviorSystem::WalkStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::WalkStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	an.isAnimating = true;
 }
 
-PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
+	auto& tilelayers = engine._TileLayers;
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& tr = components.transforms[id];
@@ -206,8 +215,9 @@ PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(Components& compon
 	return JumpUp;
 }
 
-void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
@@ -225,14 +235,17 @@ void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(Components& components, 
 	ph.velocity.y -= pb.JumpAmount;
 }
 
-void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& pb = components.player_behaviors[id];
 	pb.jumping = false;
 }
 
-PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
+	auto& tilelayers = engine._TileLayers;
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& an = components.animations[id];
@@ -256,8 +269,9 @@ PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(Components& comp
 	return JumpDown;
 }
 
-void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	an.animationName = "jump_down";
 	an.numframes = 1;
@@ -265,13 +279,13 @@ void PlayerBehaviorSystem::JumpDownStateBehavior::OnEnter(Components& components
 	an.shouldLoop = true;
 }
 
-void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 }
 
-PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
-
+	auto& components = engine._Components;
 	auto& ph = components.physicses[id];
 	auto& pb = components.player_behaviors[id];
 	ph.velocity.x += ph.velocity.x > 0 ? -pb.friction : pb.friction;
@@ -286,21 +300,23 @@ PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(Components& comp
 	return JumpLand;
 }
 
-void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	an.numframes = 1;
 	an.onframe = 0;
 	an.animationName = "jump_land";
 }
 
-void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 }
 
-PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
-
+	auto& components = engine._Components;
+	auto& tilelayers = engine._TileLayers;
 	auto& ph = components.physicses[id];
 	auto& pb = components.player_behaviors[id];
 	auto& tr = components.transforms[id];
@@ -333,8 +349,9 @@ PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(Components& compone
 	return Climb;
 }
 
-void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	an.animationName = "climb";
 	an.numframes = 3;
@@ -342,14 +359,16 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnEnter(Components& components, f
 	an.shouldLoop = true;
 }
 
-void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& an = components.animations[id];
 	an.isAnimating = true;
 }
 
-PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& pb = components.player_behaviors[id];
 	auto& sp = components.sprites[id];
 
@@ -374,8 +393,9 @@ PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(Components& com
 	return KnockBack;
 }
 
-void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& tr = components.transforms[id];
@@ -391,13 +411,15 @@ void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(Components& component
 	components.player_behaviors[id].knockback_blink_timer = 0;
 }
 
-void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	components.sprites[id].shoulddraw = true;
 }
 
-PlayerState PlayerBehaviorSystem::DeadStateBehavior::Update(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+PlayerState PlayerBehaviorSystem::DeadStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	const auto& es = components.exploding_sprites[id];
 	auto& ph = components.physicses[id];
 	ph.velocity = glm::vec2(0.0, 0.0);
@@ -407,15 +429,17 @@ PlayerState PlayerBehaviorSystem::DeadStateBehavior::Update(Components& componen
 	return Dead;
 }
 
-void PlayerBehaviorSystem::DeadStateBehavior::OnEnter(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::DeadStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	const auto& sp = components.sprites[id];
 	_Engine->AddComponentToEntity<ExplodingSprite>(components.exploding_sprites, ExplodingSprite{ sp.texture },id);
 	_Engine->RemoveComponentFromEntity<Sprite>(components.sprites, id);
 }
 
-void PlayerBehaviorSystem::DeadStateBehavior::OnExit(Components& components, float delta_t, Camera2D& camera, TileSet& tileset, std::vector<TileLayer>& tilelayers, EntityID id)
+void PlayerBehaviorSystem::DeadStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	auto& components = engine._Components;
 	const auto& es = components.exploding_sprites[id];
 	// set colliding_enemy to zero so that player isn't knocked back when they come to life
 	auto& pb = components.player_behaviors[id];
