@@ -17,13 +17,14 @@ void Engine::Update(double delta_t)
 {
 	switch (_CurrentMode) {
 	case EngineMode::Play:
-		_MovingPlatformSystem->Update(delta_t, _GameCam, *this);
-		_PlayerBehaviorSystem->Update(delta_t, _GameCam, *this);
-		_EnemyBehaviorSystem->Update(delta_t, _GameCam, *this);
-		_CollectableSystem->Update(delta_t, _GameCam, *this);
-		_PhysicsSystem->Update(delta_t, _GameCam, *this);
-		_AnimationSystem->Update(delta_t, _GameCam, *this);
-		_ExplodingSpritesSystem->Update(delta_t, _GameCam, *this);
+		Engine& e = *this;
+		_MovingPlatformSystem->Update(delta_t, _GameCam, e);
+		_PlayerBehaviorSystem->Update(delta_t, _GameCam, e);
+		_EnemyBehaviorSystem->Update(delta_t, _GameCam, e);
+		_CollectableSystem->Update(delta_t, _GameCam, e);
+		_PhysicsSystem->Update(delta_t, _GameCam, e);
+		_AnimationSystem->Update(delta_t, _GameCam, e);
+		_ExplodingSpritesSystem->Update(delta_t, _GameCam, e);
 		break;
 	}
 }
