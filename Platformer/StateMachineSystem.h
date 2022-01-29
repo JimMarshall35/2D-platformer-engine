@@ -33,7 +33,7 @@ public:
 	/// <returns> bool representing whether there should be a transition to a new state </returns>
 	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine,EntityID id, PlayerState& newstate) = 0;
 	virtual void Update(float delta_t, Camera2D& camera, Engine& engine) = 0;
-	virtual void RunStateMachine(float delta_t, Camera2D& camera, Engine& engine, BehaviorComponent<PlayerState>& bc, EntityID id) {
+	void RunStateMachine(float delta_t, Camera2D& camera, Engine& engine, BehaviorComponent<PlayerState>& bc, EntityID id) {
 
 		StateEnum& state = bc.state;
 		StateEnum& laststate = bc.laststate;
