@@ -14,11 +14,10 @@ public:
 	PlayerBehaviorSystem(Engine* engine);
 	void Update(float delta_t, Camera2D& camera, Engine& engine) override;
 private:
-	
 	static bool IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers);
 	static bool LadderAtCoordinates(const int x, const int y, std::vector<TileLayer>& tileLayers);
 	static bool IsAtLadderBottom(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers);
-
+	
 
 	class WalkStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
@@ -85,6 +84,8 @@ private:
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
+	private:
+		static void HandleEnemyHits(Physics& ph, Transform& tr, Engine& engine, float delta_t);
 	};
 
 	// Inherited via StateMachineSystem

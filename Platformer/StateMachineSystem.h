@@ -20,7 +20,6 @@ template <typename StateEnum>
 class StateMachineSystem : public ISystem
 {
 public:
-
 	/// <summary>
 	/// called from every state to check 
 	/// things that can cause a transition from any
@@ -46,7 +45,7 @@ public:
 			_Behaviormap[state]->OnEnter(delta_t, camera, engine, id);
 		}
 		
-		// run state machine to get new state
+		// call update on current state to get new state
 		StateEnum newstate;
 		newstate = _Behaviormap[state]->Update(delta_t, camera, engine, id);
 
@@ -62,7 +61,6 @@ public:
 			state = newstate;
 		}
 	}
-	
 protected:
 	std::vector<std::unique_ptr<StateBehaviorBase<StateEnum>>> _Behaviormap;
 };

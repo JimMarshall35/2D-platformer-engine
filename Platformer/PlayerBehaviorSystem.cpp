@@ -5,9 +5,12 @@
 #include <algorithm>
 #include <iostream>
 #include "Engine.h"
-
+#include "AABB.h"
 #define KNOCKBACK_AMOUNTX 200.0;
 #define KNOCKBACK_AMOUNTY 1000.0;
+
+
+#pragma region ISystem implementation
 
 void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
@@ -22,24 +25,51 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 		StateMachineSystem::RunStateMachine(delta_t, camera, engine,pb,entityID);
 		
 		// do things common to all states
-		if (pb.rightPressed) {
+		if (pb.rightPressed && pb.state != Stabbing) {
 			if (tr.scale.x < 0) {
 				tr.scale.x *= -1;
 			}
 		}
-		else if (pb.leftPressed) {
+		else if (pb.leftPressed && pb.state != Stabbing) {
 			if (tr.scale.x > 0) {
 				tr.scale.x *= -1;
 			}
 		}
-		if (pb.state != KnockBack && pb.state != Stabbing) 
+		if (pb.state != KnockBack) 
 			ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
 
 		camera.FocusPosition = tr.pos;
 	}
-	
-	
 }
+
+#pragma endregion
+
+#pragma region StateMachineSystem implementation
+
+bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, EntityID id, PlayerState& newstate)
+{
+	auto& components = engine._Components;
+	// check state transitions that are possible from all states
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& an = components.animations[id];
+	auto& tr = components.transforms[id];
+	auto& health = components.healths[id];
+	if (health.current == 0 && pb.state != Dead && pb.laststate != Dead) {
+		newstate = Dead;
+		return true;
+	}
+	if (pb.colliding_enemy != 0 && pb.state != Dead && pb.laststate != Dead && pb.state != KnockBack) {
+		health.current--;
+		newstate = KnockBack;
+		return true;
+	}
+	return false;
+}
+
+#pragma endregion
+
+#pragma region ctor
 
 PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
 {
@@ -54,6 +84,10 @@ PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
 	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior()));
 
 }
+
+#pragma endregion
+
+#pragma region ladder helpers 
 
 bool PlayerBehaviorSystem::IsStandingOnLadder(const FloorCollider& collider, const Transform& transform, std::vector<TileLayer>& tileLayers)
 {
@@ -88,27 +122,6 @@ bool PlayerBehaviorSystem::IsAtLadderBottom(const FloorCollider& collider, const
 	return !LadderAtCoordinates(floor(bottomMid.x / 16.0f), floor(bottomMid.y / 16.0f), tileLayers);
 }
 
-bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, EntityID id, PlayerState& newstate)
-{
-	auto& components = engine._Components;
-	// check state transitions that are possible from all states
-	auto& pb = components.player_behaviors[id];
-	auto& ph = components.physicses[id];
-	auto& an = components.animations[id];
-	auto& tr = components.transforms[id];
-	auto& health = components.healths[id];
-	if (health.current == 0 && pb.state != Dead && pb.laststate != Dead) {
-		newstate = Dead;
-		return true;
-	}
-	if (pb.colliding_enemy != 0 && pb.state != Dead && pb.laststate != Dead && pb.state != KnockBack) {
-		health.current--;
-		newstate = KnockBack;
-		return true;
-	}
-	return false;
-}
-
 bool PlayerBehaviorSystem::LadderAtCoordinates(const int x, const int y, std::vector<TileLayer>& tileLayers)
 {
 	// TODO : make into general helper shared among systems, that incorporates SolidTileAtCoords
@@ -128,6 +141,10 @@ bool PlayerBehaviorSystem::LadderAtCoordinates(const int x, const int y, std::ve
 	}
 	return false;
 }
+
+#pragma endregion
+
+#pragma region walk state
 
 PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
@@ -186,6 +203,10 @@ void PlayerBehaviorSystem::WalkStateBehavior::OnExit(float delta_t, Camera2D& ca
 	an.isAnimating = true;
 }
 
+#pragma endregion
+
+#pragma region jump up state
+
 PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -243,6 +264,10 @@ void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(float delta_t, Camera2D& 
 	pb.jumping = false;
 }
 
+#pragma endregion
+
+#pragma region jump down state
+
 PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -289,6 +314,10 @@ void PlayerBehaviorSystem::JumpDownStateBehavior::OnExit(float delta_t, Camera2D
 	
 }
 
+#pragma endregion
+
+#pragma region jump land state
+
 PlayerState PlayerBehaviorSystem::JumpLandStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -318,10 +347,12 @@ void PlayerBehaviorSystem::JumpLandStateBehavior::OnEnter(float delta_t, Camera2
 }
 
 void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
-{
-	auto& pb = engine._Components.player_behaviors[id];
-	
+{	
 }
+
+#pragma endregion
+
+#pragma region climb state
 
 PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
@@ -379,6 +410,10 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(float delta_t, Camera2D& c
 	//pb.downPressed = false;
 }
 
+#pragma endregion
+
+#pragma region knock back state
+
 PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -430,6 +465,10 @@ void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(float delta_t, Camera2
 	components.sprites[id].shoulddraw = true;
 }
 
+#pragma endregion
+
+#pragma region dead state
+
 PlayerState PlayerBehaviorSystem::DeadStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -465,6 +504,10 @@ void PlayerBehaviorSystem::DeadStateBehavior::OnExit(float delta_t, Camera2D& ca
 	health.current = health.max;
 }
 
+#pragma endregion
+
+#pragma region stab state
+
 PlayerState PlayerBehaviorSystem::StabStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -479,7 +522,9 @@ PlayerState PlayerBehaviorSystem::StabStateBehavior::Update(float delta_t, Camer
 
 void PlayerBehaviorSystem::StabStateBehavior::OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
+	using namespace glm;
 	auto& components = engine._Components;
+	auto& tr = components.transforms[id];
 	auto& an = components.animations[id];
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
@@ -491,6 +536,8 @@ void PlayerBehaviorSystem::StabStateBehavior::OnEnter(float delta_t, Camera2D& c
 	an.isAnimating = true;
 	an.fps = 8;
 	ph.velocity.x = 0;
+
+	HandleEnemyHits(ph, tr, engine, delta_t);
 }
 
 void PlayerBehaviorSystem::StabStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
@@ -501,3 +548,54 @@ void PlayerBehaviorSystem::StabStateBehavior::OnExit(float delta_t, Camera2D& ca
 	sp.texture = 138;
 	an.animationName = "walk";
 }
+
+void PlayerBehaviorSystem::StabStateBehavior::HandleEnemyHits(Physics& ph, Transform& tr, Engine& engine, float delta_t)
+{
+	using namespace glm;
+	auto& components = engine._Components;
+	vec2 physicsBR_p1(
+		((tr.pos.x) + (abs(tr.scale.x) * 0.5)) - ph.collider.MinusPixelsRight,
+		((tr.pos.y) + (tr.scale.y * 0.5)) - ph.collider.MinusPixelsBottom
+	);
+	vec2 physicsTL_p1(
+		((tr.pos.x) - (abs(tr.scale.x) * 0.5)) + ph.collider.MinusPixelsRight,
+		((tr.pos.y) - (tr.scale.y * 0.5)) + ph.collider.MinusPixelsTop
+	);
+	vec4 myTLBR(
+		physicsTL_p1.y,
+		physicsTL_p1.x,
+		physicsBR_p1.y,
+		physicsBR_p1.x
+	);
+	if (tr.scale.x > 0) {
+		myTLBR[3] += 8;
+	}
+	else {
+		myTLBR[1] -= 8;
+	}
+	OperateOnComponentGroup(CT_ENEMYBEHAVIOR, CT_PHYSICS, CT_TRANSFORM) {
+		auto& enemy_tr = engine._Components.transforms[entityID];
+		auto& enemy_ph = engine._Components.physicses[entityID];
+		float pvelx = enemy_ph.velocity.x * delta_t;
+		float pvely = enemy_ph.velocity.y * delta_t;
+		vec2 physicsBR_enemy(
+			((enemy_tr.pos.x + pvelx) + (abs(enemy_tr.scale.x) * 0.5)) - enemy_ph.collider.MinusPixelsRight,
+			((enemy_tr.pos.y + pvely) + (enemy_tr.scale.y * 0.5)) - enemy_ph.collider.MinusPixelsBottom
+		);
+		vec2 physicsTL_enemy(
+			((enemy_tr.pos.x + pvelx) - (abs(enemy_tr.scale.x) * 0.5)) + enemy_ph.collider.MinusPixelsRight,
+			((enemy_tr.pos.y + pvely) - (enemy_tr.scale.y * 0.5)) + enemy_ph.collider.MinusPixelsTop
+		);
+		vec4 enemyTLBR(
+			physicsTL_enemy.y,
+			physicsTL_enemy.x,
+			physicsBR_enemy.y,
+			physicsBR_enemy.x
+		);
+		if (AABBCollision(myTLBR, enemyTLBR)) {
+			engine.DeleteEntity(entityID);
+		}
+	}
+}
+
+#pragma endregion

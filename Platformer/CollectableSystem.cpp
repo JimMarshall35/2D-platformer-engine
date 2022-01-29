@@ -11,7 +11,13 @@ void CollectableSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 	OperateOnComponentGroup(CT_COLLECTABLE, CT_TRANSFORM) {
 		auto& tr = components.transforms[entityID];
 		auto& co = components.collectables[entityID];
-		
+		if (co.collected) {
+			auto& es = components.exploding_sprites[entityID];
+			if (es.finishedExploding) {
+				todelete.push_back(entityID);
+			}
+			continue;
+		}
 		EntityID player1ID = engine._Player1;
 		if (player1ID != 0) {
 			vec4 myTLBR(
@@ -40,7 +46,12 @@ void CollectableSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 			);
 			auto& player_pb = components.player_behaviors[player1ID];
 			if (AABBCollision(myTLBR, p1TLBR)) {
-				todelete.push_back(entityID);
+				//todelete.push_back(entityID);
+				co.collected = true;
+				const auto& sp = components.sprites[entityID];
+				engine.AddComponentToEntity<ExplodingSprite>(components.exploding_sprites, ExplodingSprite{ sp.texture }, entityID);
+				engine.RemoveComponentFromEntity<Sprite>(components.sprites, entityID);
+
 				switch (co.type) {
 				case CollectableType::Coin:
 					player_pb.coins_collected += co.val_i;

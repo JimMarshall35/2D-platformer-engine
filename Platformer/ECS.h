@@ -135,6 +135,7 @@ struct Collectable {
 		float val_f;
 		const char* val_str;
 	};
+	bool collected = false;
 };
 
 struct EnemyBehavior {
