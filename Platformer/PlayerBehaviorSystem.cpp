@@ -19,9 +19,7 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 		auto& an = components.animations[entityID];
 
 		
-		_EntityID = entityID;
-		_CurrentBehaviorComponent = &pb;
-		StateMachineSystem::RunStateMachine(delta_t, camera, engine);
+		StateMachineSystem::RunStateMachine(delta_t, camera, engine,pb,entityID);
 		
 		// do things common to all states
 		if (pb.rightPressed) {
@@ -44,17 +42,16 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 }
 
 PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
-	:StateMachineSystem(engine)
 {
 	_Behaviormap.push_back(nullptr);
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior(_Engine)));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior(_Engine)));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior()));
+	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior()));
 
 }
 
@@ -87,19 +84,19 @@ bool PlayerBehaviorSystem::IsAtLadderBottom(const FloorCollider& collider, const
 	auto topLeft = vec2(pos.x - width / 2.0f, pos.y - height / 2.0f);
 	auto bottomRight = vec2(pos.x + width / 2.0f, pos.y + height / 2.0f);
 	// bottom / top touching by checking the tile at points just above or below the collider
-	auto bottomMid = vec2(pos.x, pos.y + ((bottomRight.y - topLeft.y) / 2 + 1.0f));
+	auto bottomMid = vec2(pos.x, pos.y + ((bottomRight.y - topLeft.y) / 2) + 2.0f);
 	return !LadderAtCoordinates(floor(bottomMid.x / 16.0f), floor(bottomMid.y / 16.0f), tileLayers);
 }
 
-bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, PlayerState& newstate)
+bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, EntityID id, PlayerState& newstate)
 {
 	auto& components = engine._Components;
 	// check state transitions that are possible from all states
-	auto& pb = components.player_behaviors[_EntityID];
-	auto& ph = components.physicses[_EntityID];
-	auto& an = components.animations[_EntityID];
-	auto& tr = components.transforms[_EntityID];
-	auto& health = components.healths[_EntityID];
+	auto& pb = components.player_behaviors[id];
+	auto& ph = components.physicses[id];
+	auto& an = components.animations[id];
+	auto& tr = components.transforms[id];
+	auto& health = components.healths[id];
 	if (health.current == 0 && pb.state != Dead && pb.laststate != Dead) {
 		newstate = Dead;
 		return true;
@@ -160,10 +157,7 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camer
 		return JumpDown;
 	}
 	if (IsStandingOnLadder(ph.collider, tr, tilelayers)) {
-		if (pb.upPressed) {
-			return Climb;
-		}
-		if (pb.downPressed) {
+		if (pb.upPressed || pb.downPressed) {
 			return Climb;
 		}
 	}
@@ -450,8 +444,8 @@ void PlayerBehaviorSystem::DeadStateBehavior::OnEnter(float delta_t, Camera2D& c
 {
 	auto& components = engine._Components;
 	const auto& sp = components.sprites[id];
-	_Engine->AddComponentToEntity<ExplodingSprite>(components.exploding_sprites, ExplodingSprite{ sp.texture },id);
-	_Engine->RemoveComponentFromEntity<Sprite>(components.sprites, id);
+	engine.AddComponentToEntity<ExplodingSprite>(components.exploding_sprites, ExplodingSprite{ sp.texture },id);
+	engine.RemoveComponentFromEntity<Sprite>(components.sprites, id);
 }
 
 void PlayerBehaviorSystem::DeadStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
@@ -462,8 +456,8 @@ void PlayerBehaviorSystem::DeadStateBehavior::OnExit(float delta_t, Camera2D& ca
 	auto& pb = components.player_behaviors[id];
 	pb.colliding_enemy = 0;
 	// switch exploding sprite for normal one
-	_Engine->AddComponentToEntity<Sprite>(components.sprites, Sprite{ es.texture }, id);
-	_Engine->RemoveComponentFromEntity<ExplodingSprite>(components.exploding_sprites, id);
+	engine.AddComponentToEntity<Sprite>(components.sprites, Sprite{ es.texture }, id);
+	engine.RemoveComponentFromEntity<ExplodingSprite>(components.exploding_sprites, id);
 	//refill health
 	auto& health = components.healths[id];
 	health.current = health.max;

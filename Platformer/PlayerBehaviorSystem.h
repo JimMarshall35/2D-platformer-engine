@@ -22,7 +22,6 @@ private:
 
 	class WalkStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		WalkStateBehavior(Engine* e):StateBehaviorBase<PlayerState>(e){}
 		// Inherited via PlayerStateBehaviorBase
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -31,7 +30,6 @@ private:
 
 	class JumpUpStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		JumpUpStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -40,7 +38,6 @@ private:
 
 	class JumpDownStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		JumpDownStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -49,7 +46,6 @@ private:
 
 	class JumpLandStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		JumpLandStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -58,7 +54,6 @@ private:
 
 	class ClimbStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		ClimbStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -67,7 +62,6 @@ private:
 
 	class KnockbackStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		KnockbackStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via IPlayerStateBehavior
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -79,7 +73,6 @@ private:
 
 	class DeadStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		DeadStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via PlayerStateBehaviorBase
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -88,7 +81,6 @@ private:
 
 	class StabStateBehavior : public StateBehaviorBase<PlayerState> {
 	public:
-		StabStateBehavior(Engine* e) :StateBehaviorBase<PlayerState>(e) {}
 		// Inherited via StateBehaviorBase
 		virtual PlayerState Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
 		virtual void OnEnter(float delta_t, Camera2D& camera, Engine& engine, EntityID id) override;
@@ -96,5 +88,5 @@ private:
 	};
 
 	// Inherited via StateMachineSystem
-	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, PlayerState& newstate) override;
+	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, EntityID id, PlayerState& newstate) override;
 };
