@@ -31,7 +31,7 @@ MEDIUM:
 - look at a different data structure to store components in ie an array
 
 HARD:
-- lua scripting for several types of component (enemybehavior, moving platform at the very least)
+- make a state machine class derived from StateMachineSystem that can be used for lua scripted state machines
 - make collision detection and physics PERFECT
 - add particle effects system
 - IMPORTANT: add sound (will probably go with the low level library port audio)
