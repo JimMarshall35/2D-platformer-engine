@@ -157,7 +157,7 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camer
 		return JumpDown;
 	}
 	if (IsStandingOnLadder(ph.collider, tr, tilelayers)) {
-		if (pb.upPressed || pb.downPressed) {
+		if (pb.upPressed || (pb.downPressed && !IsAtLadderBottom(ph.collider,tr,tilelayers))){
 			return Climb;
 		}
 	}
@@ -375,6 +375,8 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(float delta_t, Camera2D& c
 	an.isAnimating = true;
 	pb.spacePressed = false;
 	ph.collider.Collidable = true;
+	//pb.upPressed = false;
+	//pb.downPressed = false;
 }
 
 PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
