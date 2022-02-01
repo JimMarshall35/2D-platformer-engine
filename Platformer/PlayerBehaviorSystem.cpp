@@ -9,7 +9,6 @@
 #define KNOCKBACK_AMOUNTX 200.0;
 #define KNOCKBACK_AMOUNTY 1000.0;
 
-
 #pragma region ISystem implementation
 
 void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
