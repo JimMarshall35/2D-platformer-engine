@@ -233,7 +233,7 @@
     <ClInclude Include="ExplodingSpriteUpdateSystem.h">
       <Filter>Header Files\systems</Filter>
     </ClInclude>
-    <ClInclude Include="StateMachineSystem.h">
+    <ClInclude Include="StateMachine.h">
       <Filter>Header Files\systems</Filter>
     </ClInclude>
   </ItemGroup>

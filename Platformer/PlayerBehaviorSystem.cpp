@@ -21,7 +21,7 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 		auto& an = components.animations[entityID];
 
 		
-		StateMachineSystem::RunStateMachine(delta_t, camera, engine,pb,entityID);
+		StateMachine::RunStateMachine(delta_t, camera, engine,pb,entityID);
 		
 		// TODO: MAKE THE SPRITE DIRECTION CHANGE WHEN VELOCITY CHANGES NOT ON THE DIRECTION BUTTON PRESSED
 		if (pb.rightPressed && pb.state != Stabbing) {
@@ -72,15 +72,15 @@ bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, 
 
 PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
 {
-	_Behaviormap.push_back(nullptr);
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior()));
-	_Behaviormap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior()));
+	_StatesMap.push_back(nullptr);
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior()));
 
 }
 

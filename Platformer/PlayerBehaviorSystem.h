@@ -3,12 +3,12 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <unordered_map>
-#include "StateMachineSystem.h"
+#include "StateMachine.h"
 using EntityID = int64_t;
 
 enum PlayerState : unsigned int;
 
-class PlayerBehaviorSystem : public StateMachineSystem<PlayerState>
+class PlayerBehaviorSystem : public StateMachine<PlayerState>, public ISystem
 {
 public:
 	PlayerBehaviorSystem(Engine* engine);
@@ -87,7 +87,7 @@ private:
 	private:
 		static void HandleEnemyHits(Physics& ph, Transform& tr, Engine& engine, float delta_t);
 	};
-
+protected:
 	// Inherited via StateMachineSystem
 	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, EntityID id, PlayerState& newstate) override;
 };
