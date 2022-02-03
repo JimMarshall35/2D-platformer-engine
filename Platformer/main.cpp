@@ -9,6 +9,7 @@
 #include "LuaLevelSerializer.h"
 #include "LuaVMService.h"
 #include "EditorUI.h"
+#include "Renderer2D.h"
 
 static bool wantMouseInput = false;
 static bool wantKeyboardInput = false;
@@ -51,14 +52,18 @@ int main(int argc, char* argv[])
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	glClearColor(0.5294, 0.8078, 0.9216, 1.0);
+	glClearColor(0.5294, 0.8078, 0.9216, 1.0); // sky blue
 	double last = glfwGetTime();
 	LuaVMService* vmService = new LuaVMService();
-	Engine engine(new EditorUserInterface(vmService), new LuaLevelSerializer(vmService));
+	Engine engine(
+		new EditorUserInterface(vmService), 
+		new LuaLevelSerializer(vmService), 
+		new Renderer2D()
+	);
 	engine_ptr = &engine;
+	// Note: these two lines are NOT the same one accidentally repeated!!
 	inputInit(window);
 	imguiInit(window);
-
 	
 	
 	const ImGuiIO& io = ImGui::GetIO(); (void)io;

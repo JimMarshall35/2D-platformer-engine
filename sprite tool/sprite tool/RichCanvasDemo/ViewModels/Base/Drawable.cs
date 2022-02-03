@@ -22,6 +22,14 @@ namespace RichCanvasDemo.ViewModels.Base
         private double _angle = 0;
         private bool _hasCustomBehavior;
 
+        private string _drawablename;
+
+        public string DrawableName
+		{
+            get => _drawablename;
+            set => SetProperty(ref _drawablename, value);
+		}
+
         public double Angle
         {
             get => _angle;

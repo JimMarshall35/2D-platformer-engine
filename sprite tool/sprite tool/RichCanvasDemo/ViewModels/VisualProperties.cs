@@ -6,7 +6,7 @@ namespace RichCanvasDemo.ViewModels
     public class VisualProperties : ObservableObject
     {
         // #MD ColorPicker bug when Color binded to non-colors??
-        private Color _fillColor = Colors.Red;
+        private Color _fillColor = Color.FromArgb(128,0,128,128);
         private Color _borderColor = Colors.Red;
 
         public Color FillColor

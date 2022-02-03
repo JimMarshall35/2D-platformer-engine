@@ -24,6 +24,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+			<RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <StackPanel>
@@ -98,5 +99,14 @@
                      md:HintAssist.IsFloating="True"
                      Text="{Binding Angle, Mode=TwoWay}" />
         </StackPanel>
+
+		<StackPanel Grid.Row="5"
+					Orientation="Horizontal">
+			<TextBox MinHeight="30"
+                     MinWidth="100"
+                     md:HintAssist.Hint="Name"
+                     md:HintAssist.IsFloating="True"
+                     Text="{Binding DrawableName, Mode=TwoWay}" />
+		</StackPanel>
     </Grid>
 </UserControl>

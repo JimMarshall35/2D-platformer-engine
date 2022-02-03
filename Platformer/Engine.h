@@ -3,10 +3,12 @@
 #include "Tileset.h"
 #include "Tilelayer.h"
 #include <memory>
-#include "Renderer2D.h"
+#include "IRenderer2D.h"
 #include "Camera2D.h"
 #include "ECS.h"
 #include "ISystem.h"
+
+
 
 class IEditorUserInterface;
 class ILevelSerializer;
@@ -22,7 +24,7 @@ private:
 	std::unique_ptr<IEditorUserInterface> _Editor;
 	std::unique_ptr<ILevelSerializer> _LevelSerializer;
 	EngineMode _CurrentMode = EngineMode::Edit;
-	Renderer2D _Renderer;
+	std::unique_ptr<IRenderer2D> _Renderer;
 	Camera2D _EditorCam;
 	Camera2D _GameCam;
 	
@@ -44,8 +46,8 @@ public:
 	glm::ivec2 CollidableLayerWidthAndHeight;
 	TileSet _Tileset;
 	std::vector<TileLayer> _TileLayers;
-	Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer);
-	void DrawBackgroundLayers(const Renderer2D& renderer, const Camera2D& camera);
+	Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer);
+	void DrawBackgroundLayers(const Camera2D& camera);
 	bool AABBCollision(const glm::vec4& aabb1, const glm::vec4& aabb2) const;
 	void Draw();
 	void Update(double delta_t);

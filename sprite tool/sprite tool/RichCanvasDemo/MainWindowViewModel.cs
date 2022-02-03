@@ -15,8 +15,6 @@ namespace RichCanvasDemo
 {
     public class MainWindowViewModel : ObservableObject
     {
-        private bool _enableGrid;
-        private string _gridSpacing;
         private string _elementsCount;
         private bool _enableVirtualization;
         private ICommand drawLineCommand;
@@ -26,7 +24,6 @@ namespace RichCanvasDemo
         private RelayCommand drawRectCommand;
         private RelayCommand drawBezierCommand;
         private ICommand drawEndedCommand;
-        private bool _enableSnapping;
         private bool _disableCache = true;
         private bool _disableZoom;
         private bool _disableScroll;
@@ -35,8 +32,6 @@ namespace RichCanvasDemo
         private string _autoPanTickRate = "0.9";
         private string _scrollFactor;
         private string _zoomFactor;
-        private string _maxScale;
-        private string _minScale = "0.05";
         private bool _showProperties;
         private Drawable _selectedItem;
         private ViewPresetItem _selectedViewPreset;
@@ -74,16 +69,6 @@ namespace RichCanvasDemo
         public RelayCommand PasteCommand => pasteCommand ??= new RelayCommand(Paste, () => _copiedElement != null);
         public ICommand AddViewPresetCommand => addViewPresetCommand ??= new RelayCommand(AddViewPreset);
 
-        public bool EnableGrid
-        {
-            get => _enableGrid;
-            set => SetProperty(ref _enableGrid, value);
-        }
-        public string GridSpacing
-        {
-            get => _gridSpacing;
-            set => SetProperty(ref _gridSpacing, value);
-        }
 
         public string ElementsCount
         {
@@ -95,8 +80,6 @@ namespace RichCanvasDemo
             get => _enableVirtualization;
             set => SetProperty(ref _enableVirtualization, value);
         }
-
-        public bool EnableSnapping { get => _enableSnapping; set => SetProperty(ref _enableSnapping, value); }
 
         public bool DisableCache { get => _disableCache; set => SetProperty(ref _disableCache, value); }
 
@@ -113,10 +96,6 @@ namespace RichCanvasDemo
         public string ScrollFactor { get => _scrollFactor; set => SetProperty(ref _scrollFactor, value); }
 
         public string ZoomFactor { get => _zoomFactor; set => SetProperty(ref _zoomFactor, value); }
-
-        public string MaxScale { get => _maxScale; set => SetProperty(ref _maxScale, value); }
-
-        public string MinScale { get => _minScale; set => SetProperty(ref _minScale, value); }
 
         public Drawable SelectedItem { get => _selectedItem; set => SetProperty(ref _selectedItem, value); }
 
@@ -265,7 +244,9 @@ namespace RichCanvasDemo
 
         private void Delete() => Items.Remove(SelectedItem);
 
-        private void OnDrawCommand() => Items.Add(new Rectangle());
+        private void OnDrawCommand() {
+            Items.Add(new Rectangle());
+        }
 
         private void DrawLine() => Items.Add(new Line());
 

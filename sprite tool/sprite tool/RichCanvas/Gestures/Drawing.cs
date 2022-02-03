@@ -25,6 +25,7 @@ namespace RichCanvas.Gestures
                 container.Left = position.X;
             }
             CurrentItem = container;
+            SnapToGrid();
         }
         internal void OnMouseMove(Point position)
         {
@@ -64,8 +65,10 @@ namespace RichCanvas.Gestures
         internal RichItemContainer OnMouseUp()
         {
             CurrentItem.IsDrawn = true;
-
             SetItemPosition();
+
+            CurrentItem.Width = Math.Round(CurrentItem.Width);
+            CurrentItem.Height = Math.Round(CurrentItem.Height);
 
             SnapToGrid();
 

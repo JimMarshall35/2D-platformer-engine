@@ -26,6 +26,7 @@ void CollectableSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 				tr.pos.y + (tr.scale.y * 0.5f),
 				tr.pos.x + (tr.scale.x * 0.5f)
 			);
+			// TODO: MAKE HELPERS FOR COLLISIONS
 			auto& player_tr = components.transforms[player1ID];
 			auto& player_ph = components.physicses[player1ID];
 			float pvelx = player_ph.velocity.x * delta_t;

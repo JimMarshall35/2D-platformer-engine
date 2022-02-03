@@ -81,23 +81,6 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel>
-                <CheckBox Content="Enable Grid"
-                          IsChecked="{Binding EnableGrid, Mode=TwoWay}"
-                          HorizontalAlignment="Left" />
-
-                <TextBox Text="{Binding GridSpacing, Mode=TwoWay}"
-                         Width="100"
-                         HorizontalAlignment="Left"
-                         md:HintAssist.Hint="Grid spacing value"
-                         md:HintAssist.IsFloating="True" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="1">
-                <CheckBox Content="Enable Snapping"
-                          IsChecked="{Binding EnableSnapping, Mode=TwoWay}"
-                          HorizontalAlignment="Left" />
-            </StackPanel>
 
             <StackPanel Grid.Row="2">
                 <CheckBox Content="Disable Cache"
@@ -295,11 +278,11 @@
                                      Grid.Row="1"
                                      Name="source"
                                      SelectedItems="{Binding SelectedItems}"
-                                     EnableGrid="{Binding EnableGrid}"
-                                     EnableSnapping="{Binding EnableSnapping}"
+                                     EnableGrid="True"
+                                     EnableSnapping="true"
                                      GridStyle="{StaticResource GridStyle}"
                                      Background="AliceBlue"
-                                     GridSpacing="{Binding GridSpacing, Converter={StaticResource StringToFloatConverter}}"
+                                     GridSpacing="1"
                                      Scrolling="OnScrolling"
                                      DisableCache="{Binding DisableCache}"
                                      DisableZoom="{Binding DisableZoom}"
@@ -309,8 +292,8 @@
                                      Scale="{Binding Scale, Converter={StaticResource StringToFloatConverter}, Mode=TwoWay}"
                                      ScrollFactor="{Binding ScrollFactor, Converter={StaticResource StringToFloatConverter},ConverterParameter=double}"
                                      ScaleFactor="{Binding ZoomFactor, Converter={StaticResource StringToFloatConverter},ConverterParameter=double}"
-                                     MinScale="{Binding MinScale, Converter={StaticResource StringToFloatConverter},ConverterParameter=double}"
-                                     MaxScale="{Binding MaxScale, Converter={StaticResource StringToFloatConverter},ConverterParameter=double}"
+                                     MinScale="0.05"
+                                     MaxScale="40"
                                      AutoPanSpeed="{Binding AutoPanSpeed, Converter={StaticResource StringToFloatConverter}}"
                                      AutoPanTickRate="{Binding AutoPanTickRate, Converter={StaticResource StringToFloatConverter}}"
                                      TranslateOffset="{Binding TranslateOffset, Mode=TwoWay}"
@@ -358,7 +341,7 @@
 
                 <DataTemplate x:Key="HoverAdornerTemplate">
                     <Border BorderBrush="DodgerBlue"
-                            BorderThickness="3">
+                            BorderThickness="0">
                     </Border>
                 </DataTemplate>
 
@@ -367,9 +350,10 @@
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type vm:Rectangle}">
+					
                     <Rectangle Stroke="{Binding VisualProperties.BorderColor, Converter={StaticResource ColorToSolidBrushColorConverter}}"
                                Fill="{Binding VisualProperties.FillColor, Converter={StaticResource ColorToSolidBrushColorConverter}}"
-                               StrokeThickness="3">
+                               StrokeThickness="0">
                         <Rectangle.Style>
                             <Style>
                                 <Setter Property="richCanvas:RichItemContainer.ApplyTransform">
@@ -384,7 +368,7 @@
                             </Style>
                         </Rectangle.Style>
                     </Rectangle>
-                </DataTemplate>
+				</DataTemplate>
 
                 <DataTemplate DataType="{x:Type vm:Line}">
                     <Line  Stroke="{Binding VisualProperties.BorderColor, Converter={StaticResource ColorToSolidBrushColorConverter}}"
@@ -474,7 +458,10 @@
                     <Setter Property="Scale"
                             Value="{Binding Scale, Mode=TwoWay}" />
 
-                    <Setter Property="ContextMenu">
+					<Setter Property="DrawableName"
+							Value="{Binding Name, Mode=TwoWay}"/>
+
+					<Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                 <MenuItem Header="Copy"

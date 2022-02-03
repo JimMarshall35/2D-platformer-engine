@@ -28,6 +28,14 @@ namespace RichCanvas
             set => SetValue(IsSelectedProperty, value);
         }
 
+        public static DependencyProperty DrawableNameProperty = DependencyProperty.Register(nameof(DrawableName), typeof(string), typeof(RichItemContainer), new FrameworkPropertyMetadata(OnPositionChanged));
+        public string DrawableName
+        {
+            get => (string)GetValue(NameProperty);
+            set => SetValue(NameProperty, value);
+        }
+        
+        
         public static DependencyProperty TopProperty = DependencyProperty.Register(nameof(Top), typeof(double), typeof(RichItemContainer), new FrameworkPropertyMetadata(OnPositionChanged));
         /// <summary>
         /// Gets or sets the Top position of this <see cref="RichItemContainer"/> on <see cref="RichItemsControl.ItemsHost"/>

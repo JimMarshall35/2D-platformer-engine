@@ -7,6 +7,7 @@
 #include "AABB.h"
 void EnemyBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
+	//TODO: MAKE INHERIT STATEMACHINESYSTEM
 	using namespace glm;
 	const float speed = 20;
 	auto& components = engine._Components;

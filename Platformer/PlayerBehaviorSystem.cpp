@@ -23,7 +23,7 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 		
 		StateMachineSystem::RunStateMachine(delta_t, camera, engine,pb,entityID);
 		
-		// do things common to all states
+		// TODO: MAKE THE SPRITE DIRECTION CHANGE WHEN VELOCITY CHANGES NOT ON THE DIRECTION BUTTON PRESSED
 		if (pb.rightPressed && pb.state != Stabbing) {
 			if (tr.scale.x < 0) {
 				tr.scale.x *= -1;

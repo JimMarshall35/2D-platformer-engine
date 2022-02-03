@@ -10,8 +10,10 @@ extern "C" {
 #include <lauxlib.h>
 #include <lualib.h>
 }
-
-
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 void EditorUserInterface::DeleteLastLayer()
 {
 	if (_Engine->_TileLayers.size() > 1) {
@@ -383,11 +385,11 @@ void EditorUserInterface::IncrementTilePickerScale(float amount)
 }
 
 
-void EditorUserInterface::DrawEngineOverlay(const Renderer2D& renderer, const Camera2D& camera)
+void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const Camera2D& camera)
 {
 	using namespace glm;
 	if (_SelectedTileLayer < 0) return;
-	vec4 cameraTLBR = camera.GetTLBR(renderer.WindowW, renderer.WindowH);
+	vec4 cameraTLBR = camera.GetTLBR(renderer->GetW(), renderer->GetH());
 	int skipped = 0;
 	
 	TileLayer& tl = _Engine->_TileLayers[_SelectedTileLayer];//_SelectedTileLayer == _Engine._TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
@@ -415,20 +417,20 @@ void EditorUserInterface::DrawEngineOverlay(const Renderer2D& renderer, const Ca
 			continue;
 		}
 
-		renderer.DrawWireframeRect(worldPos, vec2(tileSet.TileWidthAndHeightPx), 0.0,glm::vec4(0.0,0.0,0.0,1.0), camera);
+		renderer->DrawWireframeRect(worldPos, vec2(tileSet.TileWidthAndHeightPx), 0.0,glm::vec4(0.0,0.0,0.0,1.0), camera);
 	}
 
 	for (const auto& [key, value] : _Engine->_Components.sprites) {
 		if (_Engine->_Components.transforms.find(key) != _Engine->_Components.transforms.end()) {
 			Transform& transform = _Engine->_Components.transforms[key];
-			renderer.DrawWireframeRect(transform.pos, transform.scale, transform.rot, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), camera);
+			renderer->DrawWireframeRect(transform.pos, transform.scale, transform.rot, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), camera);
 			if (_Engine->_Components.physicses.find(key) != _Engine->_Components.physicses.end()) {
 				auto& collider = _Engine->_Components.physicses[key].collider;
 				auto width = abs(transform.scale.x) - collider.MinusPixelsLeft - collider.MinusPixelsRight;
 				auto x_offset = collider.MinusPixelsLeft / 2.0f - collider.MinusPixelsRight / 2.0f;
 				auto height = abs(transform.scale.y) - collider.MinusPixelsBottom - collider.MinusPixelsTop;
 				auto y_offset = collider.MinusPixelsTop / 2.0f - collider.MinusPixelsBottom / 2.0f;
-				renderer.DrawSolidRect(transform.pos + vec2(x_offset, y_offset), vec2(width, height), 0, vec4(0.0, 0.5, 0.5, 0.5), camera);
+				renderer->DrawSolidRect(transform.pos + vec2(x_offset, y_offset), vec2(width, height), 0, vec4(0.0, 0.5, 0.5, 0.5), camera);
 			}
 			
 		}

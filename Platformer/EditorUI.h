@@ -17,7 +17,6 @@
 struct lua_State;
 
 class EditorUserInterface;
-
 enum EditorToolInputRequirement: unsigned int {
 	None = 0,
 	CursorPositionMove = 1,
@@ -33,7 +32,7 @@ public:
 	virtual void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) = 0;
 	virtual void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) = 0;
 	virtual void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) = 0;
-	virtual void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) = 0;
+	virtual void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) = 0;
 protected:
 	Engine* _Engine;
 	EditorUserInterface* _UI;
@@ -42,7 +41,7 @@ protected:
 class Engine;
 class Tile;
 class Camera2D;
-class Renderer2D;
+class IRenderer2D;
 class LuaVMService;
 
 class EditorUserInterface : public IEditorUserInterface
@@ -57,7 +56,7 @@ private:
 		//used
 		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
 		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override;
-		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override;
+		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override;
 		//unused
 		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override {};
 	};
@@ -68,7 +67,7 @@ private:
 		// used
 		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
 		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override;
-		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override;
+		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override;
 		//unused
 		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override {};
 	private:
@@ -93,7 +92,7 @@ private:
 		//unused
 		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override {};
 		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override {};
-		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override {};
+		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override {};
 	private:
 		void FloodFill();
 	};
@@ -103,7 +102,7 @@ private:
 		LuaScriptedTool(EditorUserInterface* ui, Engine* engine, std::string luaName, unsigned int input_requirements, lua_State* L);
 		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
 		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override;
-		void drawOverlay(const Renderer2D& renderer, const Camera2D& camera) override;
+		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override;
 		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override;
 	private:
 		std::string _LuaName;
@@ -119,7 +118,7 @@ public:
 
 #pragma region IEditorUserInterface implementation
 	void DoGui();
-	void DrawEngineOverlay(const Renderer2D& renderer, const Camera2D& camera);
+	void DrawEngineOverlay(const IRenderer2D* renderer, const Camera2D& camera);
 	void cursorPositionCallbackHandler(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera);
 	void scrollCallbackHandler(GLFWwindow* window, double xoffset, double yoffset, bool imGuiWantsMouse, Camera2D& cam);
 	void mouseButtonCallbackHandler(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& cam);

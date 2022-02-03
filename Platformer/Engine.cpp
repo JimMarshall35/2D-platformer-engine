@@ -123,8 +123,8 @@ void Engine::KeyBoardButtonCallbackHandler(GLFWwindow* window, int key, int scan
 void Engine::FrameBufferSizeCallbackHandler(GLFWwindow* window, int newwidth, int newheight)
 {
 	glViewport(0, 0, newwidth, newheight);
-	_Renderer.WindowH = newheight;
-	_Renderer.WindowW = newwidth;
+	_Renderer->SetH(newheight);
+	_Renderer->SetW(newwidth);
 	switch (_CurrentMode) {
 	case EngineMode::Edit:
 		_Editor->frameBufferSizeChangeCallbackHandler(window, newwidth, newheight, _EditorCam);
@@ -173,15 +173,15 @@ void Engine::Draw()
 	switch (_CurrentMode) {
 	case EngineMode::Edit:
 
-		DrawBackgroundLayers(_Renderer, _EditorCam);
+		DrawBackgroundLayers(_EditorCam);
 		SpritesSystemDraw(_EditorCam);
 		ExplodingSpritesSystemDraw(_EditorCam);
-		_Editor->DrawEngineOverlay(_Renderer, _EditorCam);
+		_Editor->DrawEngineOverlay(_Renderer.get(), _EditorCam);
 		_Editor->DoGui();
 
 		break;
 	case EngineMode::Play:
-		DrawBackgroundLayers(_Renderer, _GameCam);
+		DrawBackgroundLayers(_GameCam);
 		SpritesSystemDraw(_GameCam);
 		ExplodingSpritesSystemDraw(_GameCam);
 		glm::vec2 playerpos = _Components.transforms[_Player1].pos;
@@ -189,11 +189,31 @@ void Engine::Draw()
 	}
 }
 
-void Engine::DrawBackgroundLayers(const Renderer2D& renderer, const Camera2D& camera)
+Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer)
+	:_Renderer(std::unique_ptr<IRenderer2D>(renderer)),
+	_LevelSerializer(std::unique_ptr<ILevelSerializer>(serializer)),
+	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI))
+{
+	_Renderer->Init();
+	_Editor->SetEngine(this);
+	_GameCam.FocusPosition = glm::vec2(32, 0);
+	_GameCam.Zoom = 2.0f;
+
+	// make systems
+	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem());
+	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
+	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem(this));
+	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
+	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem());
+	_CollectableSystem = std::unique_ptr<ISystem>(new CollectableSystem());
+	_ExplodingSpritesSystem = std::unique_ptr<ISystem>(new ExplodingSpriteUpdateSystem());
+}
+
+void Engine::DrawBackgroundLayers(const Camera2D& camera)
 {
 	using namespace glm;
 	int skipped = 0;
-	vec4 cameraTLBR = camera.GetTLBR(renderer.WindowW, renderer.WindowH);
+	vec4 cameraTLBR = camera.GetTLBR(_Renderer->GetW(), _Renderer->GetH());
 	for (const TileLayer& tl : _TileLayers) {
 		if (!tl.Visible) continue;
 		auto width = tl.GetWidth();
@@ -220,7 +240,7 @@ void Engine::DrawBackgroundLayers(const Renderer2D& renderer, const Camera2D& ca
 				continue;
 			}
 			Tile& t = _Tileset.Tiles[tileIndex - 1];
-			renderer.DrawWholeTexture(worldPos, vec2(_Tileset.TileWidthAndHeightPx), 0.0, t.Texture, camera);
+			_Renderer->DrawWholeTexture(worldPos, vec2(_Tileset.TileWidthAndHeightPx), 0.0, t.Texture, camera);
 		}
 
 	}
@@ -233,7 +253,7 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 		if (!value.shoulddraw)
 			continue;
 		Transform& transform = _Components.transforms[key];
-		vec4 cameraTLBR = cam.GetTLBR(_Renderer.WindowW, _Renderer.WindowH);
+		vec4 cameraTLBR = cam.GetTLBR(_Renderer->GetW(), _Renderer->GetH());
 		vec4 tileTLBR = vec4(
 			transform.pos.y - abs(transform.scale.y) * 0.5f,
 			transform.pos.x - abs(transform.scale.x) * 0.5f,
@@ -241,7 +261,7 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 			transform.pos.x + abs(transform.scale.x) * 0.5f
 		);
 		if (AABBCollision(cameraTLBR, tileTLBR)) {
-			_Renderer.DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
+			_Renderer->DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
 		}
 	}
 }
@@ -253,7 +273,7 @@ void Engine::ExplodingSpritesSystemDraw(const Camera2D& cam)
 			continue;
 		auto& tr = _Components.transforms[key];
 		auto& es = _Components.exploding_sprites[key];
-		_Renderer.DrawExplodingTexture(tr.pos, tr.scale, tr.rot, es.texture, cam, es.explodeTimer);
+		_Renderer->DrawExplodingTexture(tr.pos, tr.scale, tr.rot, es.texture, cam, es.explodeTimer);
 	}
 }
 
@@ -261,22 +281,7 @@ void Engine::ExplodingSpritesSystemDraw(const Camera2D& cam)
 
 #pragma region ctor
 
-Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer)
-{
-	_Renderer.Init();
-	_Editor = std::unique_ptr<IEditorUserInterface>(editorUI);
-	_Editor->SetEngine(this);
-	_LevelSerializer = std::unique_ptr<ILevelSerializer>(serializer);
-	_GameCam.FocusPosition = glm::vec2(32, 0);
-	_GameCam.Zoom = 2.0f;
-	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem());
-	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
-	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem(this));
-	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
-	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem());
-	_CollectableSystem = std::unique_ptr<ISystem>(new CollectableSystem());
-	_ExplodingSpritesSystem = std::unique_ptr<ISystem>(new ExplodingSpriteUpdateSystem());
-}
+
 
 #pragma endregion
 

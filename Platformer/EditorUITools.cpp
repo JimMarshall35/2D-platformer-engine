@@ -44,7 +44,7 @@ void EditorUserInterface::DrawSingleTileTool::handleMouseMove(double xpos, doubl
 	}
 }
 
-void EditorUserInterface::DrawSingleTileTool::drawOverlay(const Renderer2D& renderer, const Camera2D& camera)
+void EditorUserInterface::DrawSingleTileTool::drawOverlay(const IRenderer2D* renderer, const Camera2D& camera)
 {
 	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];//_SelectedTileLayer == _Engine._TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
 	auto width = tl.GetWidth();
@@ -56,7 +56,7 @@ void EditorUserInterface::DrawSingleTileTool::drawOverlay(const Renderer2D& rend
 	worldPos.y = (float)yCoord;
 	worldPos *= glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx);
 	worldPos += glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx) * 0.5f;
-	renderer.DrawWireframeRect(worldPos, glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
+	renderer->DrawWireframeRect(worldPos, glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
 }
 
 #pragma endregion
@@ -103,7 +103,7 @@ void EditorUserInterface::SelectTool::handleKeyboard(GLFWwindow* window, int key
 
 }
 
-void EditorUserInterface::SelectTool::drawOverlay(const Renderer2D& renderer, const Camera2D& camera)
+void EditorUserInterface::SelectTool::drawOverlay(const IRenderer2D* renderer, const Camera2D& camera)
 {
 	glm::vec2 worldPos;
 	TileSet& tileSet = _Engine->_Tileset;
@@ -114,7 +114,7 @@ void EditorUserInterface::SelectTool::drawOverlay(const Renderer2D& renderer, co
 		glm::vec2 scale;
 		scale.x = _UI->_LeftMouseDragStart.x - _UI->_LastMouseWorld.x;
 		scale.y = _UI->_LeftMouseDragStart.y - _UI->_LastMouseWorld.y;
-		renderer.DrawWireframeRect(_UI->_LeftMouseDragStart + scale * -0.5f, scale, 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
+		renderer->DrawWireframeRect(_UI->_LeftMouseDragStart + scale * -0.5f, scale, 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
 	}
 	for (unsigned int tile : _SelectedTiles) {
 		auto xCoord = tile % width;
@@ -123,7 +123,7 @@ void EditorUserInterface::SelectTool::drawOverlay(const Renderer2D& renderer, co
 		worldPos.y = (float)yCoord;
 		worldPos *= glm::vec2(tileSet.TileWidthAndHeightPx);
 		worldPos += glm::vec2(tileSet.TileWidthAndHeightPx) * 0.5f;
-		renderer.DrawSolidRect(worldPos, glm::vec2(tileSet.TileWidthAndHeightPx), 0, glm::vec4(0.0f, 0.5f, 0.5f, 0.4f), camera);
+		renderer->DrawSolidRect(worldPos, glm::vec2(tileSet.TileWidthAndHeightPx), 0, glm::vec4(0.0f, 0.5f, 0.5f, 0.4f), camera);
 	}
 }
 
@@ -385,7 +385,7 @@ void EditorUserInterface::LuaScriptedTool::handleKeyboard(GLFWwindow* window, in
 	}
 }
 
-void EditorUserInterface::LuaScriptedTool::drawOverlay(const Renderer2D& renderer, const Camera2D& camera)
+void EditorUserInterface::LuaScriptedTool::drawOverlay(const IRenderer2D* renderer, const Camera2D& camera)
 {
 
 }

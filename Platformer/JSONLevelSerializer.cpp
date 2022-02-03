@@ -2,6 +2,10 @@
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
 #include "rapidjson/prettywriter.h" // for stringify JSON
 #include "Engine.h"
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 {
