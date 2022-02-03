@@ -200,13 +200,13 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRe
 	_GameCam.Zoom = 2.0f;
 
 	// make systems
-	_AnimationSystem = std::unique_ptr<ISystem>(new AnimationSystem());
-	_PhysicsSystem = std::unique_ptr<ISystem>(new PhysicsSystem());
-	_PlayerBehaviorSystem = std::unique_ptr<ISystem>(new PlayerBehaviorSystem(this));
-	_MovingPlatformSystem = std::unique_ptr<ISystem>(new MovingPlaformSystem());
-	_EnemyBehaviorSystem = std::unique_ptr<ISystem>(new EnemyBehaviorSystem());
-	_CollectableSystem = std::unique_ptr<ISystem>(new CollectableSystem());
-	_ExplodingSpritesSystem = std::unique_ptr<ISystem>(new ExplodingSpriteUpdateSystem());
+	_AnimationSystem = std::make_unique<AnimationSystem>();
+	_PhysicsSystem = std::make_unique<PhysicsSystem>();
+	_PlayerBehaviorSystem = std::make_unique<PlayerBehaviorSystem>(this);
+	_MovingPlatformSystem = std::make_unique<MovingPlaformSystem>();
+	_EnemyBehaviorSystem = std::make_unique<EnemyBehaviorSystem>();
+	_CollectableSystem = std::make_unique<CollectableSystem>();
+	_ExplodingSpritesSystem = std::make_unique<ExplodingSpriteUpdateSystem>();
 }
 
 void Engine::DrawBackgroundLayers(const Camera2D& camera)
@@ -242,7 +242,6 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 			Tile& t = _Tileset.Tiles[tileIndex - 1];
 			_Renderer->DrawWholeTexture(worldPos, vec2(_Tileset.TileWidthAndHeightPx), 0.0, t.Texture, camera);
 		}
-
 	}
 }
 
