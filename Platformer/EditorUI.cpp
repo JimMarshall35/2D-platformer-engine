@@ -14,6 +14,8 @@ extern "C" {
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "IRenderer2D.h"
+
 void EditorUserInterface::DeleteLastLayer()
 {
 	if (_Engine->_TileLayers.size() > 1) {

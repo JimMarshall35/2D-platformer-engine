@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "Renderer2D.h"
 #include "ILevelSerializer.h"
 #include "IEditorUI.h"
 #include <algorithm>
@@ -10,6 +9,7 @@
 #include "EnemyBehaviorSystem.h"
 #include "CollectableSystem.h"
 #include "ExplodingSpriteUpdateSystem.h"
+#include "IRenderer2D.h"
 
 
 #pragma region Update

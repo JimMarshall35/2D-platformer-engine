@@ -3,13 +3,12 @@
 #include "Tileset.h"
 #include "Tilelayer.h"
 #include <memory>
-#include "IRenderer2D.h"
 #include "Camera2D.h"
 #include "ECS.h"
 #include "ISystem.h"
 
 
-
+class IRenderer2D;
 class IEditorUserInterface;
 class ILevelSerializer;
 

@@ -7,6 +7,7 @@ extern "C" {
 #include <lualib.h>
 }
 #include <cstdio>
+#include "IRenderer2D.h"
 
 #pragma region single tile
 
