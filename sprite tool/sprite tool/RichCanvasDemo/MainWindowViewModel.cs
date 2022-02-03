@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Linq;
 
 namespace RichCanvasDemo
 {
@@ -51,7 +52,8 @@ namespace RichCanvasDemo
         private RelayCommand drawGroupCommand;
 
         public ICommand DrawEndedCommand => drawEndedCommand ??= new RelayCommand<RoutedEventArgs>(DrawEnded);
-        public ObservableCollection<Drawable> Items { get; }
+        private ObservableCollection<Drawable> _items;
+        public ObservableCollection<Drawable> Items { get => _items; }
         public ObservableCollection<Drawable> SelectedItems { get; }
         public ObservableCollection<ViewPresetItem> ViewPresetItems { get; }
         public ICommand DrawRectCommand => drawRectCommand ??= new RelayCommand(OnDrawCommand);
@@ -129,13 +131,19 @@ namespace RichCanvasDemo
 
         public MainWindowViewModel()
         {
-            Items = new ObservableCollection<Drawable>();
+            _items = new ObservableCollection<Drawable>();
             SelectedItems = new ObservableCollection<Drawable>();
             ViewPresetItems = new ObservableCollection<ViewPresetItem>();
             SelectedItems.CollectionChanged += SelectedItemsChanged;
             _fileService = new FileService();
             _dialogService = new DialogService();
             Items.CollectionChanged += ItemsChanged;
+            Drawable.PropertiesChanged += OnDrawableChanged;
+        }
+
+        private void OnDrawableChanged()
+		{
+            OnPropertyChanged("Items");
         }
 
         private void ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -153,6 +161,7 @@ namespace RichCanvasDemo
                     ShowProperties = false;
                 }
             }
+            OnPropertyChanged("Items");
         }
 
         private void Paste()
@@ -164,7 +173,8 @@ namespace RichCanvasDemo
 
         private void Copy(Drawable element)
         {
-            if (element is ICloneable cloneableElement)
+
+            if (_selectedItem is ICloneable cloneableElement)
             {
                 _copiedElement = (Drawable)cloneableElement.Clone();
             }
@@ -269,8 +279,14 @@ namespace RichCanvasDemo
 
         private void AddImage()
         {
+            if (Items.Where(item => (item is ImageVisual)).Count() > 0)
+			{
+                MessageBox.Show("image already open - you're only allowed one");
+                return;
+            }
+                
             _fileService.OpenFileDialog(out string selectedImagePath);
-            var bmp = new BitmapImage(new Uri(selectedImagePath));
+            var bmp = new BitmapImage(new Uri(selectedImagePath)); // just to get w and h
             var image = new ImageVisual
             {
                 Top = 0,
@@ -281,7 +297,7 @@ namespace RichCanvasDemo
                 Width = bmp.PixelWidth,
                 Height = bmp.PixelHeight,
             };
-            Items.Add(image);
+            Items.Insert(0,image);
         }
 
         private void AddText()
@@ -295,6 +311,7 @@ namespace RichCanvasDemo
             };
             _dialogService.OpenDialog<EditText>(text);
             Items.Add(text);
+            
         }
 
 

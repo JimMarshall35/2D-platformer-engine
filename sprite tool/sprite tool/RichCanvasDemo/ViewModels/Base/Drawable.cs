@@ -2,11 +2,16 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Numerics;
 
 namespace RichCanvasDemo.ViewModels.Base
 {
+
     public abstract class Drawable : ObservableObject
     {
+        public delegate void DrawablePropertyChangedHandler();
+
+        public static event DrawablePropertyChangedHandler PropertiesChanged;
         private double _top;
         private double _left;
         private bool _isSelected;
@@ -27,7 +32,11 @@ namespace RichCanvasDemo.ViewModels.Base
         public string DrawableName
 		{
             get => _drawablename;
-            set => SetProperty(ref _drawablename, value);
+            set
+            {
+                SetProperty(ref _drawablename, value);
+                PropertiesChanged();
+            }
 		}
 
         public double Angle
@@ -39,13 +48,21 @@ namespace RichCanvasDemo.ViewModels.Base
         public double Top
         {
             get => _top;
-            set => SetProperty(ref _top, value);
+            set
+            {
+                SetProperty(ref _top, value);
+                PropertiesChanged();
+            }
         }
 
         public double Left
         {
             get => _left;
-            set => SetProperty(ref _left, value);
+            set
+            {
+                SetProperty(ref _left, value);
+                PropertiesChanged();
+            }
         }
 
         public bool IsSelected
@@ -65,6 +82,7 @@ namespace RichCanvasDemo.ViewModels.Base
             {
                 SetProperty(ref _width, value);
                 OnWidthUpdated();
+                PropertiesChanged();
             }
         }
 
@@ -75,6 +93,7 @@ namespace RichCanvasDemo.ViewModels.Base
             {
                 SetProperty(ref _height, value);
                 OnHeightUpdated();
+                PropertiesChanged();
             }
         }
 

@@ -31,7 +31,8 @@
         <local:PointToStringConverter x:Key="PointToStringConverter" />
         <converters:StringToFloatConverter x:Key="StringToFloatConverter" />
         <converters:CommandToListConverter x:Key="CommandsToListConverter" />
-        <GeometryDrawing x:Key="GridStyle"
+		<converters:DrawableListToStringConverter x:Key="DrawableListToStringConverter"/>
+		<GeometryDrawing x:Key="GridStyle"
                          Geometry="M0,0 L0,1 0.03,1 0.03,0.03 1,0.03 1,0 Z"
                          Brush="Green"/>
         <converters:ListToPointCollectionConverter x:Key="ListToPointCollectionConverter" />
@@ -79,7 +80,9 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="auto" />
+			</Grid.RowDefinitions>
 
 
             <StackPanel Grid.Row="2">
@@ -167,7 +170,15 @@
                           md:HintAssist.IsFloating="True">
                 </ComboBox>
             </StackPanel>
-        </Grid>
+			<StackPanel Grid.Row="9">
+				<TextBox Text="{Binding Path = Items, Converter= {StaticResource DrawableListToStringConverter}, Mode=OneWay}"
+						 Background="Transparent"
+                         BorderThickness="0"
+						 IsReadOnly="True"
+                         TextWrapping="Wrap" />
+			</StackPanel>
+			
+		</Grid>
 
         <!--ACTIONS-->
         <Grid Grid.Column="2"
