@@ -68,10 +68,10 @@ namespace RichCanvasDemo
         public ICommand AddTextCommand => addTextCommand ??= new RelayCommand(AddText);
         public ICommand AddImageCommand => addImageCommand ??= new RelayCommand(AddImage);
         public ICommand CopyCommand => copyCommand ??= new RelayCommand<Drawable>(Copy);
-        public RelayCommand PasteCommand => pasteCommand ??= new RelayCommand(Paste, () => _copiedElement != null);
+        public RelayCommand PasteCommand => pasteCommand ??= new RelayCommand(Paste, () => _copiedItems.Count > 0);
         public ICommand AddViewPresetCommand => addViewPresetCommand ??= new RelayCommand(AddViewPreset);
 
-
+        public List<Drawable> _copiedItems;
         public string ElementsCount
         {
             get => _elementsCount;
@@ -129,6 +129,15 @@ namespace RichCanvasDemo
             }
         }
 
+        public ObservableCollection<Rectangle> RectangleItems
+		{
+			get
+			{
+                return new ObservableCollection<Rectangle>(Items.Where(x => x is Rectangle).Select(x => (Rectangle)x));
+
+			}
+        }
+
         public MainWindowViewModel()
         {
             _items = new ObservableCollection<Drawable>();
@@ -139,11 +148,13 @@ namespace RichCanvasDemo
             _dialogService = new DialogService();
             Items.CollectionChanged += ItemsChanged;
             Drawable.PropertiesChanged += OnDrawableChanged;
+            _copiedItems = new List<Drawable>();
         }
 
         private void OnDrawableChanged()
 		{
             OnPropertyChanged("Items");
+            OnPropertyChanged("RectangleItems");
         }
 
         private void ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -162,22 +173,38 @@ namespace RichCanvasDemo
                 }
             }
             OnPropertyChanged("Items");
+            OnPropertyChanged("RectangleItems");
         }
+
+
 
         private void Paste()
         {
+            /*
             _copiedElement.Left = MousePosition.X;
             _copiedElement.Top = MousePosition.Y;
             Items.Add(_copiedElement);
+            */
+            foreach(var d in _copiedItems)
+			{
+                d.Top += 50;
+                Items.Add(d);
+			}
         }
 
         private void Copy(Drawable element)
         {
-
+            /*
             if (_selectedItem is ICloneable cloneableElement)
             {
                 _copiedElement = (Drawable)cloneableElement.Clone();
             }
+            */
+            _copiedItems.Clear();
+            foreach(var item in SelectedItems)
+			{
+                _copiedItems.Add((Drawable)((ICloneable)item).Clone());
+			}
             PasteCommand.RaiseCanExecuteChanged();
         }
 

@@ -85,7 +85,7 @@
 			</Grid.RowDefinitions>
 
 
-            <StackPanel Grid.Row="2">
+            <!--<StackPanel Grid.Row="2">
                 <CheckBox Content="Disable Cache"
                           IsChecked="{Binding DisableCache, Mode=TwoWay}"
                           HorizontalAlignment="Left" />
@@ -169,13 +169,57 @@
                           md:HintAssist.Hint="View Preset"
                           md:HintAssist.IsFloating="True">
                 </ComboBox>
-            </StackPanel>
-			<StackPanel Grid.Row="9">
+            </StackPanel>-->
+			<StackPanel Grid.Row="2">
 				<TextBox Text="{Binding Path = Items, Converter= {StaticResource DrawableListToStringConverter}, Mode=OneWay}"
-						 Background="Transparent"
+						 Background="Black"
                          BorderThickness="0"
 						 IsReadOnly="True"
-                         TextWrapping="Wrap" />
+                         TextWrapping="Wrap" FontFamily="Courier New" Width="500" Height="500" BorderBrush="#8939D300" Foreground="#FFDCFF00" />
+			</StackPanel>
+			<StackPanel Grid.Row="3">
+				<TreeView ItemsControl.ItemsSource="{Binding RectangleItems}">
+					<TreeView.ItemTemplate>
+						<HierarchicalDataTemplate>
+							<TreeViewItem Header="{Binding DrawableName, Mode=TwoWay}">
+								<StackPanel Orientation="Vertical">
+									<StackPanel Orientation="Horizontal">
+
+										<TextBox md:HintAssist.Hint="X"
+											 md:HintAssist.IsFloating="True"
+											 Text="{Binding Left, Mode=TwoWay}"
+											 MinHeight="30"
+											 MinWidth="100" />
+
+										<TextBox md:HintAssist.Hint="Y"
+											 md:HintAssist.IsFloating="True"
+											 Text="{Binding Top, Mode=TwoWay}"
+											 MinHeight="30"
+											 MinWidth="100" />
+
+									</StackPanel>
+									<StackPanel Orientation="Horizontal">
+
+										<TextBox md:HintAssist.Hint="Width"
+											 md:HintAssist.IsFloating="True"
+											 Text="{Binding Width, Mode=TwoWay}"
+											 MinHeight="30"
+											 MinWidth="100" />
+
+										<TextBox md:HintAssist.Hint="Height"
+											 md:HintAssist.IsFloating="True"
+											 Text="{Binding Height, Mode=TwoWay}"
+											 MinHeight="30"
+											 MinWidth="100" />
+
+									</StackPanel>
+									
+								</StackPanel>
+								
+							</TreeViewItem>
+						</HierarchicalDataTemplate>
+					</TreeView.ItemTemplate>
+				</TreeView>
 			</StackPanel>
 			
 		</Grid>
@@ -194,11 +238,11 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Button Content="Draw Line"
+                <!--<Button Content="Draw Line"
                         Command="{Binding DrawLineCommand}"
                         Width="120"
                         Height="30"
-                        HorizontalAlignment="Right" />
+                        HorizontalAlignment="Right" />-->
 
                 <Button Content="Draw Rect"
                         Command="{Binding DrawRectCommand}"
@@ -207,7 +251,7 @@
                         HorizontalAlignment="Right"
                         Grid.Row="1" />
 
-                <Button Content="Resize"
+                <!--<Button Content="Resize"
                         Command="{Binding ResizeCommand}"
                         MinWidth="120"
                         Height="30"
@@ -226,7 +270,7 @@
                         Width="120"
                         Height="30"
                         HorizontalAlignment="Right"
-                        Grid.Row="4" />
+                        Grid.Row="4" />-->
 
                 <Button Content="Delete"
                         Command="{Binding DeleteCommand}"
@@ -477,7 +521,9 @@
                             <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                 <MenuItem Header="Copy"
                                           Command="{Binding CopyCommand}" />
-                            </ContextMenu>
+								<MenuItem Header="Paste"
+										  Command="{Binding PasteCommand}"/>
+							</ContextMenu>
                         </Setter.Value>
                     </Setter>
 

@@ -20,8 +20,8 @@ struct ImgFileTilesetData {
 	unsigned int firstTileID;
 	glm::ivec2 TileWidthAndHeightPx;
 };
-
-struct TileSet { // should be incorporated into renderer
+//TODO: Incorporate into renderer and generally revamp
+struct TileSet { 
 	
 	std::vector<Tile> Tiles;
 	glm::ivec2 TileWidthAndHeightPx{ 16,16 };

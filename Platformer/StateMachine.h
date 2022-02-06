@@ -50,7 +50,7 @@ public:
 	}
 protected:
 	/// <param name="newstate"> outputs a new state </param>
-	/// <returns> bool representing whether there should be a transition to a new state </returns>
+	/// <returns> bool representing whether there should be a transition to the new state </returns>
 	virtual bool DoGlobalTransitions(float delta_t, Camera2D& camera, Engine& engine, EntityID id, PlayerState& newstate) = 0;
 	std::vector<std::unique_ptr<StateBehaviorBase<StateEnum>>> _StatesMap;
 };

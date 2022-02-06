@@ -215,6 +215,7 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="IRenderer2D.h" />
     <ClInclude Include="ISystem.h" />
+    <ClInclude Include="ITileset.h" />
     <ClInclude Include="JSONLevelSerializer.h" />
     <ClInclude Include="LuaLevelSerializer.h" />
     <ClInclude Include="LuaVMService.h" />

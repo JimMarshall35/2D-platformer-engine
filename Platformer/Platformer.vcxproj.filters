@@ -236,6 +236,9 @@
     <ClInclude Include="StateMachine.h">
       <Filter>Header Files\systems</Filter>
     </ClInclude>
+    <ClInclude Include="ITileset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vert.glsl" />
