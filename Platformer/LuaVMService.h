@@ -34,6 +34,7 @@ private:
 	static int l_SetCollectableValInt(lua_State* L);      // lua parameters: engine*, entityID, val | returns void
 	static int l_SetCollectableValFloat(lua_State* L);    // lua parameters: engine*, entityID, val | returns void
 	static int l_SetCollectableValString(lua_State* L);   // lua parameters: engine*, entityID, val | returns void
+	static int l_LoadNamedTiles(lua_State* L);            // lua parameters: engine*, filepath, (list of named tiles outputted by sprite tool)
 
 #pragma endregion
 

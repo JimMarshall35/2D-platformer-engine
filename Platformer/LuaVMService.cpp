@@ -5,6 +5,8 @@ extern "C" {
 #include <lualib.h>
 }
 #include "Engine.h"
+#include "IRenderer2D.h"
+#include "ITileset.h"
 
 LuaVMService::LuaVMService()
 {
@@ -35,7 +37,7 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_SetCollectableValInt, "C_SetCollectableValueInt");
     registerFunction(l_SetCollectableValFloat, "C_SetCollectableValueFloat");
     registerFunction(l_SetCollectableValString, "C_SetCollectableValueString");
-
+    registerFunction(l_LoadNamedTiles, "C_LoadNamedTiles");
 }
 
 
@@ -52,15 +54,16 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
+    ITileset* tileset = e->Renderer->GetTileset();
     int tilesetFilesSize, tilelayersSize, animationsSize;
     std::string filepath;
     if (lua_getfield(L, 2, "tiledims") != LUA_TTABLE) goto error;
     if (lua_getfield(L, 3, "x") != LUA_TNUMBER) goto error;
-    e->_Tileset.TileWidthAndHeightPx.x = luaL_checkinteger(L, 4);
-    std::cout << e->_Tileset.TileWidthAndHeightPx.x << std::endl;
+    tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 4);
+    std::cout << tileset->TileWidthAndHeightPx.x << std::endl;
     lua_pop(L, 1); // tiledims on the top
     if (lua_getfield(L, 3, "y") != LUA_TNUMBER) goto error;
-    e->_Tileset.TileWidthAndHeightPx.y = luaL_checkinteger(L, 4);
+    tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 4);
     lua_pop(L, 2); // parent table on the top
     if (lua_getfield(L, 2, "tileset") != LUA_TTABLE) goto error;
     tilesetFilesSize = lua_rawlen(L, -1);
@@ -72,9 +75,9 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
         lua_pop(L, 1);
         if (lua_getfield(L, -1, "tile_width_px") != LUA_TNUMBER) goto error;
         if (lua_getfield(L, -2, "tile_height_px") != LUA_TNUMBER) goto error;
-        e->_Tileset.TileWidthAndHeightPx.x = luaL_checkinteger(L, -2);
-        e->_Tileset.TileWidthAndHeightPx.y = luaL_checkinteger(L, -1);
-        e->_Tileset.LoadTilesFromImgFile(filepath);
+        tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, -2);
+        tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, -1);
+        tileset->LoadTilesFromImgFile(filepath);
         lua_pop(L, 3);
     }
     lua_pop(L, 1); // parent table on the top
@@ -114,7 +117,7 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
             lua_pop(L, 1);
         }
         std::string anim_name = luaL_checkstring(L, -2);
-        e->_Tileset.AnimationsMap[anim_name] = anim_frames;
+        tileset->AnimationsMap[anim_name] = anim_frames;
         lua_pop(L, 3);
     }
     lua_pop(L, 1);
@@ -385,10 +388,11 @@ int LuaVMService::l_LoadTilesetFile(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    e->_Tileset.TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
-    e->_Tileset.TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
+    ITileset* tileset = e->Renderer->GetTileset();
+    tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
+    tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
     std::string path = (std::string)luaL_checkstring(L, 4);
-    e->_Tileset.LoadTilesFromImgFile(path);
+    tileset->LoadTilesFromImgFile(path);
     return 0;
 }
 
@@ -424,6 +428,7 @@ int LuaVMService::l_LoadAnimationFrames(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
+    ITileset* tileset = e->Renderer->GetTileset();
     std::string name = (std::string)luaL_checkstring(L, 2);
 
     int frames_size = lua_rawlen(L, -1);
@@ -433,16 +438,17 @@ int LuaVMService::l_LoadAnimationFrames(lua_State* L)
         anim_frames[j] = luaL_checkinteger(L, -1);
         lua_pop(L, 1);
     }
-    e->_Tileset.AnimationsMap[name] = anim_frames;
+    tileset->AnimationsMap[name] = anim_frames;
     return 0;
 }
 
 int LuaVMService::l_GetTileset(lua_State* L)
 {
     Engine* e = (Engine*)lua_touserdata(L, 1);
+    ITileset* tileset = e->Renderer->GetTileset();
     lua_newtable(L);
-    for (int i = 0; i < e->_Tileset.FilesList.size(); i++) {
-        const auto& file = e->_Tileset.FilesList[i];
+    for (int i = 0; i < tileset->FilesList.size(); i++) {
+        const auto& file = tileset->FilesList[i];
         lua_newtable(L);
         lua_pushstring(L, file.path.c_str());
         lua_setfield(L, -2, "path");
@@ -617,9 +623,10 @@ int LuaVMService::l_GetEntities(lua_State* L)
 int LuaVMService::l_GetAnimations(lua_State* L)
 {
     Engine* e = (Engine*)lua_touserdata(L, 1);
+    ITileset* tileset = e->Renderer->GetTileset();
     lua_newtable(L);
     int anim_index = 1;
-    for (auto& [key, val] : e->_Tileset.AnimationsMap) {
+    for (auto& [key, val] : tileset->AnimationsMap) {
         lua_newtable(L);
         lua_pushstring(L, key.c_str());
         lua_setfield(L, -2, "name");
@@ -774,6 +781,58 @@ int LuaVMService::l_SetCollectableValString(lua_State* L)
     EntityID id = lua_tointeger(L, 2);
 
     e->_Components.collectables[id].val_str = lua_tostring(L, 3);
+    return 0;
+}
+
+int LuaVMService::l_LoadNamedTiles(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "l_SetSpriteComponent takes 3 parameters" << std::endl;
+        return 0;
+    }
+    if (!lua_isuserdata(L, 1)) {
+        std::cout << "first parameter should be engine pointer" << std::endl;
+        return 0;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    if (!lua_isstring(L, 2)) {
+        std::cout << "2nd param should be file path" << std::endl;
+        return 0;
+    }
+    std::string fp = lua_tostring(L, 2);
+    if (!lua_istable(L, 3)) {
+        std::cout << "3rd param should be table" << std::endl;
+        return 0;
+    }
+    std::vector<NamedTileData> v;
+    lua_pushnil(L);  /* first key */
+    while (lua_next(L, 3) != 0) {
+        /* uses 'key' (at index -2) and 'value' (at index -1) */
+        printf("%s - %s\n",
+            lua_typename(L, lua_type(L, -2)),
+            lua_typename(L, lua_type(L, -1)));
+        NamedTileData td;
+        td.name = lua_tostring(L, -2);
+        lua_getfield(L, -1, "topleft");
+        lua_getfield(L, -1, "x");
+        td.left = lua_tonumber(L, -1);
+        lua_getfield(L, -2, "y");
+        td.top = lua_tonumber(L, -1);
+        lua_pop(L, 3);
+
+        lua_getfield(L, -1, "dimensions");
+        lua_getfield(L, -1, "x");
+        td.width = lua_tonumber(L, -1);
+        lua_getfield(L, -2, "y");
+        td.height = lua_tonumber(L, -1);
+        lua_pop(L, 3);
+
+        v.push_back(td);
+        /* removes 'value'; keeps 'key' for next iteration */
+        lua_pop(L, 1);
+    }
+    e->Renderer->GetTileset()->LoadNamedSpritesFromFile(fp, v);
     return 0;
 }
 

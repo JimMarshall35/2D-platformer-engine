@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 class Camera2D;
+class ITileset;
 class IRenderer2D {
 public:
 	virtual void DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam) const = 0;
@@ -12,4 +13,5 @@ public:
 	virtual unsigned int GetW() const  = 0;
 	virtual unsigned int GetH() const = 0;
 	virtual void Init() = 0;
+	virtual ITileset* GetTileset() = 0;
 };

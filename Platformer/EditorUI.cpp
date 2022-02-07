@@ -15,6 +15,7 @@ extern "C" {
 #include <sstream>
 #include <iostream>
 #include "IRenderer2D.h"
+#include "Tileset.h"
 
 void EditorUserInterface::DeleteLastLayer()
 {
@@ -35,12 +36,13 @@ void EditorUserInterface::PushNewTileLayer(unsigned int width_tiles, unsigned in
 
 void EditorUserInterface::DoTileButtonsWindow() {
 	unsigned int oncol = 0;
+	ITileset* tileset = _Engine->Renderer->GetTileset();
 	if (_SelectedTile) {
 		std::string selected_info = "selected texture: " + std::to_string(_SelectedTile->Texture) + " selected ID: " + std::to_string(_SelectedTile->ID);
 		ImGui::Text(selected_info.c_str());
 	}
-	for (Tile& t : _Engine->_Tileset.Tiles) {
-		auto dims = _Engine->_Tileset.GetTileDims(t.ID);
+	for (Tile& t : tileset->Tiles) {
+		auto dims = tileset->GetTileDims(t.ID);
 		int texWidth = dims.x;
 		int texHeight = dims.y;
 		ImVec2 uv0 = ImVec2(0.0f, 0.0f);
@@ -49,7 +51,7 @@ void EditorUserInterface::DoTileButtonsWindow() {
 			_SelectedTile = &t;
 		}
 		oncol++;
-		if (oncol >= _Engine->_Tileset.TileSetWidthAndHeightTiles.x) {
+		if (oncol >= tileset->TileSetWidthAndHeightTiles.x) {
 			oncol = 0;
 		}
 		else {
@@ -292,8 +294,9 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 
 void EditorUserInterface::DoTileSetSelectWindow()
 {
+	ITileset* tileset = _Engine->Renderer->GetTileset();
 	ImGui::Begin("tileset");
-	ImGui::InputInt2("Tile width and height", &_Engine->_Tileset.TileWidthAndHeightPx[0]);
+	ImGui::InputInt2("Tile width and height", &tileset->TileWidthAndHeightPx[0]);
 	// open Dialog Simple
 	if (ImGui::Button("Open File Dialog"))
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg", ".");
@@ -353,12 +356,13 @@ EditorUserInterface::~EditorUserInterface()
 
 void EditorUserInterface::DoGui()
 {
+	ITileset* tileset = _Engine->Renderer->GetTileset();
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	DoTileSetSelectWindow();
 	DoToolSelectWindow();
-	if (_Engine->_Tileset.Tiles.size() > 0) {
+	if (tileset->Tiles.size() > 0) {
 		ImGui::Begin("tiles");
 		DoTileButtonsWindow();
 		ImGui::End();
@@ -395,7 +399,7 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 	int skipped = 0;
 	
 	TileLayer& tl = _Engine->_TileLayers[_SelectedTileLayer];//_SelectedTileLayer == _Engine._TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
-	TileSet& tileSet = _Engine->_Tileset;
+	ITileset* tileset = _Engine->Renderer->GetTileset();
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
 	for (int i = 0; i < tl.Tiles.size(); i++) {
@@ -405,21 +409,21 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 		auto yCoord = i / width;
 		worldPos.x = (float)xCoord;
 		worldPos.y = (float)yCoord;
-		worldPos *= vec2(tileSet.TileWidthAndHeightPx);
+		worldPos *= vec2(tileset->TileWidthAndHeightPx);
 		vec4 tileTLBR = vec4(
 			worldPos.y,
 			worldPos.x,
-			worldPos.y + (float)tileSet.TileWidthAndHeightPx.y,
-			worldPos.x + (float)tileSet.TileWidthAndHeightPx.x
+			worldPos.y + (float)tileset->TileWidthAndHeightPx.y,
+			worldPos.x + (float)tileset->TileWidthAndHeightPx.x
 		);
-		worldPos += vec2(tileSet.TileWidthAndHeightPx) * 0.5f;
+		worldPos += vec2(tileset->TileWidthAndHeightPx) * 0.5f;
 		
 		if (!_Engine->AABBCollision(cameraTLBR, tileTLBR)) {
 			skipped++;
 			continue;
 		}
 
-		renderer->DrawWireframeRect(worldPos, vec2(tileSet.TileWidthAndHeightPx), 0.0,glm::vec4(0.0,0.0,0.0,1.0), camera);
+		renderer->DrawWireframeRect(worldPos, vec2(tileset->TileWidthAndHeightPx), 0.0,glm::vec4(0.0,0.0,0.0,1.0), camera);
 	}
 
 	for (const auto& [key, value] : _Engine->_Components.sprites) {
@@ -442,12 +446,13 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 
 void EditorUserInterface::cursorPositionCallbackHandler(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera)
 {
+	ITileset* tileset = _Engine->Renderer->GetTileset();
 	_lastMouseRawY = ypos;
 	_lastMouseRawX = xpos;
 	if (!imGuiWantsMouse) {
 		if (_SelectedTileLayer < 0) return;
 		_LastMouseWorld = camera.MouseScreenPosToWorld(_lastMouseRawX, _lastMouseRawY, WindowW, WindowH);
-		glm::ivec2 tileDims = _Engine->_Tileset.TileWidthAndHeightPx;
+		glm::ivec2 tileDims = tileset->TileWidthAndHeightPx;
 		int tileLayerH = _Engine->_TileLayers[_SelectedTileLayer].GetHeight();
 		int tileLayerW = _Engine->_TileLayers[_SelectedTileLayer].GetWidth();
 		int x = floor(_LastMouseWorld.x / (float)tileDims.x);
@@ -563,7 +568,8 @@ void EditorUserInterface::SetEngine(Engine* engine)
 
 bool EditorUserInterface::FileChosen(std::string path)
 {
-	_Engine->_Tileset.LoadTilesFromImgFile(path);
+	ITileset* tileset = _Engine->Renderer->GetTileset();
+	tileset->LoadTilesFromImgFile(path);
 	PushNewTileLayer(100, 50);
 	PushNewTileLayer(100, 50);
 	_SelectedTileLayer = 0;

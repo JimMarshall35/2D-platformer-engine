@@ -95,3 +95,43 @@ void TileSet::ClearTiles()
 	Tiles.clear();
 }
 
+bool TileSet::LoadNamedSpritesFromFile(std::string filepath, const std::vector<NamedTileData>& sprites)
+{
+	int n;
+	const int NUM_CHANNELS = 4;
+	int img_w, img_h;
+	const unsigned char* data = stbi_load(filepath.c_str(), &img_w, &img_h, &n, NUM_CHANNELS);
+	if (data == NULL)
+		return false;
+
+	for (const auto& tiledata : sprites) {
+		LoadSprite(data, img_w, img_h, NUM_CHANNELS, tiledata);
+	}
+	stbi_image_free((void*)data);
+}
+
+void TileSet::LoadSprite(const unsigned char* data, const unsigned int img_w, const unsigned int img_h, const unsigned int numchannels, const NamedTileData& spritedata)
+{
+	std::vector<unsigned char> buffer(spritedata.width * spritedata.height * numchannels);
+	unsigned int start_pixel = (spritedata.top * img_w) + spritedata.left;
+
+	const unsigned char* src_ptr = data + (start_pixel * numchannels);
+	unsigned char* output_ptr = buffer.data();
+	for (size_t i = 0; i < spritedata.height; i++) {
+		memcpy(output_ptr, src_ptr, (spritedata.width * numchannels));
+		output_ptr += (spritedata.width * numchannels);
+		src_ptr += img_w * numchannels;
+	}
+	unsigned int tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spritedata.width, spritedata.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
+	NamedSpritesMap[spritedata.name] = tex;
+}
+

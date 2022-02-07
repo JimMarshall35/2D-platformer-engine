@@ -123,8 +123,8 @@ void Engine::KeyBoardButtonCallbackHandler(GLFWwindow* window, int key, int scan
 void Engine::FrameBufferSizeCallbackHandler(GLFWwindow* window, int newwidth, int newheight)
 {
 	glViewport(0, 0, newwidth, newheight);
-	_Renderer->SetH(newheight);
-	_Renderer->SetW(newwidth);
+	Renderer->SetH(newheight);
+	Renderer->SetW(newwidth);
 	switch (_CurrentMode) {
 	case EngineMode::Edit:
 		_Editor->frameBufferSizeChangeCallbackHandler(window, newwidth, newheight, _EditorCam);
@@ -176,7 +176,7 @@ void Engine::Draw()
 		DrawBackgroundLayers(_EditorCam);
 		SpritesSystemDraw(_EditorCam);
 		ExplodingSpritesSystemDraw(_EditorCam);
-		_Editor->DrawEngineOverlay(_Renderer.get(), _EditorCam);
+		_Editor->DrawEngineOverlay(Renderer.get(), _EditorCam);
 		_Editor->DoGui();
 
 		break;
@@ -190,11 +190,11 @@ void Engine::Draw()
 }
 
 Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer)
-	:_Renderer(std::unique_ptr<IRenderer2D>(renderer)),
+	:Renderer(std::unique_ptr<IRenderer2D>(renderer)),
 	_LevelSerializer(std::unique_ptr<ILevelSerializer>(serializer)),
 	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI))
 {
-	_Renderer->Init();
+	Renderer->Init();
 	_Editor->SetEngine(this);
 	_GameCam.FocusPosition = glm::vec2(32, 0);
 	_GameCam.Zoom = 2.0f;
@@ -213,7 +213,8 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 {
 	using namespace glm;
 	int skipped = 0;
-	vec4 cameraTLBR = camera.GetTLBR(_Renderer->GetW(), _Renderer->GetH());
+	ITileset* tileset = Renderer->GetTileset();
+	vec4 cameraTLBR = camera.GetTLBR(Renderer->GetW(), Renderer->GetH());
 	for (const TileLayer& tl : _TileLayers) {
 		if (!tl.Visible) continue;
 		auto width = tl.GetWidth();
@@ -226,21 +227,21 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 			auto yCoord = i / width;
 			worldPos.x = (float)xCoord;
 			worldPos.y = (float)yCoord;
-			worldPos *= vec2(_Tileset.TileWidthAndHeightPx);
+			worldPos *= vec2(tileset->TileWidthAndHeightPx);
 			vec4 tileTLBR = vec4(
 				worldPos.y,
 				worldPos.x,
-				worldPos.y + (float)_Tileset.TileWidthAndHeightPx.y,
-				worldPos.x + (float)_Tileset.TileWidthAndHeightPx.x
+				worldPos.y + (float)tileset->TileWidthAndHeightPx.y,
+				worldPos.x + (float)tileset->TileWidthAndHeightPx.x
 			);
-			worldPos += vec2(_Tileset.TileWidthAndHeightPx) * 0.5f;
+			worldPos += vec2(tileset->TileWidthAndHeightPx) * 0.5f;
 
 			if (!AABBCollision(cameraTLBR, tileTLBR)) {
 				skipped++;
 				continue;
 			}
-			Tile& t = _Tileset.Tiles[tileIndex - 1];
-			_Renderer->DrawWholeTexture(worldPos, vec2(_Tileset.TileWidthAndHeightPx), 0.0, t.Texture, camera);
+			Tile& t = tileset->Tiles[tileIndex - 1];
+			Renderer->DrawWholeTexture(worldPos, vec2(tileset->TileWidthAndHeightPx), 0.0, t.Texture, camera);
 		}
 	}
 }
@@ -252,7 +253,7 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 		if (!value.shoulddraw)
 			continue;
 		Transform& transform = _Components.transforms[key];
-		vec4 cameraTLBR = cam.GetTLBR(_Renderer->GetW(), _Renderer->GetH());
+		vec4 cameraTLBR = cam.GetTLBR(Renderer->GetW(), Renderer->GetH());
 		vec4 tileTLBR = vec4(
 			transform.pos.y - abs(transform.scale.y) * 0.5f,
 			transform.pos.x - abs(transform.scale.x) * 0.5f,
@@ -260,7 +261,7 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 			transform.pos.x + abs(transform.scale.x) * 0.5f
 		);
 		if (AABBCollision(cameraTLBR, tileTLBR)) {
-			_Renderer->DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
+			Renderer->DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
 		}
 	}
 }
@@ -272,7 +273,7 @@ void Engine::ExplodingSpritesSystemDraw(const Camera2D& cam)
 			continue;
 		auto& tr = _Components.transforms[key];
 		auto& es = _Components.exploding_sprites[key];
-		_Renderer->DrawExplodingTexture(tr.pos, tr.scale, tr.rot, es.texture, cam, es.explodeTimer);
+		Renderer->DrawExplodingTexture(tr.pos, tr.scale, tr.rot, es.texture, cam, es.explodeTimer);
 	}
 }
 

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "ITileset.h"
+#include "IRenderer2D.h"
 
 void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 {
@@ -13,18 +15,19 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 	Document doc;
 	doc.SetObject();
 
+	ITileset* tileset = engine.Renderer->GetTileset();
 	// tile dims
 	Value tileDims;
 	tileDims.SetObject();
-	tileDims.AddMember("x", engine._Tileset.TileWidthAndHeightPx.x,doc.GetAllocator());
-	tileDims.AddMember("y", engine._Tileset.TileWidthAndHeightPx.y, doc.GetAllocator());
-	tileDims.AddMember("tileset_w", engine._Tileset.TileSetWidthAndHeightTiles.x,doc.GetAllocator());
-	tileDims.AddMember("tileset_h", engine._Tileset.TileSetWidthAndHeightTiles.y, doc.GetAllocator());
+	tileDims.AddMember("x", tileset->TileWidthAndHeightPx.x,doc.GetAllocator());
+	tileDims.AddMember("y", tileset->TileWidthAndHeightPx.y, doc.GetAllocator());
+	tileDims.AddMember("tileset_w", tileset->TileSetWidthAndHeightTiles.x,doc.GetAllocator());
+	tileDims.AddMember("tileset_h", tileset->TileSetWidthAndHeightTiles.y, doc.GetAllocator());
 	doc.AddMember("tiledims", tileDims, doc.GetAllocator());
 
 	// tileset paths, first tile ID's
 	Value tilesetPathsArray = Value(kArrayType);
-	for (auto t : engine._Tileset.FilesList) {
+	for (auto t : tileset->FilesList) {
 		Value tileset_file;
 		tileset_file.SetObject();
 		Value path_val;
@@ -59,7 +62,7 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 	
 	// animations
 	Value animationsArray = Value(kArrayType);
-	for (auto [key, val] : engine._Tileset.AnimationsMap) {
+	for (auto [key, val] : tileset->AnimationsMap) {
 		Value anim_object;
 		anim_object.SetObject();
 		Value anim_name;
@@ -92,9 +95,10 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 bool JSONLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 {
 	using namespace rapidjson;
+	ITileset* tileset = engine.Renderer->GetTileset();
 	engine._TileLayers.clear();
-	engine._Tileset.ClearTiles();
-	engine._Tileset.AnimationsMap.clear();
+	tileset->ClearTiles();
+	tileset->AnimationsMap.clear();
 	std::ifstream ifs;
 	ifs.open(filePath);
 	std::string file_content((std::istreambuf_iterator<char>(ifs)),
@@ -104,18 +108,18 @@ bool JSONLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 
 	const Value& tiledims = doc["tiledims"];
 	
-	engine._Tileset.TileWidthAndHeightPx.x = tiledims["x"].GetInt();
-	engine._Tileset.TileWidthAndHeightPx.y = tiledims["y"].GetInt();
-	engine._Tileset.TileSetWidthAndHeightTiles.x = tiledims["tileset_w"].GetInt();
-	engine._Tileset.TileSetWidthAndHeightTiles.y = tiledims["tileset_h"].GetInt();
+	tileset->TileWidthAndHeightPx.x = tiledims["x"].GetInt();
+	tileset->TileWidthAndHeightPx.y = tiledims["y"].GetInt();
+	tileset->TileSetWidthAndHeightTiles.x = tiledims["tileset_w"].GetInt();
+	tileset->TileSetWidthAndHeightTiles.y = tiledims["tileset_h"].GetInt();
 
-	const Value& tileset = doc["tileset"];
-	for (SizeType i = 0; i < tileset.Size(); i++) {
-		const Value& tilesetFile = tileset[i];
+	const Value& doctileset = doc["tileset"];
+	for (SizeType i = 0; i < doctileset.Size(); i++) {
+		const Value& tilesetFile = doctileset[i];
 		auto path = std::string(tilesetFile["path"].GetString());
-		engine._Tileset.TileWidthAndHeightPx.x =  tilesetFile["tile_width_px"].GetInt();
-		engine._Tileset.TileWidthAndHeightPx.y = tilesetFile["tile_height_px"].GetInt();
-		engine._Tileset.LoadTilesFromImgFile(path);
+		tileset->TileWidthAndHeightPx.x =  tilesetFile["tile_width_px"].GetInt();
+		tileset->TileWidthAndHeightPx.y = tilesetFile["tile_height_px"].GetInt();
+		tileset->LoadTilesFromImgFile(path);
 	}
 	
 	const Value& tilelayers = doc["tilelayers"];
@@ -144,7 +148,7 @@ bool JSONLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 		const Value& json_frames = animation["frames"];
 		for (SizeType j = 0; j < json_frames.Size(); j++)
 			anim_frames.push_back(json_frames[j].GetUint());
-		engine._Tileset.AnimationsMap[anim_name] = anim_frames;
+		tileset->AnimationsMap[anim_name] = anim_frames;
 	}
 	return true;
 }

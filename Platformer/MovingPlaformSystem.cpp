@@ -1,6 +1,6 @@
 #include "MovingPlaformSystem.h"
 #include "Engine.h"
-#include "Tileset.h"
+#include "ITileset.h"
 #include <algorithm>
 #include <iostream>
 #define M_PI           3.14159265358979323846  /* pi */

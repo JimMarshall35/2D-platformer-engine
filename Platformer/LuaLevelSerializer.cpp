@@ -3,6 +3,8 @@
 
 #include "Engine.h"
 #include "LuaVMService.h"
+#include "IRenderer2D.h"
+#include "ITileset.h"
 
 void LuaLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 {
@@ -11,6 +13,7 @@ void LuaLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 
 bool LuaLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 {
+    ITileset* tileset = engine.Renderer->GetTileset();
     std::vector<EntityID> ids;
     for (auto const& element : engine._Entities) {
         ids.push_back(element.first);
@@ -19,8 +22,8 @@ bool LuaLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
         engine.DeleteEntity(id);
     }
     engine._TileLayers.clear();
-    engine._Tileset.ClearTiles();
-    engine._Tileset.AnimationsMap.clear();
+    tileset->ClearTiles();
+    tileset->AnimationsMap.clear();
     _VM->SetGlobalPointer((void*)&engine, "C_Engine");
 
     bool r = _VM->CallFunction1StringParameterNoReturnVal("OnLoadLevel", filePath);

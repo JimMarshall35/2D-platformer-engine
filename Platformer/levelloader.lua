@@ -8,7 +8,11 @@ require "defs"
 function OnLoadLevel(path)
 	local level = persistence.load(path)
 	for i,ts in ipairs(level.tileset) do
-		C_LoadTilesetFile(C_Engine, ts.tile_width_px, ts.tile_height_px, ts.path)
+		if ts.named_sprites == nil then
+			C_LoadTilesetFile(C_Engine, ts.tile_width_px, ts.tile_height_px, ts.path)
+		else
+			C_LoadNamedTiles(C_Engine, ts.path, ts.named_sprites)
+		end
 	end
 	for i,tl in ipairs(level.tilelayers) do
 		C_LoadTileLayer(C_Engine, tl.widthtiles, tl.heighttiles, tl.t_type, tl.tiles)

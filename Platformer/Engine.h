@@ -23,7 +23,7 @@ private:
 	std::unique_ptr<IEditorUserInterface> _Editor;
 	std::unique_ptr<ILevelSerializer> _LevelSerializer;
 	EngineMode _CurrentMode = EngineMode::Edit;
-	std::unique_ptr<IRenderer2D> _Renderer;
+	
 	Camera2D _EditorCam;
 	Camera2D _GameCam;
 	
@@ -40,10 +40,9 @@ private:
 	void GotoEditMode();
 public:
 	EntityID _Player1 = 0;
-
+	std::unique_ptr<IRenderer2D> Renderer;
 
 	glm::ivec2 CollidableLayerWidthAndHeight;
-	TileSet _Tileset;
 	std::vector<TileLayer> _TileLayers;
 	Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer);
 	void DrawBackgroundLayers(const Camera2D& camera);

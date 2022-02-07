@@ -1,15 +1,15 @@
 #include "AnimationSystem.h"
-#include "Tileset.h"
 #include "Engine.h"
-
+#include "IRenderer2D.h"
+#include "ITileset.h"
 
 void AnimationSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
 	auto& components = engine._Components;
-	auto& tileset = engine._Tileset;
+	auto tileset = engine.Renderer->GetTileset();
 	OperateOnComponentGroup(CT_ANIMATION, CT_SPRITE) {
 		auto& val = components.animations[entityID];
-		auto& frames = tileset.AnimationsMap[val.animationName];
+		auto& frames = tileset->AnimationsMap[val.animationName];
 		if (val.isAnimating) {
 			val.timer += delta_t;
 			if (val.timer > 1 / val.fps) {

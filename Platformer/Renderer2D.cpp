@@ -6,6 +6,7 @@
 #include <vector>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/random.hpp>
+#include "Tileset.h"
 
 #define EXPLODE_QUADS_ROWS 16
 #define EXPLODE_QUADS_COLS 16
@@ -22,7 +23,7 @@ void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation
 	model = glm::scale(model, glm::vec3(scale, 1.0f));
 
 	_TextureShader.use();
-	_TextureShader.setMat4("projection", cam.GetProjectionMatrix(WindowW, WindowH));
+	_TextureShader.setMat4("projection", cam.GetProjectionMatrix(_WindowW, _WindowH));
 	_TextureShader.setMat4("model", model);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -30,6 +31,15 @@ void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation
 	glBindVertexArray(_TextureVAO);
 	glDrawArrays(GL_TRIANGLES,0,6);
 	GLPrintErrors("DrawWholeTexture");
+}
+
+Renderer2D::Renderer2D() :_Tileset(new TileSet()) 
+{  
+}
+
+Renderer2D::Renderer2D(GLuint w, GLuint h) : _WindowW(w), _WindowH(h), _Tileset(new TileSet()) 
+{ 
+	Init(); 
 }
 
 void Renderer2D::DrawWireframeRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const
@@ -40,7 +50,7 @@ void Renderer2D::DrawWireframeRect(glm::vec2 pos, glm::vec2 scale, float rotatio
 	model = glm::scale(model, glm::vec3(scale, 1.0f));
 
 	_WireframeShader.use();
-	_WireframeShader.setMat4("projection", cam.GetProjectionMatrix(WindowW, WindowH));
+	_WireframeShader.setMat4("projection", cam.GetProjectionMatrix(_WindowW, _WindowH));
 	_WireframeShader.setMat4("model", model);
 	_WireframeShader.setVec4("Colour", colour);
 
@@ -57,7 +67,7 @@ void Renderer2D::DrawSolidRect(glm::vec2 pos, glm::vec2 scale, float rotation, g
 	model = glm::scale(model, glm::vec3(scale, 1.0f));
 
 	_WireframeShader.use();
-	_WireframeShader.setMat4("projection", cam.GetProjectionMatrix(WindowW, WindowH));
+	_WireframeShader.setMat4("projection", cam.GetProjectionMatrix(_WindowW, _WindowH));
 	_WireframeShader.setMat4("model", model);
 	_WireframeShader.setVec4("Colour", colour);
 
@@ -74,7 +84,7 @@ void Renderer2D::DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rota
 	model = glm::scale(model, glm::vec3(scale, 1.0f));
 
 	_ExplodeShader.use();
-	_ExplodeShader.setMat4("projection", cam.GetProjectionMatrix(WindowW, WindowH));
+	_ExplodeShader.setMat4("projection", cam.GetProjectionMatrix(_WindowW, _WindowH));
 	_ExplodeShader.setMat4("model", model);
 	//setExplodeDirectionsUniform(_ExplodeShader);
 	_ExplodeShader.setFloat("time", time);
@@ -309,3 +319,4 @@ void Renderer2D::setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirect
 	delete[] blockBuffer;
 	GLPrintErrors();
 }
+

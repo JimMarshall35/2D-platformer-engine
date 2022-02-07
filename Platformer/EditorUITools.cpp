@@ -8,7 +8,7 @@ extern "C" {
 }
 #include <cstdio>
 #include "IRenderer2D.h"
-
+#include "Tileset.h"
 #pragma region single tile
 
 EditorUserInterface::DrawSingleTileTool::DrawSingleTileTool(EditorUserInterface* ui, Engine* engine)
@@ -55,9 +55,10 @@ void EditorUserInterface::DrawSingleTileTool::drawOverlay(const IRenderer2D* ren
 	auto yCoord = _UI->_TileIndexHovvered / width;
 	worldPos.x = (float)xCoord;
 	worldPos.y = (float)yCoord;
-	worldPos *= glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx);
-	worldPos += glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx) * 0.5f;
-	renderer->DrawWireframeRect(worldPos, glm::vec2(_Engine->_Tileset.TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
+	ITileset* tileset = _Engine->Renderer->GetTileset();
+	worldPos *= glm::vec2(tileset->TileWidthAndHeightPx);
+	worldPos += glm::vec2(tileset->TileWidthAndHeightPx) * 0.5f;
+	renderer->DrawWireframeRect(worldPos, glm::vec2(tileset->TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);
 }
 
 #pragma endregion
@@ -107,7 +108,8 @@ void EditorUserInterface::SelectTool::handleKeyboard(GLFWwindow* window, int key
 void EditorUserInterface::SelectTool::drawOverlay(const IRenderer2D* renderer, const Camera2D& camera)
 {
 	glm::vec2 worldPos;
-	TileSet& tileSet = _Engine->_Tileset;
+
+	ITileset* tileSet = _Engine->Renderer->GetTileset();
 	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
@@ -122,9 +124,9 @@ void EditorUserInterface::SelectTool::drawOverlay(const IRenderer2D* renderer, c
 		auto yCoord = tile / width;
 		worldPos.x = (float)xCoord;
 		worldPos.y = (float)yCoord;
-		worldPos *= glm::vec2(tileSet.TileWidthAndHeightPx);
-		worldPos += glm::vec2(tileSet.TileWidthAndHeightPx) * 0.5f;
-		renderer->DrawSolidRect(worldPos, glm::vec2(tileSet.TileWidthAndHeightPx), 0, glm::vec4(0.0f, 0.5f, 0.5f, 0.4f), camera);
+		worldPos *= glm::vec2(tileSet->TileWidthAndHeightPx);
+		worldPos += glm::vec2(tileSet->TileWidthAndHeightPx) * 0.5f;
+		renderer->DrawSolidRect(worldPos, glm::vec2(tileSet->TileWidthAndHeightPx), 0, glm::vec4(0.0f, 0.5f, 0.5f, 0.4f), camera);
 	}
 }
 
@@ -132,7 +134,7 @@ void EditorUserInterface::SelectTool::GetNewSelection()
 {
 	using namespace glm;
 	_SelectedTiles.clear();
-	TileSet& tileSet = _Engine->_Tileset;
+	ITileset* tileSet = _Engine->Renderer->GetTileset();
 	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
@@ -163,12 +165,12 @@ void EditorUserInterface::SelectTool::GetNewSelection()
 		auto yCoord = i / width;
 		worldPos.x = (float)xCoord;
 		worldPos.y = (float)yCoord;
-		worldPos *= vec2(tileSet.TileWidthAndHeightPx);
+		worldPos *= vec2(tileSet->TileWidthAndHeightPx);
 		vec4 tileTLBR = vec4(
 			worldPos.y,
 			worldPos.x,
-			worldPos.y + (float)tileSet.TileWidthAndHeightPx.y,
-			worldPos.x + (float)tileSet.TileWidthAndHeightPx.x
+			worldPos.y + (float)tileSet->TileWidthAndHeightPx.y,
+			worldPos.x + (float)tileSet->TileWidthAndHeightPx.x
 		);
 		if (_Engine->AABBCollision(tileTLBR, selectionTLBR)) {
 			if (i == last_i + 1) {

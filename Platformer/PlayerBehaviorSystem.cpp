@@ -1,7 +1,7 @@
 #include "PlayerBehaviorSystem.h"
 
 #include "Camera2D.h"
-#include "Tileset.h"
+#include "ITileset.h"
 #include <algorithm>
 #include <iostream>
 #include "Engine.h"
