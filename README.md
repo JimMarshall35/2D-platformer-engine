@@ -16,6 +16,7 @@ MEDIUM:
 - sort out tile sizes in general, allow for possibility of different background layers containing different sized tiles
 - look at a different data structure to store components in ie an array
 - make an interface for user input, supply to engine by DI similar to renderer - important - currently glfw hard coded
+- extend state machine class to permit heirachical state machines (stack of states)
 
 HARD:
 - make a state machine class derived from StateMachineSystem that can be used for lua scripted state machines
