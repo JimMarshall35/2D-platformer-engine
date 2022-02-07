@@ -1,5 +1,7 @@
 An engine for 2d platformers with a level editor - still a work in progress
 
+ECS based
+
 Also includes a tool for marking frames on a sprite sheet, outputs lua code. Based on this library: https://github.com/mircea21S/RichCanvas
 
 
