@@ -1,4 +1,4 @@
-An engine for 2d platformers with a level editor - still a work in progress
+An engine for 2d platformers with a level editor - still a work in progress, a learning exercise in engine development
 
 ECS based
 
