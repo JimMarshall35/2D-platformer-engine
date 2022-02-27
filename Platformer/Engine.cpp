@@ -10,22 +10,25 @@
 #include "CollectableSystem.h"
 #include "ExplodingSpriteUpdateSystem.h"
 #include "IRenderer2D.h"
+#include "AABB.h"
 
 
 #pragma region Update
 
 void Engine::Update(double delta_t)
 {
+
+	if (_NewLvlToLoad != "") {
+		LoadLevel(_NewLvlToLoad);
+		_NewLvlToLoad = "";
+		_CurrentMode = EngineMode::Play;
+	}
 	switch (_CurrentMode) {
 	case EngineMode::Play:
 		Engine& e = *this;
-		_MovingPlatformSystem->Update(delta_t, _GameCam, e);
-		_PlayerBehaviorSystem->Update(delta_t, _GameCam, e);
-		_EnemyBehaviorSystem->Update(delta_t, _GameCam, e);
-		_CollectableSystem->Update(delta_t, _GameCam, e);
-		_PhysicsSystem->Update(delta_t, _GameCam, e);
-		_AnimationSystem->Update(delta_t, _GameCam, e);
-		_ExplodingSpritesSystem->Update(delta_t, _GameCam, e);
+		for (auto& sys : _Systems) {
+			sys->Update(delta_t, _GameCam, e);
+		}
 		break;
 	}
 }
@@ -197,16 +200,20 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRe
 	Renderer->Init();
 	_Editor->SetEngine(this);
 	_GameCam.FocusPosition = glm::vec2(32, 0);
-	_GameCam.Zoom = 2.0f;
+	_GameCam.Zoom = 3.0f;
 
 	// make systems
-	_AnimationSystem = std::make_unique<AnimationSystem>();
-	_PhysicsSystem = std::make_unique<PhysicsSystem>();
-	_PlayerBehaviorSystem = std::make_unique<PlayerBehaviorSystem>(this);
-	_MovingPlatformSystem = std::make_unique<MovingPlaformSystem>();
-	_EnemyBehaviorSystem = std::make_unique<EnemyBehaviorSystem>();
-	_CollectableSystem = std::make_unique<CollectableSystem>();
-	_ExplodingSpritesSystem = std::make_unique<ExplodingSpriteUpdateSystem>();
+	_Systems.push_back(std::make_unique<AnimationSystem>());
+	_Systems.push_back(std::make_unique<PhysicsSystem>());
+	_Systems.push_back(std::make_unique<PlayerBehaviorSystem>(this));
+	_Systems.push_back(std::make_unique<MovingPlaformSystem>());
+	_Systems.push_back(std::make_unique<EnemyBehaviorSystem>());
+	_Systems.push_back(std::make_unique<CollectableSystem>());
+	_Systems.push_back(std::make_unique<ExplodingSpriteUpdateSystem>());
+
+	//LoadLevel("test.lua");
+	//CueLevel("test.lua");
+	CueLevel("test.lua");
 }
 
 void Engine::DrawBackgroundLayers(const Camera2D& camera)
@@ -215,7 +222,7 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 	int skipped = 0;
 	ITileset* tileset = Renderer->GetTileset();
 	vec4 cameraTLBR = camera.GetTLBR(Renderer->GetW(), Renderer->GetH());
-	for (const TileLayer& tl : _TileLayers) {
+	for (const TileLayer& tl : TileLayers) {
 		if (!tl.Visible) continue;
 		auto width = tl.GetWidth();
 		auto height = tl.GetHeight();
@@ -285,14 +292,5 @@ void Engine::ExplodingSpritesSystemDraw(const Camera2D& cam)
 
 #pragma endregion
 
-#pragma region helpers
-
-bool Engine::AABBCollision(const glm::vec4& bb1, const glm::vec4& bb2) const
-{
-	return ((bb1[3] > bb2[1]) && (bb2[3] > bb1[1])) &&
-		((bb1[2] > bb2[0]) && (bb2[2] > bb1[0]));
-}
-
-#pragma endregion
 
 

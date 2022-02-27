@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Engine.h"
 #include "AABB.h"
+#include "IRenderer2D.h"
 #define KNOCKBACK_AMOUNTX 200.0;
 #define KNOCKBACK_AMOUNTY 1000.0;
 
@@ -24,6 +25,8 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 		StateMachine::RunStateMachine(delta_t, camera, engine,pb,entityID);
 		
 		// TODO: MAKE THE SPRITE DIRECTION CHANGE WHEN VELOCITY CHANGES NOT ON THE DIRECTION BUTTON PRESSED
+
+		// flip sprite if moving left
 		if (pb.rightPressed && pb.state != Stabbing) {
 			if (tr.scale.x < 0) {
 				tr.scale.x *= -1;
@@ -34,9 +37,12 @@ void PlayerBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engin
 				tr.scale.x *= -1;
 			}
 		}
+
+		// clamp velocity
 		if (pb.state != KnockBack) 
 			ph.velocity.x = std::clamp(ph.velocity.x, -pb.MAX_X_SPEED, pb.MAX_X_SPEED);
 
+		// set camera focus 
 		camera.FocusPosition = tr.pos;
 	}
 }
@@ -148,11 +154,13 @@ bool PlayerBehaviorSystem::LadderAtCoordinates(const int x, const int y, std::ve
 PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
-	auto& tilelayers = engine._TileLayers;
+	auto& tilelayers = engine.TileLayers;
+	auto tileset = engine.Renderer->GetTileset();
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& an = components.animations[id];
 	auto& tr = components.transforms[id];
+	auto& sp = components.sprites[id];
 	if (pb.leftPressed) {
 		an.isAnimating = true;
 		ph.velocity.x += -pb.movespeed * delta_t;
@@ -163,6 +171,12 @@ PlayerState PlayerBehaviorSystem::WalkStateBehavior::Update(float delta_t, Camer
 	}
 	else {
 		ph.velocity.x += ph.velocity.x > 0 ? -pb.friction : pb.friction;
+		if (abs(ph.velocity.x < pb.friction + 0.1)) {
+			ph.velocity.x = 0;
+		}
+		an.onframe = 0;
+		auto& frames = tileset->AnimationsMap[an.animationName];
+		sp.texture = frames[0];
 		an.isAnimating = false;
 	}
 	if (pb.spacePressed) {
@@ -209,7 +223,7 @@ void PlayerBehaviorSystem::WalkStateBehavior::OnExit(float delta_t, Camera2D& ca
 PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
-	auto& tilelayers = engine._TileLayers;
+	auto& tilelayers = engine.TileLayers;
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& tr = components.transforms[id];
@@ -270,7 +284,7 @@ void PlayerBehaviorSystem::JumpUpStateBehavior::OnExit(float delta_t, Camera2D& 
 PlayerState PlayerBehaviorSystem::JumpDownStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
-	auto& tilelayers = engine._TileLayers;
+	auto& tilelayers = engine.TileLayers;
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
 	auto& an = components.animations[id];
@@ -356,7 +370,7 @@ void PlayerBehaviorSystem::JumpLandStateBehavior::OnExit(float delta_t, Camera2D
 PlayerState PlayerBehaviorSystem::ClimbStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
-	auto& tilelayers = engine._TileLayers;
+	auto& tilelayers = engine.TileLayers;
 	auto& ph = components.physicses[id];
 	auto& pb = components.player_behaviors[id];
 	auto& tr = components.transforms[id];

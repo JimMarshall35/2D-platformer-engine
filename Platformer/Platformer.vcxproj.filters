@@ -25,6 +25,9 @@
     <Filter Include="Source Files\systems">
       <UniqueIdentifier>{b40b2292-76ed-4035-b51e-413ab8d086a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="State Machine Lib">
+      <UniqueIdentifier>{9074e8f0-5606-4f98-8ca8-0fc9279ccda7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -238,6 +241,12 @@
     </ClInclude>
     <ClInclude Include="ITileset.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="statemachine_lib.h">
+      <Filter>State Machine Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="state_lib.h">
+      <Filter>State Machine Lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -38,6 +38,7 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_SetCollectableValFloat, "C_SetCollectableValueFloat");
     registerFunction(l_SetCollectableValString, "C_SetCollectableValueString");
     registerFunction(l_LoadNamedTiles, "C_LoadNamedTiles");
+    registerFunction(l_SetTilesetWidthAndHeight, "C_SetTilesetWidthAndHeight");
 }
 
 
@@ -99,7 +100,7 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
             tl.Tiles[j] = luaL_checkinteger(L, -1);
             lua_pop(L, 1);
         }
-        e->_TileLayers.push_back(tl);
+        e->TileLayers.push_back(tl);
         lua_pop(L, 5);
     }
     lua_pop(L, 1); // parent table on the top
@@ -416,7 +417,7 @@ int LuaVMService::l_LoadTileLayer(lua_State* L)
         tl.Tiles[j] = luaL_checkinteger(L, -1);
         lua_pop(L, 1);
     }
-    e->_TileLayers.push_back(tl);
+    e->TileLayers.push_back(tl);
 }
 
 int LuaVMService::l_LoadAnimationFrames(lua_State* L)
@@ -647,8 +648,8 @@ int LuaVMService::l_GetTilelayers(lua_State* L)
 {
     Engine* e = (Engine*)lua_touserdata(L, 1);
     lua_newtable(L);
-    for (int i = 0; i < e->_TileLayers.size(); i++) {
-        const auto& tl = e->_TileLayers[i];
+    for (int i = 0; i < e->TileLayers.size(); i++) {
+        const auto& tl = e->TileLayers[i];
         lua_newtable(L);
         lua_pushinteger(L, tl.Type);
         lua_setfield(L, -2, "t_type");
@@ -833,6 +834,21 @@ int LuaVMService::l_LoadNamedTiles(lua_State* L)
         lua_pop(L, 1);
     }
     e->Renderer->GetTileset()->LoadNamedSpritesFromFile(fp, v);
+    return 0;
+}
+
+int LuaVMService::l_SetTilesetWidthAndHeight(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 3) {
+        std::cout << "4 arguments required l_LoadTileset, engine*, tileset_w, tileset_h" << std::endl;
+        lua_pushboolean(L, false);
+        return 1;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    ITileset* tileset = e->Renderer->GetTileset();
+    tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
+    tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
     return 0;
 }
 

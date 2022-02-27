@@ -9,6 +9,7 @@ extern "C" {
 #include <cstdio>
 #include "IRenderer2D.h"
 #include "Tileset.h"
+#include "AABB.h"
 #pragma region single tile
 
 EditorUserInterface::DrawSingleTileTool::DrawSingleTileTool(EditorUserInterface* ui, Engine* engine)
@@ -24,10 +25,10 @@ void EditorUserInterface::DrawSingleTileTool::handleMouseButton(int button, int 
 {
 	if (!imGuiWantsMouse) {
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = _UI->_SelectedTile->ID;
+			_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = _UI->_SelectedTile->ID;
 		}
 		else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-			_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = 0;
+			_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = 0;
 		}
 	}
 
@@ -37,17 +38,17 @@ void EditorUserInterface::DrawSingleTileTool::handleMouseMove(double xpos, doubl
 {
 	if (!imGuiWantsMouse) {
 		if (_UI->_LeftMouseDragging) {
-			_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = _UI->_SelectedTile->ID;
+			_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = _UI->_SelectedTile->ID;
 		}
 		else if (_UI->_RightMouseDragging) {
-			_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = 0;
+			_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[_UI->_TileIndexHovvered] = 0;
 		}
 	}
 }
 
 void EditorUserInterface::DrawSingleTileTool::drawOverlay(const IRenderer2D* renderer, const Camera2D& camera)
 {
-	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];//_SelectedTileLayer == _Engine._TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
+	TileLayer& tl = _Engine->TileLayers[_UI->_SelectedTileLayer];//_SelectedTileLayer == _Engine.TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
 	glm::vec2 worldPos;
@@ -110,7 +111,7 @@ void EditorUserInterface::SelectTool::drawOverlay(const IRenderer2D* renderer, c
 	glm::vec2 worldPos;
 
 	ITileset* tileSet = _Engine->Renderer->GetTileset();
-	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];
+	TileLayer& tl = _Engine->TileLayers[_UI->_SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
 	if (_UI->_LeftMouseDragging) {
@@ -135,7 +136,7 @@ void EditorUserInterface::SelectTool::GetNewSelection()
 	using namespace glm;
 	_SelectedTiles.clear();
 	ITileset* tileSet = _Engine->Renderer->GetTileset();
-	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];
+	TileLayer& tl = _Engine->TileLayers[_UI->_SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
 	float lowestX, lowestY, highestX, highestY;
@@ -159,7 +160,7 @@ void EditorUserInterface::SelectTool::GetNewSelection()
 	vec4 selectionTLBR = vec4(lowestY, lowestX, highestY, highestX);
 	int last_i = 0;
 	_SelectionWidth = 1;
-	for (int i = 0; i < _Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles.size(); i++) {
+	for (int i = 0; i < _Engine->TileLayers[_UI->_SelectedTileLayer].Tiles.size(); i++) {
 		vec2 worldPos;
 		auto xCoord = i % width;
 		auto yCoord = i / width;
@@ -172,7 +173,7 @@ void EditorUserInterface::SelectTool::GetNewSelection()
 			worldPos.y + (float)tileSet->TileWidthAndHeightPx.y,
 			worldPos.x + (float)tileSet->TileWidthAndHeightPx.x
 		);
-		if (_Engine->AABBCollision(tileTLBR, selectionTLBR)) {
+		if (AABBCollision(tileTLBR, selectionTLBR)) {
 			if (i == last_i + 1) {
 				_SelectionWidth++;
 				if (_SelectionWidth >= width)
@@ -193,7 +194,7 @@ void EditorUserInterface::SelectTool::CopyTiles()
 	_ClipBoardLayer = _UI->_SelectedTileLayer;
 	_ClipBoard.clear();
 	for (int tile : _SelectedTiles) {
-		_ClipBoard.push_back(_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[tile]);
+		_ClipBoard.push_back(_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[tile]);
 	}
 }
 
@@ -203,8 +204,8 @@ void EditorUserInterface::SelectTool::CutTiles()
 	_ClipBoardLayer = _UI->_SelectedTileLayer;
 	_ClipBoard.clear();
 	for (int tile : _SelectedTiles) {
-		_ClipBoard.push_back(_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[tile]);
-		_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[tile] = 0;
+		_ClipBoard.push_back(_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[tile]);
+		_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[tile] = 0;
 
 	}
 }
@@ -215,9 +216,9 @@ void EditorUserInterface::SelectTool::PasteTiles()
 	int dst_tile = startindex;
 	int rows = _ClipBoard.size() / _ClipBoardWidth;
 	int copiedTilesOnRow = 0;
-	int dst_layer_width = _Engine->_TileLayers[_UI->_SelectedTileLayer].GetWidth();
+	int dst_layer_width = _Engine->TileLayers[_UI->_SelectedTileLayer].GetWidth();
 	for (int i = 0; i < _ClipBoard.size(); i++) {
-		_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[dst_tile] = _ClipBoard[i];
+		_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[dst_tile] = _ClipBoard[i];
 		copiedTilesOnRow++;
 		if (copiedTilesOnRow >= _ClipBoardWidth) {
 			dst_tile -= _ClipBoardWidth - 1;
@@ -233,7 +234,7 @@ void EditorUserInterface::SelectTool::PasteTiles()
 void EditorUserInterface::SelectTool::DeleteSelection()
 {
 	for (int tile : _SelectedTiles) {
-		_Engine->_TileLayers[_UI->_SelectedTileLayer].Tiles[tile] = 0;
+		_Engine->TileLayers[_UI->_SelectedTileLayer].Tiles[tile] = 0;
 	}
 }
 
@@ -259,7 +260,7 @@ void EditorUserInterface::FloodFillTool::FloodFill()
 {
 	std::queue<unsigned int> q;
 	q.push(_UI->_TileIndexHovvered);
-	TileLayer& tl = _Engine->_TileLayers[_UI->_SelectedTileLayer];
+	TileLayer& tl = _Engine->TileLayers[_UI->_SelectedTileLayer];
 	auto tl_w = tl.GetWidth();
 	auto tl_h = tl.GetHeight();
 	while (!q.empty()) {
@@ -329,7 +330,7 @@ void EditorUserInterface::LuaScriptedTool::handleMouseButton(int button, int act
 {
 	if (InputRequirement & MouseButton) {
 		lua_getglobal(_L, "EditorTools");
-		dumpstack(_L);
+		//dumpstack(_L);
 		int size = luaL_len(_L, -1);
 		for (int i = 0; i < size; i++) {
 			std::cout << "before " << lua_gettop(_L) << std::endl;

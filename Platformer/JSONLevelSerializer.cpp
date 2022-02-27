@@ -42,7 +42,7 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 
 	// tile layers
 	Value layersArrayTopLevel = Value(kArrayType);
-	for (const TileLayer& tl : engine._TileLayers) {
+	for (const TileLayer& tl : engine.TileLayers) {
 		Value tileLayer;
 		tileLayer.SetObject();
 		Value widthTiles(tl.GetWidth());
@@ -96,7 +96,7 @@ bool JSONLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 {
 	using namespace rapidjson;
 	ITileset* tileset = engine.Renderer->GetTileset();
-	engine._TileLayers.clear();
+	engine.TileLayers.clear();
 	tileset->ClearTiles();
 	tileset->AnimationsMap.clear();
 	std::ifstream ifs;
@@ -137,7 +137,7 @@ bool JSONLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 		for (SizeType j = 0; j < tiles.Size(); j++) {
 			tl.Tiles[j] = tiles[j].GetInt();
 		}
-		engine._TileLayers.push_back(tl);
+		engine.TileLayers.push_back(tl);
 	}
 
 	const Value& animations = doc["animations"];

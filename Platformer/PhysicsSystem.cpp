@@ -8,7 +8,7 @@ void PhysicsSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 {
 	using namespace glm;
 	auto& components = engine._Components;
-	auto& tilelayers = engine._TileLayers;
+	auto& tilelayers = engine.TileLayers;
 	OperateOnComponentGroup(CT_PHYSICS, CT_TRANSFORM){
 		// get relavent components
 		auto& phys = components.physicses[entityID];
@@ -40,11 +40,28 @@ void PhysicsSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 			phys.bottomTouching = true;
 			//vel.y = 0;
 		}
+		
 		else {
 			phys.bottomTouching = false;
 			onplatform_id = MovingPlatformAtPos(bottomMid, components);
 			phys.movingPlatformId = onplatform_id;
 		}
+		// test
+		if (SolidTileAtCoords(floor(topLeft.x / 16.0f), floor(topLeft.y / 16.0f), tilelayers, phys)) {
+			phys.leftTouching = true;
+		}
+		else {
+			phys.leftTouching = false;
+		}
+		auto topright = topLeft + glm::vec2(width, 0.0f);
+		if (SolidTileAtCoords(floor(topright.x / 16.0f), floor(topright.y / 16.0f), tilelayers, phys)) {
+			phys.rightTouching = true;
+		}
+		else {
+			phys.rightTouching = false;
+		}
+		//end test
+
 		if (phys.movingPlatformId != 0) {
 			auto& movingPlatform = components.moving_platforms[phys.movingPlatformId];
 			auto& movingPlatformTransform = components.transforms[phys.movingPlatformId];

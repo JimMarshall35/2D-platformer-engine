@@ -8,6 +8,17 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+/*
+struct UniformBufferVariable {
+    std::string Name;
+    void* Data;
+    size_t DataSize;
+};
+struct UniformBufferDescription {
+    std::string BlockName;
+    std::vector<UniformBufferVariable> BufferVariables;
+};
+*/
 
 class Shader
 {
@@ -207,6 +218,38 @@ public:
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
+    // ------------------------------------------------------------------------
+     /*
+    void setUniformBuffer(const UniformBufferDescription& bd) {
+       
+        GLuint blockIndex = glGetUniformBlockIndex(ID, bd.BlockName.c_str());
+        GLint blockSize;
+        glGetActiveUniformBlockiv(ID, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+        std::vector<GLbyte> blockBuffer(blockSize);
+        
+#define NUM_PARTICLE_ATTRIBUTES 3
+        std::vector<const GLchar*> names(bd.BufferVariables.size());
+        for (int i = 0; i < bd.BufferVariables.size(); i++) {
+            names[i] = bd.BufferVariables[i].Name.c_str();
+        }
+
+        std::vector<GLuint> indices(names.size());
+        glGetUniformIndices(ID, names.size(), names.data(), indices.data());
+        std::vector<GLuint> offset(names.size());
+        glGetActiveUniformsiv(ID, names.size(), indices.data(), GL_UNIFORM_OFFSET, offset.data());
+        memcpy(blockBuffer + offset[0], explodeDirections.data(), explodeDirections.size() * sizeof(glm::vec2));
+        memcpy(blockBuffer + offset[1], explodeRotations.data(), explodeRotations.size() * sizeof(GLfloat));
+        memcpy(blockBuffer + offset[2], explodeSpeeds.data(), explodeSpeeds.size() * sizeof(GLfloat));
+
+
+        glGenBuffers(1, &uboHandle);
+        glBindBuffer(GL_UNIFORM_BUFFER, uboHandle);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBuffer.data(), GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboHandle);
+        GLPrintErrors();
+        
+    }
+    */
 
 private:
     // utility function for checking shader compilation/linking errors.

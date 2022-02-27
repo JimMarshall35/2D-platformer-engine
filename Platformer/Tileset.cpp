@@ -18,7 +18,7 @@ int TileSet::LoadTilesFromPxlData(const unsigned char* data, const unsigned int 
 	TileSetWidthAndHeightTiles.y = img_h / TileWidthAndHeightPx.y;
 	int oldsize = Tiles.size();
 	Tiles.resize(oldsize + (TileSetWidthAndHeightTiles.x * TileSetWidthAndHeightTiles.y));
-	unsigned char* buffer = new unsigned char[TileWidthAndHeightPx.x * TileWidthAndHeightPx.y * numchannels];
+	std::vector<unsigned char> buffer = std::vector<unsigned char>(TileWidthAndHeightPx.x * TileWidthAndHeightPx.y * numchannels);
 	int firstID = LastId;
 	glBindTexture(GL_TEXTURE_2D, 0);
 	
@@ -30,7 +30,7 @@ int TileSet::LoadTilesFromPxlData(const unsigned char* data, const unsigned int 
 			unsigned int start_pixel = (start_pixel_y * img_w) + start_pixel_x;
 
 			const unsigned char* src_ptr = data + (start_pixel * numchannels);
-			unsigned char* output_ptr = buffer;
+			unsigned char* output_ptr = buffer.data();
 			for (size_t i = 0; i < TileWidthAndHeightPx.y; i++) {
 				memcpy(output_ptr, src_ptr, (TileWidthAndHeightPx.x * numchannels));
 				output_ptr += (TileWidthAndHeightPx.x * numchannels);
@@ -46,13 +46,12 @@ int TileSet::LoadTilesFromPxlData(const unsigned char* data, const unsigned int 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TileWidthAndHeightPx.x, TileWidthAndHeightPx.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TileWidthAndHeightPx.x, TileWidthAndHeightPx.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
 			Tiles[oldsize+ind].ID = LastId++;
 
 		}
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	delete[] buffer;
 	return firstID;
 }
 
@@ -133,5 +132,15 @@ void TileSet::LoadSprite(const unsigned char* data, const unsigned int img_w, co
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spritedata.width, spritedata.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
 	NamedSpritesMap[spritedata.name] = tex;
+}
+
+GLuint TileSet::GetTextureByTileID(TileID tileId)
+{
+	for (const Tile& tile : Tiles)
+	{
+		if (tile.ID == tileId)
+			return tile.Texture;
+	}
+	return 0;
 }
 

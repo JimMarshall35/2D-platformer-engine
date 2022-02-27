@@ -3,7 +3,7 @@
 #include <memory>
 #include "Engine.h"
 #include <algorithm>    // std::find
-#include <vector>       // std::vector
+#include <vector>
 
 
 template <typename StateEnum>

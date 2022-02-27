@@ -1,4 +1,4 @@
-{
+[3] = {
 	["path"] = "C:\Users\james.marshall\source\repos\Platformer\open gunner\OpenGunnerHeroVer2.png";
 	["named_sprites"] = {
 		["run_gun_mid_r_0"] = {

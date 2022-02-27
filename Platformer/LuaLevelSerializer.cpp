@@ -21,7 +21,7 @@ bool LuaLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
     for (EntityID id : ids) {
         engine.DeleteEntity(id);
     }
-    engine._TileLayers.clear();
+    engine.TileLayers.clear();
     tileset->ClearTiles();
     tileset->AnimationsMap.clear();
     _VM->SetGlobalPointer((void*)&engine, "C_Engine");

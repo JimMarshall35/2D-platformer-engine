@@ -16,12 +16,13 @@ extern "C" {
 #include <iostream>
 #include "IRenderer2D.h"
 #include "Tileset.h"
+#include "AABB.h"
 
 void EditorUserInterface::DeleteLastLayer()
 {
-	if (_Engine->_TileLayers.size() > 1) {
-		_Engine->_TileLayers.pop_back();
-		if (_SelectedTileLayer >= _Engine->_TileLayers.size()) 
+	if (_Engine->TileLayers.size() > 1) {
+		_Engine->TileLayers.pop_back();
+		if (_SelectedTileLayer >= _Engine->TileLayers.size()) 
 			_SelectedTileLayer--;
 	}
 	std::cout << "sdjoigsd" << std::endl;
@@ -31,7 +32,7 @@ void EditorUserInterface::PushNewTileLayer(unsigned int width_tiles, unsigned in
 {
 	TileLayer t;
 	t.SetWidthAndHeight(width_tiles, height_tiles);
-	_Engine->_TileLayers.push_back(t);
+	_Engine->TileLayers.push_back(t);
 }
 
 void EditorUserInterface::DoTileButtonsWindow() {
@@ -62,7 +63,7 @@ void EditorUserInterface::DoTileButtonsWindow() {
 
 void EditorUserInterface::DoLayersWindow()
 {
-	int numLayers = _Engine->_TileLayers.size();
+	int numLayers = _Engine->TileLayers.size();
 	if (_LayerTabsOpenSize != numLayers) {
 		if (_LayerTabsOpen != nullptr) {
 			delete[] _LayerTabsOpen;
@@ -73,7 +74,7 @@ void EditorUserInterface::DoLayersWindow()
 	unsigned int tab_bar_flags = ImGuiTabBarFlags_Reorderable;
 	bool delete_pressed = 0;
 	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
-		for (TileLayer& t : _Engine->_TileLayers) {
+		for (TileLayer& t : _Engine->TileLayers) {
 			
 			int width = t.GetWidth();
 			int height = t.GetHeight();
@@ -367,7 +368,7 @@ void EditorUserInterface::DoGui()
 		DoTileButtonsWindow();
 		ImGui::End();
 	}
-	if (_Engine->_TileLayers.size() > 0) {
+	if (_Engine->TileLayers.size() > 0) {
 		ImGui::Begin("layers");
 		DoLayersWindow();
 		ImGui::End();
@@ -398,7 +399,7 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 	vec4 cameraTLBR = camera.GetTLBR(renderer->GetW(), renderer->GetH());
 	int skipped = 0;
 	
-	TileLayer& tl = _Engine->_TileLayers[_SelectedTileLayer];//_SelectedTileLayer == _Engine._TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
+	TileLayer& tl = _Engine->TileLayers[_SelectedTileLayer];//_SelectedTileLayer == _Engine.TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
 	ITileset* tileset = _Engine->Renderer->GetTileset();
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
@@ -418,7 +419,7 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 		);
 		worldPos += vec2(tileset->TileWidthAndHeightPx) * 0.5f;
 		
-		if (!_Engine->AABBCollision(cameraTLBR, tileTLBR)) {
+		if (!AABBCollision(cameraTLBR, tileTLBR)) {
 			skipped++;
 			continue;
 		}
@@ -453,8 +454,8 @@ void EditorUserInterface::cursorPositionCallbackHandler(double xpos, double ypos
 		if (_SelectedTileLayer < 0) return;
 		_LastMouseWorld = camera.MouseScreenPosToWorld(_lastMouseRawX, _lastMouseRawY, WindowW, WindowH);
 		glm::ivec2 tileDims = tileset->TileWidthAndHeightPx;
-		int tileLayerH = _Engine->_TileLayers[_SelectedTileLayer].GetHeight();
-		int tileLayerW = _Engine->_TileLayers[_SelectedTileLayer].GetWidth();
+		int tileLayerH = _Engine->TileLayers[_SelectedTileLayer].GetHeight();
+		int tileLayerW = _Engine->TileLayers[_SelectedTileLayer].GetWidth();
 		int x = floor(_LastMouseWorld.x / (float)tileDims.x);
 		int y = floor(_LastMouseWorld.y / (float)tileDims.y);
 		if (x < 0 || x >= tileLayerW || y < 0 || y >= tileLayerH) {
@@ -524,7 +525,7 @@ void EditorUserInterface::keyboardButtonCallbackHandler(GLFWwindow* window, int 
 		_Engine->SaveCurrentLevel("test.lua");
 	}
 	if (key == GLFW_KEY_L && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
-		_Engine->LoadLevel("test.lua");
+		_Engine->CueLevel("test.lua");//LoadLevel("test.lua");
 	}
 	if (_SelectedTool->InputRequirement & KeyboardButton) {
 		_SelectedTool->handleKeyboard(window,key,scancode,action,mods,wantKeyboardInput);
@@ -570,8 +571,6 @@ bool EditorUserInterface::FileChosen(std::string path)
 {
 	ITileset* tileset = _Engine->Renderer->GetTileset();
 	tileset->LoadTilesFromImgFile(path);
-	PushNewTileLayer(100, 50);
-	PushNewTileLayer(100, 50);
 	_SelectedTileLayer = 0;
 	
 	return true;

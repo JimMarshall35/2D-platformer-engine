@@ -11,7 +11,7 @@ void EnemyBehaviorSystem::Update(float delta_t, Camera2D& camera, Engine& engine
 	using namespace glm;
 	const float speed = 20;
 	auto& components = engine._Components;
-	auto& tilelayers = engine._TileLayers;
+	auto& tilelayers = engine.TileLayers;
 	OperateOnComponentGroup(CT_ENEMYBEHAVIOR, CT_TRANSFORM, CT_PHYSICS) {
 		auto& enemy = components.enemy_behaviors[entityID];
 		auto& tr = components.transforms[entityID];

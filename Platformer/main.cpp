@@ -55,35 +55,31 @@ int main(int argc, char* argv[])
 	glClearColor(0.5294, 0.8078, 0.9216, 1.0); // sky blue
 	double last = glfwGetTime();
 	LuaVMService* vmService = new LuaVMService();
-	Engine engine(
-		new EditorUserInterface(vmService), 
-		new LuaLevelSerializer(vmService), 
-		new Renderer2D()
-	);
-	engine_ptr = &engine;
-	// Note: these two lines are NOT the same one accidentally repeated!!
+	
+	// Note: these two lines are NOT the same one accidentally repeated!! READ CAREFULLY
 	inputInit(window);
 	imguiInit(window);
 	
 	
 	const ImGuiIO& io = ImGui::GetIO(); (void)io;
 	
-
+	Engine engine(
+		new EditorUserInterface(vmService),
+		new LuaLevelSerializer(vmService),
+		new Renderer2D()
+	);
+	engine_ptr = &engine;
 	while (!glfwWindowShouldClose(window))
 	{
 		double now = glfwGetTime();
 		double delta = now - last;
 		last = now;
-
-		engine.Update(delta);
-
 		wantMouseInput = io.WantCaptureMouse;
 		wantKeyboardInput = io.WantCaptureKeyboard;
 
 		glfwPollEvents();
 
-		
-
+		engine.Update(delta);
 		glClear(GL_COLOR_BUFFER_BIT);
 		engine.Draw();
 		

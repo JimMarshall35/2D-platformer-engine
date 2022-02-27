@@ -11,7 +11,7 @@
 #define EXPLODE_QUADS_ROWS 16
 #define EXPLODE_QUADS_COLS 16
 #define EXPLODE_QUADS_TOTAL EXPLODE_QUADS_ROWS*EXPLODE_QUADS_COLS
-void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, GLuint texture, const Camera2D& cam) const
+void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, TileID tileID, const Camera2D& cam) const
 {
 	GLClearErrors();
 	
@@ -26,7 +26,7 @@ void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation
 	_TextureShader.setMat4("projection", cam.GetProjectionMatrix(_WindowW, _WindowH));
 	_TextureShader.setMat4("model", model);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, _Tileset->GetTextureByTileID(tileID));
 
 	glBindVertexArray(_TextureVAO);
 	glDrawArrays(GL_TRIANGLES,0,6);
@@ -75,7 +75,7 @@ void Renderer2D::DrawSolidRect(glm::vec2 pos, glm::vec2 scale, float rotation, g
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer2D::DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam, float time) const
+void Renderer2D::DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rotation, TileID tileID, const Camera2D& cam, float time) const
 {
 	GLClearErrors();
 	glm::mat4 model = glm::mat4(1.0f);
@@ -92,7 +92,7 @@ void Renderer2D::DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rota
 
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, tileID);
 	
 	glBindVertexArray(_ExplodeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, EXPLODE_QUADS_TOTAL*6);
@@ -281,6 +281,7 @@ void Renderer2D::seedExplodeRotations()
 		_ExplodeRotations[i] = 0;
 	}
 }
+
 #define RandomFloatBetween(min,max) ((((float) rand()) / (float) RAND_MAX)*(max-min)) + min
 void Renderer2D::seedExplodeSpeeds()
 {

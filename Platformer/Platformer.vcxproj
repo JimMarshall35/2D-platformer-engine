@@ -200,6 +200,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ExplodingSpriteUpdateSystem.h" />
+    <ClInclude Include="statemachine_lib.h" />
     <ClInclude Include="IEditorUI.h" />
     <ClInclude Include="ILevelSerializer.h" />
     <ClInclude Include="ImGuiFileDialog.h" />
@@ -225,6 +226,7 @@
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="state_lib.h" />
     <ClInclude Include="stb\stb_image.h" />
     <ClInclude Include="stb\stb_image_resize.h" />
     <ClInclude Include="Tilelayer.h" />

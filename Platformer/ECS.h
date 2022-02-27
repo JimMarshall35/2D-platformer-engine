@@ -17,7 +17,7 @@ struct ExplodingSprite {
 	unsigned int texture;
 	bool shoulddraw = true;
 	float explodeTimer = 0;
-	float explodeTime = 3.0;
+	float explodeTime = 1.0;
 	bool finishedExploding = false;
 };
 

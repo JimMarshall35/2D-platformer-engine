@@ -5,14 +5,15 @@
 #include <unordered_map>
 
 using TextureID = unsigned int;
+using TileID = unsigned int;
 
 struct Tile {
 public:
-	Tile(TextureID texture, unsigned int ID);
+	Tile(TextureID texture, TileID ID);
 	Tile() {};
 	~Tile();
 	TextureID Texture = 0;
-	unsigned int ID = 0;
+	TileID ID = 0;
 };
 
 struct ImgFileTilesetData {
@@ -43,4 +44,5 @@ public:
 	virtual bool LoadNamedSpritesFromFile(std::string filepath, const std::vector<NamedTileData>& sprites) = 0;
 	virtual glm::ivec2 GetTileDims(unsigned int tileID) = 0;
 	virtual void ClearTiles() = 0;
+	virtual TextureID GetTextureByTileID(TileID tileId) = 0;
 };
