@@ -73,23 +73,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,7 +121,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -135,7 +135,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,7 +154,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -183,6 +183,7 @@
     <ClCompile Include="MovingPlaformSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PlayerBehaviorSystem.cpp" />
+    <ClCompile Include="PortAudioPlayer.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="stbi_image.cpp" />
     <ClCompile Include="Tilelayer.cpp" />
@@ -192,6 +193,7 @@
   <ItemGroup>
     <ClInclude Include="AABB.h" />
     <ClInclude Include="AnimationSystem.h" />
+    <ClInclude Include="audiofile.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="CollectableSystem.h" />
     <ClInclude Include="dirent\dirent.h" />
@@ -200,6 +202,8 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ExplodingSpriteUpdateSystem.h" />
+    <ClInclude Include="IAudioPlayer.h" />
+    <ClInclude Include="PortAudioPlayer.h" />
     <ClInclude Include="statemachine_lib.h" />
     <ClInclude Include="IEditorUI.h" />
     <ClInclude Include="ILevelSerializer.h" />

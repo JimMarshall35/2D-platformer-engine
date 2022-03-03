@@ -192,10 +192,11 @@ void Engine::Draw()
 	}
 }
 
-Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer)
+Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer, IAudioPlayer* audio)
 	:Renderer(std::unique_ptr<IRenderer2D>(renderer)),
 	_LevelSerializer(std::unique_ptr<ILevelSerializer>(serializer)),
-	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI))
+	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI)),
+	_AudioPlayer(std::unique_ptr<IAudioPlayer>(audio))
 {
 	Renderer->Init();
 	_Editor->SetEngine(this);

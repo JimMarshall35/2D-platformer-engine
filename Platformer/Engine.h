@@ -7,6 +7,7 @@
 #include "ECS.h"
 #include "ISystem.h"
 #include "statemachine_lib.h"
+#include "IAudioPlayer.h"
 
 
 class IRenderer2D;
@@ -47,6 +48,7 @@ class Engine : public ECS
 private:
 	std::unique_ptr<IEditorUserInterface> _Editor;
 	std::unique_ptr<ILevelSerializer> _LevelSerializer;
+	std::unique_ptr<IAudioPlayer> _AudioPlayer;
 	EngineMode _CurrentMode = EngineMode::Play;
 	
 	Camera2D _EditorCam;
@@ -65,10 +67,11 @@ private:
 public:
 	EntityID _Player1 = 0;
 	std::unique_ptr<IRenderer2D> Renderer;
+	
 
 	glm::ivec2 CollidableLayerWidthAndHeight;
 	std::vector<TileLayer> TileLayers;
-	Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer);
+	Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer, IAudioPlayer* audio);
 	void DrawBackgroundLayers(const Camera2D& camera);
 	void Draw();
 	void Update(double delta_t);

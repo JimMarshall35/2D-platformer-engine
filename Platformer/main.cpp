@@ -10,6 +10,7 @@
 #include "LuaVMService.h"
 #include "EditorUI.h"
 #include "Renderer2D.h"
+#include "PortAudioPlayer.h"
 
 static bool wantMouseInput = false;
 static bool wantKeyboardInput = false;
@@ -66,7 +67,8 @@ int main(int argc, char* argv[])
 	Engine engine(
 		new EditorUserInterface(vmService),
 		new LuaLevelSerializer(vmService),
-		new Renderer2D()
+		new Renderer2D(),
+		new PortAudioPlayer()
 	);
 	engine_ptr = &engine;
 	while (!glfwWindowShouldClose(window))
