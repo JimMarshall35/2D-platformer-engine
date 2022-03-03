@@ -7,6 +7,7 @@
 #define SOUNDFX_BUFFER_SIZE_SECONDS 20
 #define NUMCHANNELS 2
 #define SOUNDFX_BUFFER_SIZE_SAMPLES SOUNDFX_BUFFER_SIZE_SECONDS * SAMPLE_RATE * NUMCHANNELS
+
 static paTestData data;
 AudioRingBuffer<float> PortAudioPlayer::s_soundFxBuffer(SOUNDFX_BUFFER_SIZE_SAMPLES);
 
@@ -20,13 +21,12 @@ PortAudioPlayer::PortAudioPlayer()
     err = Pa_OpenDefaultStream(
         &stream,
         0,          /* no input channels */
-        2,          /* stereo output */
+        NUMCHANNELS,          /* stereo output */
         paFloat32,  /* 32 bit floating point output */
         SAMPLE_RATE,
         paFramesPerBufferUnspecified,        /* frames per buffer, i.e. the number of sample frames that PortAudio will request from the callback. Many apps may want to use paFramesPerBufferUnspecified, which tells PortAudio to pick the best, possibly changing, buffer size.*/
         paSoundFxCallback, /* this is your callback function */
-        &data); /*This is a pointer that will be passed to
-                           your callback*/
+        nullptr); /*This is a pointer that will be passed to your callback*/
     if (err != paNoError) {
         std::cout << "Pa_OpenDefaultStream error" << std::endl;
     }
@@ -34,18 +34,20 @@ PortAudioPlayer::PortAudioPlayer()
     if (err != paNoError) {
         std::cout << "Pa_StartStream error" << std::endl;
     }
-    
+    //AudioClipID id = LoadClip("message.wav");
+    //PlayClip(id);
 }
 
-AudioClipID PortAudioPlayer::LoadSound(std::string path)
+AudioClipID PortAudioPlayer::LoadClip(std::string path)
 {
-    auto id = _idGenerator.GetClipId();
+    auto id = _idGenerator.GetId();
     AudioFile<float> af;
     af.load(path);
     assert(af.getSampleRate() == SAMPLE_RATE);
     int numSamples = af.getNumSamplesPerChannel();
 
     int secondInterleafChannel = 1;
+
     // if source is mono load the same sample into left and right channels
     if (af.isMono())
         secondInterleafChannel = 0;
@@ -61,7 +63,7 @@ AudioClipID PortAudioPlayer::LoadSound(std::string path)
 	return id;
 }
 
-bool PortAudioPlayer::PlaySound(AudioClipID id)
+bool PortAudioPlayer::PlayClip(AudioClipID id)
 {
     if (_audioDataMap.find(id) == _audioDataMap.end()) {
         return false;
@@ -88,24 +90,8 @@ int PortAudioPlayer::paSoundFxCallback(const void* inputBuffer, void* outputBuff
     unsigned int i;
     (void)inputBuffer; /* Prevent unused variable warning. */
 
-    s_soundFxBuffer.ReadBlock((float*)outputBuffer, framesPerBuffer*2);
+    s_soundFxBuffer.ReadBlock((float*)outputBuffer, framesPerBuffer * NUMCHANNELS);
 
     return 0;
 }
 
-AudioClipID AudioClipIdGenerator::GetClipId()
-{
-    if(!_deletedClipIds.empty()){
-        auto val = _deletedClipIds.front();
-        _deletedClipIds.pop();
-        return val;
-    }
-    else {
-        return _onId++;
-    }
-}
-
-void AudioClipIdGenerator::DeleteId(AudioClipID id)
-{
-    _deletedClipIds.push(id);
-}

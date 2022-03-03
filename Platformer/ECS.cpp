@@ -6,7 +6,7 @@
 
 EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 {
-	EntityID id = GetEntityId();
+	EntityID id = _idGenerator.GetId();
 	for (const auto& ct : components) {
 		switch (ct) {
 		case CT_TRANSFORM:
@@ -82,7 +82,7 @@ bool ECS::DeleteEntity(EntityID id)
 		}
 	}
 	_Entities.erase(id);
-	_DeletedIds.push(id);
+	_idGenerator.DeleteId(id);
 	return true;
 }
 
@@ -173,14 +173,3 @@ std::set<EntityID> ECS::getIntersection(const std::vector<ComponentType>& compon
 	
 }
 
-EntityID ECS::GetEntityId()
-{
-	static EntityID id = 1;
-	if (!_DeletedIds.empty()) {
-		EntityID recycled = _DeletedIds.front();
-		_DeletedIds.pop();
-		return recycled;
-	}
-		
-	return id++;
-}

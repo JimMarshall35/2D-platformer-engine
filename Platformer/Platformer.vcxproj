@@ -194,6 +194,7 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="audiofile.h" />
+    <ClInclude Include="AudioRingBuffer.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="CollectableSystem.h" />
     <ClInclude Include="dirent\dirent.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ExplodingSpriteUpdateSystem.h" />
     <ClInclude Include="IAudioPlayer.h" />
+    <ClInclude Include="IdGenerator.h" />
     <ClInclude Include="PortAudioPlayer.h" />
     <ClInclude Include="statemachine_lib.h" />
     <ClInclude Include="IEditorUI.h" />

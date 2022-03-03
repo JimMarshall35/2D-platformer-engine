@@ -5,6 +5,7 @@
 #include <set>
 #include <queue>
 #include <iostream>
+#include "IdGenerator.h"
 
 using EntityID = int64_t;
 
@@ -249,6 +250,5 @@ public:
 	static std::set<EntityID> getKeys(ComponentType type, const Components& components);
 	static std::set<EntityID> getIntersection(const std::vector<ComponentType>& componentTypes, const Components& components);
 private:
-	EntityID GetEntityId();
-	std::queue<EntityID> _DeletedIds;
+	IdGenerator<EntityID> _idGenerator;
 };

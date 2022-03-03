@@ -260,6 +260,12 @@
     <ClInclude Include="audiofile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AudioRingBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IdGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vert.glsl" />
