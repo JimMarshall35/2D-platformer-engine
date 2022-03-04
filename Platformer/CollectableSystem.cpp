@@ -56,15 +56,20 @@ void CollectableSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 				switch (co.type) {
 				case CollectableType::Coin:
 					player_pb.coins_collected += co.val_i;
+					engine.AudioPlayer->PlayClip(_CoinAudioClip, 0.05f);
 					break;
 				default:
 					std::cout << "invalid collectable type" << std::endl;
 				}
-				
 			}
 		}
 	}
 	for (auto id : todelete) {
 		engine.DeleteEntity(id);
 	}
+}
+
+void CollectableSystem::Initialize(Engine* engine)
+{
+	_CoinAudioClip = engine->AudioPlayer->LoadClip("341695__projectsu012__coins-1.wav");
 }

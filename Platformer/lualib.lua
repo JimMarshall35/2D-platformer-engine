@@ -49,6 +49,8 @@ function luaLib_LoadLevel_PersistenceLib(path)
 					val.time_period,
 					val.timer
 				)
+			elseif key == ComponentType.CT_COLLECTABLE then
+				C_SetCollectableType(C_Engine, id, val.type)
 			end
 		end
 	end

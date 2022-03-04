@@ -48,17 +48,14 @@ class Engine : public ECS
 private:
 	std::unique_ptr<IEditorUserInterface> _Editor;
 	std::unique_ptr<ILevelSerializer> _LevelSerializer;
-	std::unique_ptr<IAudioPlayer> _AudioPlayer;
 	EngineMode _CurrentMode = EngineMode::Play;
-	
 	Camera2D _EditorCam;
 	Camera2D _GameCam;
-	
 	std::vector<std::unique_ptr<ISystem>> _Systems;
 	PS::StateMachine<HighLevelEngineState, HighLevelEngineEvent> _StateMachine;
-
 	std::string _NewLvlToLoad = "";
-
+private:
+	void InitializeSystems();
 	void SpritesSystemDraw(const Camera2D& cam);
 	void ExplodingSpritesSystemDraw(const Camera2D& cam);
 	void GotoEditMode();
@@ -67,7 +64,9 @@ private:
 public:
 	EntityID _Player1 = 0;
 	std::unique_ptr<IRenderer2D> Renderer;
-	
+	std::unique_ptr<IAudioPlayer> AudioPlayer;
+	AudioClipID JumpAudioClip;
+	AudioClipID CoinAudioClip;
 
 	glm::ivec2 CollidableLayerWidthAndHeight;
 	std::vector<TileLayer> TileLayers;

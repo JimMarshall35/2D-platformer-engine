@@ -28,6 +28,9 @@
     <Filter Include="State Machine Lib">
       <UniqueIdentifier>{9074e8f0-5606-4f98-8ca8-0fc9279ccda7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{d793f92d-40d3-4e6d-b62c-20f439d87bff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -251,19 +254,22 @@
     <ClInclude Include="state_lib.h">
       <Filter>State Machine Lib</Filter>
     </ClInclude>
-    <ClInclude Include="IAudioPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PortAudioPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="audiofile.h">
+    <ClInclude Include="IdGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioRingBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="IdGenerator.h">
+    <ClInclude Include="audiofile.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="IAudioPlayer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="PortAudioPlayer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="macros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

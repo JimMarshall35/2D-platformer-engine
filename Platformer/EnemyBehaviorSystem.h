@@ -11,5 +11,8 @@ public:
 
 private:
     bool SolidTileAtCoords(int x, int y, const std::vector<TileLayer>& tileLayers, const Physics& phys);
+
+    // Inherited via ISystem
+    virtual void Initialize(Engine* engine) override;
 };
 

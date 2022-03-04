@@ -15,3 +15,6 @@ void ExplodingSpriteUpdateSystem::Update(float delta_t, Camera2D& camera, Engine
 	}
 }
 
+void ExplodingSpriteUpdateSystem::Initialize(Engine* engine)
+{
+}

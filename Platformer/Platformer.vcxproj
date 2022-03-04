@@ -205,6 +205,7 @@
     <ClInclude Include="ExplodingSpriteUpdateSystem.h" />
     <ClInclude Include="IAudioPlayer.h" />
     <ClInclude Include="IdGenerator.h" />
+    <ClInclude Include="macros.h" />
     <ClInclude Include="PortAudioPlayer.h" />
     <ClInclude Include="statemachine_lib.h" />
     <ClInclude Include="IEditorUI.h" />

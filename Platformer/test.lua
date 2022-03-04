@@ -55886,6 +55886,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -55915,6 +55916,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -55944,6 +55946,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -55973,6 +55976,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56002,6 +56006,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56031,6 +56036,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56060,6 +56066,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56089,6 +56096,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56118,6 +56126,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56147,6 +56156,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56176,6 +56186,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56205,6 +56216,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};
@@ -56234,6 +56246,7 @@ local obj1 = {
 					["shouldloop"] = 1;
 				};
 				[8] = {
+					["type"] = 1;
 				};
 			};
 		};

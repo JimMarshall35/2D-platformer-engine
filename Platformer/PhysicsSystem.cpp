@@ -279,6 +279,10 @@ bool PhysicsSystem::ResolveDynamicRectVsRect(rect* r_dynamic, const float fTimeS
 	return false;
 }
 
+void PhysicsSystem::Initialize(Engine* engine)
+{
+}
+
 EntityID PhysicsSystem::MovingPlatformAtPos(const glm::vec2& pos, Components& c) {
 	for (const auto& [key, val] : c.moving_platforms) {
 		const auto& transform = c.transforms[key];

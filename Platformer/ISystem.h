@@ -9,4 +9,5 @@ class Engine;
 class ISystem {
 public:
 	virtual void Update(float delta_t, Camera2D& camera, Engine& engine ) = 0;
+	virtual void Initialize(Engine* engine) = 0;
 };

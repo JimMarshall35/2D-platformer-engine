@@ -99,3 +99,7 @@ bool EnemyBehaviorSystem::SolidTileAtCoords(int x, int y, const std::vector<Tile
 	}
 	return false;
 }
+
+void EnemyBehaviorSystem::Initialize(Engine* engine)
+{
+}

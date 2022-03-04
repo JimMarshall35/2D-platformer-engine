@@ -30,3 +30,7 @@ void AnimationSystem::Update(float delta_t, Camera2D& camera, Engine& engine)
 
 	}
 }
+
+void AnimationSystem::Initialize(Engine* engine)
+{
+}

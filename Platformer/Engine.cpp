@@ -115,6 +115,7 @@ void Engine::KeyBoardButtonCallbackHandler(GLFWwindow* window, int key, int scan
 			else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) {
 				value.attackPressed = false;
 			}
+
 		}
 		if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 			GotoEditMode();
@@ -192,31 +193,6 @@ void Engine::Draw()
 	}
 }
 
-Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer, IAudioPlayer* audio)
-	:Renderer(std::unique_ptr<IRenderer2D>(renderer)),
-	_LevelSerializer(std::unique_ptr<ILevelSerializer>(serializer)),
-	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI)),
-	_AudioPlayer(std::unique_ptr<IAudioPlayer>(audio))
-{
-	Renderer->Init();
-	_Editor->SetEngine(this);
-	_GameCam.FocusPosition = glm::vec2(32, 0);
-	_GameCam.Zoom = 3.0f;
-
-	// make systems
-	_Systems.push_back(std::make_unique<AnimationSystem>());
-	_Systems.push_back(std::make_unique<PhysicsSystem>());
-	_Systems.push_back(std::make_unique<PlayerBehaviorSystem>(this));
-	_Systems.push_back(std::make_unique<MovingPlaformSystem>());
-	_Systems.push_back(std::make_unique<EnemyBehaviorSystem>());
-	_Systems.push_back(std::make_unique<CollectableSystem>());
-	_Systems.push_back(std::make_unique<ExplodingSpriteUpdateSystem>());
-
-	//LoadLevel("test.lua");
-	//CueLevel("test.lua");
-	CueLevel("test.lua");
-}
-
 void Engine::DrawBackgroundLayers(const Camera2D& camera)
 {
 	using namespace glm;
@@ -254,6 +230,7 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 	}
 }
 
+
 void Engine::SpritesSystemDraw(const Camera2D& cam)
 {
 	using namespace glm;
@@ -287,9 +264,46 @@ void Engine::ExplodingSpritesSystemDraw(const Camera2D& cam)
 
 #pragma endregion
 
+#pragma region Systems
+void Engine::InitializeSystems()
+{
+	for (auto& sys : _Systems) {
+		sys->Initialize(this);
+	}
+}
+
+#pragma endregion
+
+
 #pragma region ctor
 
+Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRenderer2D* renderer, IAudioPlayer* audio)
+	:Renderer(std::unique_ptr<IRenderer2D>(renderer)),
+	_LevelSerializer(std::unique_ptr<ILevelSerializer>(serializer)),
+	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI)),
+	AudioPlayer(std::unique_ptr<IAudioPlayer>(audio))
+{
+	Renderer->Init();
+	_Editor->SetEngine(this);
+	_GameCam.FocusPosition = glm::vec2(32, 0);
+	_GameCam.Zoom = 3.0f;
 
+	// make systems
+	_Systems.push_back(std::make_unique<AnimationSystem>());
+	_Systems.push_back(std::make_unique<PhysicsSystem>());
+	_Systems.push_back(std::make_unique<PlayerBehaviorSystem>());
+	_Systems.push_back(std::make_unique<MovingPlaformSystem>());
+	_Systems.push_back(std::make_unique<EnemyBehaviorSystem>());
+	_Systems.push_back(std::make_unique<CollectableSystem>());
+	_Systems.push_back(std::make_unique<ExplodingSpriteUpdateSystem>());
+
+	InitializeSystems();
+	//JumpAudioClip = AudioPlayer->LoadClip("262893__kwahmah-02__videogame-jump.wav");
+	//CoinAudioClip = AudioPlayer->LoadClip("341695__projectsu012__coins-1.wav");
+	//LoadLevel("test.lua");
+	//CueLevel("test.lua");
+	CueLevel("test.lua");
+}
 
 #pragma endregion
 

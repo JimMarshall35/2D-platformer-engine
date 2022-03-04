@@ -62,6 +62,7 @@ bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, 
 	auto& health = components.healths[id];
 	if (health.current == 0 && pb.state != Dead && pb.laststate != Dead) {
 		newstate = Dead;
+		engine.AudioPlayer->PlayClip(_DieSound);
 		return true;
 	}
 	if (pb.colliding_enemy != 0 && pb.state != Dead && pb.laststate != Dead && pb.state != KnockBack) {
@@ -72,22 +73,30 @@ bool PlayerBehaviorSystem::DoGlobalTransitions(float delta_t, Camera2D& camera, 
 	return false;
 }
 
+
+
 #pragma endregion
 
-#pragma region ctor
-
-PlayerBehaviorSystem::PlayerBehaviorSystem(Engine* engine)
+void PlayerBehaviorSystem::Initialize(Engine* engine)
 {
 	_StatesMap.push_back(nullptr);
 	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new WalkStateBehavior()));
-	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpUpStateBehavior(engine)));
 	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpDownStateBehavior()));
 	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new JumpLandStateBehavior()));
 	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new ClimbStateBehavior()));
-	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior()));
+	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new KnockbackStateBehavior(engine)));
 	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new DeadStateBehavior()));
 	_StatesMap.push_back(std::unique_ptr<StateBehaviorBase<PlayerState>>(new StabStateBehavior()));
 
+	_DieSound = engine->AudioPlayer->LoadClip("475347__fupicat__videogame-death-sound.wav");
+}
+
+#pragma region ctor
+
+PlayerBehaviorSystem::PlayerBehaviorSystem()
+{
+	
 }
 
 #pragma endregion
@@ -220,6 +229,11 @@ void PlayerBehaviorSystem::WalkStateBehavior::OnExit(float delta_t, Camera2D& ca
 
 #pragma region jump up state
 
+PlayerBehaviorSystem::JumpUpStateBehavior::JumpUpStateBehavior(Engine* e)
+{
+	_JumpSound = e->AudioPlayer->LoadClip("262893__kwahmah-02__videogame-jump.wav");
+}
+
 PlayerState PlayerBehaviorSystem::JumpUpStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -256,6 +270,8 @@ void PlayerBehaviorSystem::JumpUpStateBehavior::OnEnter(float delta_t, Camera2D&
 	auto& an = components.animations[id];
 	auto& pb = components.player_behaviors[id];
 	auto& ph = components.physicses[id];
+
+	engine.AudioPlayer->PlayClip(_JumpSound, 0.05);
 
 	an.isAnimating = true;
 	an.animationName = "jump_up";
@@ -427,6 +443,11 @@ void PlayerBehaviorSystem::ClimbStateBehavior::OnExit(float delta_t, Camera2D& c
 
 #pragma region knock back state
 
+PlayerBehaviorSystem::KnockbackStateBehavior::KnockbackStateBehavior(Engine* engine)
+{
+	_knockbackSoundEffect = engine->AudioPlayer->LoadClip("346116__lulyc__retro-game-heal-sound.wav");
+}
+
 PlayerState PlayerBehaviorSystem::KnockbackStateBehavior::Update(float delta_t, Camera2D& camera, Engine& engine, EntityID id)
 {
 	auto& components = engine._Components;
@@ -470,6 +491,8 @@ void PlayerBehaviorSystem::KnockbackStateBehavior::OnEnter(float delta_t, Camera
 
 	components.player_behaviors[id].knockback_timer = 0;
 	components.player_behaviors[id].knockback_blink_timer = 0;
+
+	engine.AudioPlayer->PlayClip(_knockbackSoundEffect, 0.05);
 }
 
 void PlayerBehaviorSystem::KnockbackStateBehavior::OnExit(float delta_t, Camera2D& camera, Engine& engine, EntityID id)

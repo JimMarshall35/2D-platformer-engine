@@ -711,6 +711,7 @@ int LuaVMService::l_SetCollectableType(lua_State* L)
         return 0;
     }
     EntityID id = lua_tointeger(L, 2);
+    int typeASInt = lua_tointeger(L, 3);
     CollectableType type = (CollectableType)lua_tointeger(L, 3);
 
     e->_Components.collectables[id].type = type;

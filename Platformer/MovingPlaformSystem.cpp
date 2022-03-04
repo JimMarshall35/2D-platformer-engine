@@ -26,3 +26,7 @@ void MovingPlaformSystem::Update(float delta_t, Camera2D& camera, Engine& engine
 		//transform.pos = glm::mix(movingPlatform.point1, movingPlatform.point2, t);
 	}
 }
+
+void MovingPlaformSystem::Initialize(Engine* engine)
+{
+}
