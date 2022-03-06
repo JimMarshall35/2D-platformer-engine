@@ -37,5 +37,4 @@ glm::vec2 Camera2D::MouseScreenPosToWorld(double mousex, double mousey, unsigned
         tlbr[1] + norm.x * (tlbr[3] - tlbr[1]),
         tlbr[0] + norm.y * (tlbr[2] - tlbr[0])
     );
-     
 }

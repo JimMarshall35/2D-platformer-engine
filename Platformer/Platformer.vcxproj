@@ -73,23 +73,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(SolutionDir)box2d-main\box2d-main\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(SolutionDir)box2d-main\box2d-main\build\bin\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(SolutionDir)box2d-main\box2d-main\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(SolutionDir)box2d-main\box2d-main\build\bin\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(SolutionDir)box2d-main\box2d-main\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(SolutionDir)box2d-main\box2d-main\build\bin\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)portaudio\include;$(SolutionDir)glad\include;$(SolutionDir)glfw-3.3.5.bin.WIN64\include;$(SolutionDir)glm-master;$(SolutionDir)rapidjson-master\rapidjson-master\include;$(SolutionDir)lua53\include;$(SolutionDir)box2d-main\box2d-main\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)glfw-3.3.5.bin.WIN64\lib-vc2019;$(SolutionDir)lua53;$(SolutionDir)portaudio\out\build\x64-Debug;$(SolutionDir)box2d-main\box2d-main\build\bin\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,7 +121,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -135,7 +135,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,19 +154,23 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;lua53.lib;portaudio_static_x64.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="AnimationSystem.cpp" />
+    <ClCompile Include="Box2dContextService.cpp" />
+    <ClCompile Include="Box2dPhysicsSystem.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="CollectableSystem.cpp" />
+    <ClCompile Include="DrawPolygonTool.cpp" />
+    <ClCompile Include="DrawSingleTileTool.cpp" />
     <ClCompile Include="ECS.cpp" />
-    <ClCompile Include="EditorUITools.cpp" />
     <ClCompile Include="EnemyBehaviorSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="ExplodingSpriteUpdateSystem.cpp" />
+    <ClCompile Include="FloodFillTool.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="ImGuiFileDialog.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -178,6 +182,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="JSONLevelSerializer.cpp" />
     <ClCompile Include="LuaLevelSerializer.cpp" />
+    <ClCompile Include="LuaScriptedTool.cpp" />
     <ClCompile Include="LuaVMService.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovingPlaformSystem.cpp" />
@@ -185,6 +190,7 @@
     <ClCompile Include="PlayerBehaviorSystem.cpp" />
     <ClCompile Include="PortAudioPlayer.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
+    <ClCompile Include="SelectTool.cpp" />
     <ClCompile Include="stbi_image.cpp" />
     <ClCompile Include="Tilelayer.cpp" />
     <ClCompile Include="Tileset.cpp" />
@@ -195,19 +201,27 @@
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="audiofile.h" />
     <ClInclude Include="AudioRingBuffer.h" />
+    <ClInclude Include="Box2dContextService.h" />
+    <ClInclude Include="Box2dPhysicsSystem.h" />
+    <ClInclude Include="Box2dWorldSettings.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="CollectableSystem.h" />
     <ClInclude Include="dirent\dirent.h" />
+    <ClInclude Include="DrawPolygonTool.h" />
+    <ClInclude Include="DrawSingleTileTool.h" />
     <ClInclude Include="ECS.h" />
+    <ClInclude Include="EditorToolBase.h" />
     <ClInclude Include="EnemyBehaviorSystem.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ExplodingSpriteUpdateSystem.h" />
+    <ClInclude Include="FloodFillTool.h" />
     <ClInclude Include="IAudioPlayer.h" />
     <ClInclude Include="IdGenerator.h" />
+    <ClInclude Include="LuaScriptedTool.h" />
     <ClInclude Include="macros.h" />
+    <ClInclude Include="pacific_state.h" />
     <ClInclude Include="PortAudioPlayer.h" />
-    <ClInclude Include="statemachine_lib.h" />
     <ClInclude Include="IEditorUI.h" />
     <ClInclude Include="ILevelSerializer.h" />
     <ClInclude Include="ImGuiFileDialog.h" />
@@ -231,9 +245,9 @@
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PlayerBehaviorSystem.h" />
     <ClInclude Include="Renderer2D.h" />
+    <ClInclude Include="SelectTool.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="StateMachine.h" />
-    <ClInclude Include="state_lib.h" />
     <ClInclude Include="stb\stb_image.h" />
     <ClInclude Include="stb\stb_image_resize.h" />
     <ClInclude Include="Tilelayer.h" />
@@ -241,7 +255,10 @@
     <ClInclude Include="EditorUI.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="explode_frag.glsl" />
+    <None Include="explode_vert.glsl" />
     <None Include="frag.glsl" />
+    <None Include="single_line_vert.glsl" />
     <None Include="vert.glsl" />
     <None Include="wireframe_frag.glsl" />
     <None Include="wireframe_vert.glsl" />

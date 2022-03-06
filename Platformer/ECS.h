@@ -5,6 +5,8 @@
 #include <set>
 #include <queue>
 #include <iostream>
+#include <mutex>
+
 #include "IdGenerator.h"
 
 using EntityID = int64_t;
@@ -23,9 +25,31 @@ struct ExplodingSprite {
 };
 
 struct Transform{
+	Transform() {}
+	Transform(const Transform&) = default;
+
 	glm::vec2 pos;
 	glm::vec2 scale;
 	float rot;
+public:
+	void SetPos(const glm::vec2& newpos){
+		std::lock_guard<std::mutex> lg(mut);
+		pos.x = newpos.x;
+		pos.y = newpos.y;
+	}
+	glm::vec2 GetPos() {
+		std::lock_guard<std::mutex> lg(mut);
+		return pos;
+	}
+	void SetRot(float newrot) {
+		std::lock_guard<std::mutex> lg(mut);
+		rot = newrot;
+	}
+	float GetRot() {
+		return rot;
+	}
+private:
+	std::mutex mut;
 };
 
 struct MovingPlatform {
@@ -64,7 +88,10 @@ struct Physics {
 	FloorCollider collider;
 	EntityID movingPlatformId = 0;
 };
-
+class b2Body;
+struct Box2dPhysics {
+	b2Body* body;
+};
 
 struct Animation {
 	bool isAnimating = false;
@@ -157,7 +184,8 @@ enum ComponentType : unsigned int {
 	CT_COLLECTABLE = 8,
 	CT_ENEMYBEHAVIOR = 9,
 
-	CT_EXPLODINGSPRITE = 10
+	CT_EXPLODINGSPRITE = 10,
+	CT_BOX2DPHYSICS = 11
 };
 
 template <typename Type>
@@ -172,6 +200,7 @@ using MovingPlatforms = ComponentMap<MovingPlatform>;
 using Collectables = ComponentMap<Collectable>;
 using EnemyBehaviors = ComponentMap<EnemyBehavior>;
 using ExplodingSprites = ComponentMap<ExplodingSprite>;
+using Box2dPhysicses = ComponentMap<Box2dPhysics>;
 
 struct Components
 {
@@ -185,6 +214,7 @@ struct Components
 	Collectables collectables;
 	EnemyBehaviors enemy_behaviors;
 	ExplodingSprites exploding_sprites;
+	Box2dPhysicses box2d_physicses;
 };
 
 enum class EntityType {

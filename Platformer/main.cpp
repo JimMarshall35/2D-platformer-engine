@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
 	glClearColor(0.5294, 0.8078, 0.9216, 1.0); // sky blue
 	double last = glfwGetTime();
-	LuaVMService* vmService = new LuaVMService();
+	
 	
 	// Note: these two lines are NOT the same one accidentally repeated!! READ CAREFULLY
 	inputInit(window);
@@ -63,7 +63,8 @@ int main(int argc, char* argv[])
 	
 	
 	const ImGuiIO& io = ImGui::GetIO(); (void)io;
-	
+
+	LuaVMService* vmService = new LuaVMService();
 	Engine engine(
 		new EditorUserInterface(vmService),
 		new LuaLevelSerializer(vmService),
@@ -71,8 +72,19 @@ int main(int argc, char* argv[])
 		new PortAudioPlayer()
 	);
 	engine_ptr = &engine;
+	std::chrono::duration<double> frameTime(0.0);
+	std::chrono::duration<double> sleepAdjust(0.0);
 	while (!glfwWindowShouldClose(window))
 	{
+#ifndef SEPARATE_PHYSICS_THREAD
+
+
+		std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+		engine.Box2dContext.Step();
+#endif // SEPARATE_PHYSICS_THREAD
+
+		
+
 		double now = glfwGetTime();
 		double delta = now - last;
 		last = now;
@@ -87,6 +99,26 @@ int main(int argc, char* argv[])
 		
 		
 		glfwSwapBuffers(window);
+#ifndef SEPARATE_PHYSICS_THREAD
+
+		// Throttle to cap at 60Hz. This adaptive using a sleep adjustment. This could be improved by
+		// using mm_pause or equivalent for the last millisecond.
+		std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+		std::chrono::duration<double> target(1.0 / 60.0);
+		std::chrono::duration<double> timeUsed = t2 - t1;
+		std::chrono::duration<double> sleepTime = target - timeUsed + sleepAdjust;
+		if (sleepTime > std::chrono::duration<double>(0))
+		{
+			std::this_thread::sleep_for(sleepTime);
+		}
+
+		std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
+		frameTime = t3 - t1;
+
+		// Compute the sleep adjustment using a low pass filter
+		sleepAdjust = 0.9 * sleepAdjust + 0.1 * (target - frameTime);
+#endif // SEPARATE_PHYSICS_THREAD
+
 	}
 
 	glfwDestroyWindow(window);

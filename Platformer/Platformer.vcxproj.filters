@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\imgui">
-      <UniqueIdentifier>{f3e7fea2-7e80-49da-8290-e9f12369a5f1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{4fd2c21a-81b1-47be-879e-943afdec7f7f}</UniqueIdentifier>
     </Filter>
@@ -25,21 +22,105 @@
     <Filter Include="Source Files\systems">
       <UniqueIdentifier>{b40b2292-76ed-4035-b51e-413ab8d086a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="State Machine Lib">
-      <UniqueIdentifier>{9074e8f0-5606-4f98-8ca8-0fc9279ccda7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\audio">
       <UniqueIdentifier>{d793f92d-40d3-4e6d-b62c-20f439d87bff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{3ef94a32-fd72-43fc-b4b6-c7c7b177d49c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\interfaces">
+      <UniqueIdentifier>{1f741616-4a02-4d9f-a17e-67448b64d881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\editor UI">
+      <UniqueIdentifier>{fe195a0b-90e5-4812-bba0-dd587d877d8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\editor UI\imgui">
+      <UniqueIdentifier>{f3e7fea2-7e80-49da-8290-e9f12369a5f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\editor UI\imgui additional libs">
+      <UniqueIdentifier>{dfa4c367-c9ff-4e13-8e0e-55a7aaf85898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ECS">
+      <UniqueIdentifier>{ab5829f7-7a6c-493c-95ed-2be73f916c59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{e9abb5ff-3db5-4f7c-b4ce-e1f3c5177691}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\level serializer">
+      <UniqueIdentifier>{40725516-9523-43f7-b060-ebf48165efa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{065ba7da-f9bf-4376-9d66-de534937ecc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\port audio implementation">
+      <UniqueIdentifier>{359b07f0-b738-4cac-b0a4-780743dc20ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\interfaces">
+      <UniqueIdentifier>{79d5a53e-cdfa-47af-bc3a-3a65294bf3af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\openGL">
+      <UniqueIdentifier>{694c9601-96e1-4193-aaf6-82d52df3bf4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\third party utils">
+      <UniqueIdentifier>{a11ba683-9f80-439b-8446-f61b24b326c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\third party utils">
+      <UniqueIdentifier>{2c3aca95-c644-4c93-ad31-d5d3a02d4b0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\editor UI\interfaces">
+      <UniqueIdentifier>{37c9d8d4-7927-46b8-87bd-053eedaecfc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\level serializer\interfaces">
+      <UniqueIdentifier>{d9cebc0a-5b15-4c03-ba25-12b70b170b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{94268c88-92bd-4202-8787-46329ced156e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{fce9d0ea-4511-4426-8b43-cdc4989c70a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\third party utils">
+      <UniqueIdentifier>{77506084-f854-4868-8ada-cb8b0c513a49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\shaders">
+      <UniqueIdentifier>{ce2f3a5d-4bff-4861-bb46-53e4eed761ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ECS">
+      <UniqueIdentifier>{f6aef5c1-a04f-4932-a64c-5057ed80be4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{7424ce8a-85eb-4766-b957-884bc158d165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\level serializer">
+      <UniqueIdentifier>{b7b70c3a-0fb0-449c-9414-de416debdc17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\editor UI">
+      <UniqueIdentifier>{916dd1d2-843b-42d6-af57-4193027440a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\editor UI\imgui additional libs">
+      <UniqueIdentifier>{16f7f6df-41dc-40d4-bdb2-4e7a643e4a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\State Machine Lib">
+      <UniqueIdentifier>{9074e8f0-5606-4f98-8ca8-0fc9279ccda7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\editor UI\implementation">
+      <UniqueIdentifier>{00273851-7b3f-4532-8880-8d5769959f92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\editor UI\implementation\tools">
+      <UniqueIdentifier>{943f56cb-9e10-43be-ba26-1e3ac7fd6d21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\editor UI\tools">
+      <UniqueIdentifier>{f84d82a8-fb6b-4a74-9651-be69e2d5c6d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\box2d">
+      <UniqueIdentifier>{9a9a8677-5a09-4919-9bc0-7ccfd247a31f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\box2d">
+      <UniqueIdentifier>{45fdfcba-11e1-476f-915f-2c93ec33293a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
@@ -63,42 +144,6 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiFileDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stbi_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tileset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tilelayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JSONLevelSerializer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaLevelSerializer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaVMService.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorUITools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AnimationSystem.cpp">
       <Filter>Source Files\systems</Filter>
     </ClCompile>
@@ -117,103 +162,103 @@
     <ClCompile Include="CollectableSystem.cpp">
       <Filter>Source Files\systems</Filter>
     </ClCompile>
-    <ClCompile Include="AABB.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExplodingSpriteUpdateSystem.cpp">
       <Filter>Source Files\systems</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer2D.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Tileset.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
     <ClCompile Include="PortAudioPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="stbi_image.cpp">
+      <Filter>Source Files\graphics\third party utils</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2D.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Tilelayer.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaVMService.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="JSONLevelSerializer.cpp">
+      <Filter>Source Files\level serializer</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaLevelSerializer.cpp">
+      <Filter>Source Files\level serializer</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorUI.cpp">
+      <Filter>Source Files\editor UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiFileDialog.cpp">
+      <Filter>Source Files\editor UI\imgui additional libs</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawSingleTileTool.cpp">
+      <Filter>Source Files\editor UI\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectTool.cpp">
+      <Filter>Source Files\editor UI\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="FloodFillTool.cpp">
+      <Filter>Source Files\editor UI\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaScriptedTool.cpp">
+      <Filter>Source Files\editor UI\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawPolygonTool.cpp">
+      <Filter>Source Files\editor UI\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Box2dPhysicsSystem.cpp">
+      <Filter>Source Files\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Box2dContextService.cpp">
+      <Filter>Source Files\box2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EditorUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_glfw.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_opengl3.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_opengl3_loader.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>Header Files\imgui</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>Header Files\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGuiFileDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGuiFileDialogConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dirent\dirent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stb\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stb\stb_image_resize.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ErrorHandling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tileset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tilelayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ILevelSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JSONLevelSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IEditorUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IRenderer2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaLevelSerializer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaVMService.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\editor UI\imgui</Filter>
     </ClInclude>
     <ClInclude Include="AnimationSystem.h">
       <Filter>Header Files\systems</Filter>
@@ -236,47 +281,148 @@
     <ClInclude Include="CollectableSystem.h">
       <Filter>Header Files\systems</Filter>
     </ClInclude>
-    <ClInclude Include="AABB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ExplodingSpriteUpdateSystem.h">
       <Filter>Header Files\systems</Filter>
-    </ClInclude>
-    <ClInclude Include="StateMachine.h">
-      <Filter>Header Files\systems</Filter>
-    </ClInclude>
-    <ClInclude Include="ITileset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="statemachine_lib.h">
-      <Filter>State Machine Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="state_lib.h">
-      <Filter>State Machine Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="IdGenerator.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioRingBuffer.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="audiofile.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
     <ClInclude Include="IAudioPlayer.h">
-      <Filter>Header Files\audio</Filter>
+      <Filter>Header Files\audio\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiFileDialogConfig.h">
+      <Filter>Header Files\editor UI\imgui additional libs</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiFileDialog.h">
+      <Filter>Header Files\editor UI\imgui additional libs</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Tilelayer.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaLevelSerializer.h">
+      <Filter>Header Files\level serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="JSONLevelSerializer.h">
+      <Filter>Header Files\level serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2D.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaVMService.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IdGenerator.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="PortAudioPlayer.h">
-      <Filter>Header Files\audio</Filter>
+      <Filter>Header Files\audio\port audio implementation</Filter>
+    </ClInclude>
+    <ClInclude Include="ITileset.h">
+      <Filter>Header Files\graphics\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer2D.h">
+      <Filter>Header Files\graphics\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_image.h">
+      <Filter>Header Files\graphics\third party utils</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_image_resize.h">
+      <Filter>Header Files\graphics\third party utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorHandling.h">
+      <Filter>Header Files\graphics\openGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer2D.h">
+      <Filter>Header Files\graphics\openGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\graphics\openGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Tileset.h">
+      <Filter>Header Files\graphics\openGL</Filter>
+    </ClInclude>
+    <ClInclude Include="audiofile.h">
+      <Filter>Header Files\audio\third party utils</Filter>
+    </ClInclude>
+    <ClInclude Include="IEditorUI.h">
+      <Filter>Header Files\editor UI\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorToolBase.h">
+      <Filter>Header Files\editor UI\implementation</Filter>
+    </ClInclude>
+    <ClInclude Include="ILevelSerializer.h">
+      <Filter>Header Files\level serializer\interfaces</Filter>
     </ClInclude>
     <ClInclude Include="macros.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="dirent\dirent.h">
+      <Filter>Header Files\editor UI\imgui additional libs</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>Header Files\State Machine Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="pacific_state.h">
+      <Filter>Header Files\State Machine Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorUI.h">
+      <Filter>Header Files\editor UI\implementation</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawSingleTileTool.h">
+      <Filter>Header Files\editor UI\implementation\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectTool.h">
+      <Filter>Header Files\editor UI\implementation\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="FloodFillTool.h">
+      <Filter>Header Files\editor UI\implementation\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaScriptedTool.h">
+      <Filter>Header Files\editor UI\implementation\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawPolygonTool.h">
+      <Filter>Header Files\editor UI\implementation\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Box2dPhysicsSystem.h">
+      <Filter>Header Files\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Box2dContextService.h">
+      <Filter>Header Files\box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Box2dWorldSettings.h">
+      <Filter>Header Files\box2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vert.glsl" />
-    <None Include="frag.glsl" />
-    <None Include="wireframe_frag.glsl" />
-    <None Include="wireframe_vert.glsl" />
+    <None Include="frag.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="vert.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="wireframe_frag.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="wireframe_vert.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="explode_frag.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="explode_vert.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="single_line_vert.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

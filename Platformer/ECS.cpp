@@ -8,36 +8,33 @@ EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 {
 	EntityID id = _idGenerator.GetId();
 	for (const auto& ct : components) {
+		Transform t = Transform();
 		switch (ct) {
-		case CT_TRANSFORM:
-			_Components.transforms[id] = Transform();
-			break;
-		case CT_ANIMATION:
+		break; case CT_TRANSFORM:
+			_Components.transforms[id].pos = t.pos;
+			_Components.transforms[id].rot = t.rot;
+		break; case CT_ANIMATION:
 			_Components.animations[id] = Animation();
-			break;
-		case CT_HEALTH:
+		break; case CT_HEALTH:
 			_Components.healths[id] = Health();
-			break;
-		case CT_PHYSICS:
+		break; case CT_PHYSICS:
 			_Components.physicses[id] = Physics();
-			break;
-		case CT_PLAYERBEHAVIOR:
+		break; case CT_PLAYERBEHAVIOR:
 			_Components.player_behaviors[id] = PlayerBehavior();
-			break;
-		case CT_SPRITE:
+		break; case CT_SPRITE:
 			_Components.sprites[id] = Sprite();
-			break;
-		case CT_MOVINGPLATFORM:
+		break; case CT_MOVINGPLATFORM:
 			_Components.moving_platforms[id] = MovingPlatform();
-			break;
-		case CT_COLLECTABLE:
+		break; case CT_COLLECTABLE:
 			_Components.collectables[id] = Collectable();
-			break;
-		case CT_ENEMYBEHAVIOR:
+		break; case CT_ENEMYBEHAVIOR:
 			_Components.enemy_behaviors[id] = EnemyBehavior();
-			break;
-		case CT_EXPLODINGSPRITE:
+		break; case CT_EXPLODINGSPRITE:
 			_Components.exploding_sprites[id] = ExplodingSprite();
+		break; case CT_BOX2DPHYSICS:
+			auto ph = Box2dPhysics();
+
+			_Components.box2d_physicses[id] = ph;
 		}
 	}
 	_Entities[id] = components;
@@ -78,6 +75,9 @@ bool ECS::DeleteEntity(EntityID id)
 			break;
 		case CT_EXPLODINGSPRITE:
 			_Components.exploding_sprites.erase(id);
+			break;
+		case CT_BOX2DPHYSICS:
+			_Components.box2d_physicses.erase(id);
 			break;
 		}
 	}
@@ -145,6 +145,8 @@ std::set<EntityID> ECS::getKeys(ComponentType type, const Components& components
 		break;
 	case CT_EXPLODINGSPRITE:
 		return convertToSet(extract_keys<EntityID, ExplodingSprite>(components.exploding_sprites));
+	case CT_BOX2DPHYSICS:
+		return convertToSet(extract_keys<EntityID, Box2dPhysics>(components.box2d_physicses));
 		break;
 	}
 }

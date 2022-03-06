@@ -17,28 +17,33 @@ LuaVMService::LuaVMService()
 
 void LuaVMService::RegisterLuaAPI()
 {
-    registerFunction(l_LoadLevelFromLuaTable, "C_LoadLevel");
+    registerFunction(l_LoadLevelFromLuaTable, "C_LoadLevel"); // 'deprecated'
+
     registerFunction(l_CreateEntity, "C_CreateEntity");
-    registerFunction(l_SetTransformComponent, "C_SetTransformComponent");
-    registerFunction(l_SetSpriteComponent, "C_SetSpriteComponent");
-    registerFunction(l_SetAnimationComponent, "C_SetAnimationComponent");
-    registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
-    registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
-    registerFunction(l_SetMovingPlatformComponent, "C_SetMovingPlatformComponent");
+    registerFunction(l_CreateBox2dDynamicBoxBody, "C_CreateBox2dDynamicBoxBody");
+    
     registerFunction(l_LoadTilesetFile, "C_LoadTilesetFile");
     registerFunction(l_LoadTileLayer, "C_LoadTileLayer");
     registerFunction(l_LoadAnimationFrames, "C_LoadAnimationFrames");
+    registerFunction(l_LoadNamedTiles, "C_LoadNamedTiles");
+
     registerFunction(l_GetTileset, "C_GetTileset");
     registerFunction(l_GetEntities, "C_GetEntities");
     registerFunction(l_GetAnimations, "C_GetAnimations");
     registerFunction(l_GetTilelayers, "C_GetTilelayers");
+
+    registerFunction(l_SetMovingPlatformComponent, "C_SetMovingPlatformComponent");
     registerFunction(l_SetVelocity, "C_SetVelocity");
     registerFunction(l_SetCollectableType, "C_SetCollectableType");
     registerFunction(l_SetCollectableValInt, "C_SetCollectableValueInt");
     registerFunction(l_SetCollectableValFloat, "C_SetCollectableValueFloat");
     registerFunction(l_SetCollectableValString, "C_SetCollectableValueString");
-    registerFunction(l_LoadNamedTiles, "C_LoadNamedTiles");
     registerFunction(l_SetTilesetWidthAndHeight, "C_SetTilesetWidthAndHeight");
+    registerFunction(l_SetTransformComponent, "C_SetTransformComponent");
+    registerFunction(l_SetSpriteComponent, "C_SetSpriteComponent");
+    registerFunction(l_SetAnimationComponent, "C_SetAnimationComponent");
+    registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
+    registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
 }
 
 
@@ -61,7 +66,7 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
     if (lua_getfield(L, 2, "tiledims") != LUA_TTABLE) goto error;
     if (lua_getfield(L, 3, "x") != LUA_TNUMBER) goto error;
     tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 4);
-    std::cout << tileset->TileWidthAndHeightPx.x << std::endl;
+    //std::cout << tileset->TileWidthAndHeightPx.x << std::endl;
     lua_pop(L, 1); // tiledims on the top
     if (lua_getfield(L, 3, "y") != LUA_TNUMBER) goto error;
     tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 4);
@@ -72,7 +77,7 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
         lua_rawgeti(L, -1, i + 1); // a tileset file table is top of the stack
         if (lua_getfield(L, -1, "path") != LUA_TSTRING) goto error;
         filepath = luaL_checkstring(L, -1);
-        std::cout << filepath << std::endl;
+        //std::cout << filepath << std::endl;
         lua_pop(L, 1);
         if (lua_getfield(L, -1, "tile_width_px") != LUA_TNUMBER) goto error;
         if (lua_getfield(L, -2, "tile_height_px") != LUA_TNUMBER) goto error;
@@ -125,7 +130,7 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
     lua_pushboolean(L, true);
     return 1;
 error:
-    std::cout << "an error occured" << std::endl;
+    //std::cout << "an error occured" << std::endl;
     lua_pushboolean(L, false);
     return 1;
 }
@@ -850,6 +855,31 @@ int LuaVMService::l_SetTilesetWidthAndHeight(lua_State* L)
     ITileset* tileset = e->Renderer->GetTileset();
     tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
     tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
+    return 0;
+}
+
+int LuaVMService::l_CreateBox2dDynamicBoxBody(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 8) {
+        std::cout << "7 arguments: engine*, entityID, halfwidth, halfheight, centerx, centery, angle, static" << std::endl;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    EntityID id = lua_tointeger(L, 2);
+    float hx = lua_tonumber(L, 3);
+    float hy = lua_tonumber(L, 4);
+    auto center = glm::vec2(lua_tonumber(L, 5), lua_tonumber(L, 6));
+    float angle = lua_tonumber(L, 7);
+    bool isStatic = lua_toboolean(L, 8);
+    b2Body* body;
+    if (isStatic) {
+        body = e->Box2dContext.MakeStaticBox(hx, hy, center, angle, id);
+    }
+    else {
+        body = e->Box2dContext.MakeDynamicBox(hx, hy, center, angle, id);
+    }
+    
+    e->_Components.box2d_physicses[id].body = body;
     return 0;
 }
 

@@ -13,30 +13,15 @@
 #include <memory>
 #include "IEditorUI.h"
 #include <iostream>
+#include "EditorToolBase.h"
 
 struct lua_State;
 
 class EditorUserInterface;
-enum EditorToolInputRequirement: unsigned int {
-	None = 0,
-	CursorPositionMove = 1,
-	MouseButton = 2,
-	KeyboardButton = 4
-};
 
 
-class EditorToolBase {
-public:
-	std::string name;
-	unsigned int InputRequirement = 0;
-	virtual void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) = 0;
-	virtual void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) = 0;
-	virtual void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) = 0;
-	virtual void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) = 0;
-protected:
-	Engine* _Engine;
-	EditorUserInterface* _UI;
-};
+
+
 
 class Engine;
 class Tile;
@@ -49,66 +34,12 @@ class EditorUserInterface : public IEditorUserInterface
 private:
 
 #pragma region Editor tool internal classes
-
-	class DrawSingleTileTool : public EditorToolBase {
-	public:
-		DrawSingleTileTool(EditorUserInterface* ui, Engine* engine);
-		//used
-		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
-		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override;
-		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override;
-		//unused
-		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override {};
-	};
-
-	class SelectTool : public EditorToolBase {
-	public:
-		SelectTool(EditorUserInterface* ui, Engine* engine);
-		// used
-		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
-		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override;
-		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override;
-		//unused
-		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override {};
-	private:
-		std::vector<unsigned int> _SelectedTiles;
-		unsigned int _SelectionWidth;
-		std::vector<unsigned int> _ClipBoard;
-		unsigned int _ClipBoardWidth;
-		unsigned int _ClipBoardLayer;
-		void GetNewSelection();
-	private:
-		void CopyTiles();
-		void CutTiles();
-		void PasteTiles();
-		void DeleteSelection();
-	};
-
-	class FloodFillTool : public EditorToolBase {
-	public:
-		FloodFillTool(EditorUserInterface* ui, Engine* engine);
-		//used
-		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
-		//unused
-		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override {};
-		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override {};
-		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override {};
-	private:
-		void FloodFill();
-	};
-
-	class LuaScriptedTool : public EditorToolBase {
-	public:
-		LuaScriptedTool(EditorUserInterface* ui, Engine* engine, std::string luaName, unsigned int input_requirements, lua_State* L);
-		void handleMouseButton(int button, int action, int mods, bool imGuiWantsMouse, const Camera2D& camera) override;
-		void handleKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods, bool wantKeyboardInput) override;
-		void drawOverlay(const IRenderer2D* renderer, const Camera2D& camera) override;
-		void handleMouseMove(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera) override;
-	private:
-		std::string _LuaName;
-		lua_State* _L;
-	};
-
+	friend class DrawSingleTileTool;
+	friend class SelectTool;
+	friend class FloodFillTool;
+	friend class LuaScriptedTool;
+	friend class DrawPolygonTool;
+	
 #pragma endregion
 
 public:
@@ -140,7 +71,7 @@ private:
 	void DoTileSetSelectWindow();
 	void DoToolSelectWindow();
 
-	std::vector<EditorToolBase*> _EditorTools;
+	std::vector<EditorToolBase*> _EditorTools; // tools added in SetEngine function
 	EditorToolBase* _SelectedTool;
 
 

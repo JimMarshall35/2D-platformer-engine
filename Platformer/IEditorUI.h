@@ -7,6 +7,7 @@ class Engine;
 
 class IEditorUserInterface {
 public:
+	
 	virtual void DoGui() = 0;
 	virtual void DrawEngineOverlay(const IRenderer2D* renderer, const Camera2D& cam) = 0;
 	virtual void cursorPositionCallbackHandler(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& cam) = 0;

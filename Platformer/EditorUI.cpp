@@ -18,6 +18,12 @@ extern "C" {
 #include "Tileset.h"
 #include "AABB.h"
 
+#include "DrawSingleTileTool.h"
+#include "SelectTool.h"
+#include "FloodFillTool.h"
+#include "LuaScriptedTool.h"
+#include "DrawPolygonTool.h"
+
 void EditorUserInterface::DeleteLastLayer()
 {
 	if (_Engine->TileLayers.size() > 1) {
@@ -143,6 +149,7 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 	Collectable* co = nullptr;
 	ExplodingSprite* es = nullptr;
 	Health* h = nullptr;
+	Box2dPhysics* b2d = nullptr;
 	
 	for (auto& [id, components] : _Engine->_Entities) {
 		
@@ -275,6 +282,13 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 							transform = &_Engine->_Components.transforms[id];
 							ImGui::Image((ImTextureID)es->texture, ImVec2(transform->scale.x, transform->scale.y));
 						}
+						ImGui::TreePop();
+					}
+					break;
+				case CT_BOX2DPHYSICS:
+					b2d = &_Engine->_Components.box2d_physicses[id];
+					if (ImGui::TreeNode("Box2d")) {
+
 						ImGui::TreePop();
 					}
 					break;
@@ -542,27 +556,27 @@ void EditorUserInterface::frameBufferSizeChangeCallbackHandler(GLFWwindow* windo
 
 void EditorUserInterface::SetEngine(Engine* engine)
 {
-	 _Engine = engine; 
-	 _EditorTools.push_back(new SelectTool(this, engine));
-	 _EditorTools.push_back(new DrawSingleTileTool(this, engine));
-	 _EditorTools.push_back(new FloodFillTool(this, engine));
-	 _SelectedTool = _EditorTools[1];
-	 lua_State* L = _VM->GetL();
-	 lua_getglobal(L, "EditorTools");
-	 int size = luaL_len(L, -1);
-	 for (int i = 0; i < size; i++) {
-		 lua_geti(L, -1, i + 1);
-		 lua_getfield(L, -1, "name");
-		 std::string name = luaL_checkstring(L, -1);
-		 std::cout << name << std::endl;
-		 lua_pop(L, 1);
-		 lua_getfield(L, -1, "inputRequirements");
-		 EditorToolInputRequirement inpt = (EditorToolInputRequirement)luaL_checkinteger(L, -1);
-		 _EditorTools.push_back(new LuaScriptedTool(this, engine, name,inpt, L));
-		 lua_pop(L, 2);
-	 }
-	 lua_pop(L, 1);
-
+	_Engine = engine; 
+	_EditorTools.push_back(new SelectTool(this, engine));
+	_EditorTools.push_back(new DrawSingleTileTool(this, engine));
+	_EditorTools.push_back(new FloodFillTool(this, engine));
+	_SelectedTool = _EditorTools[1];
+	lua_State* L = _VM->GetL();
+	lua_getglobal(L, "EditorTools");
+	int size = luaL_len(L, -1);
+	for (int i = 0; i < size; i++) {
+		lua_geti(L, -1, i + 1);
+		lua_getfield(L, -1, "name");
+		std::string name = luaL_checkstring(L, -1);
+		std::cout << name << std::endl;
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "inputRequirements");
+		EditorToolInputRequirement inpt = (EditorToolInputRequirement)luaL_checkinteger(L, -1);
+		_EditorTools.push_back(new LuaScriptedTool(this, engine, name,inpt, L));
+		lua_pop(L, 2);
+	}
+	lua_pop(L, 1);
+	_EditorTools.push_back(new DrawPolygonTool(this, engine));
 }
 
 

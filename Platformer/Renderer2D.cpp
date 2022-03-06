@@ -120,7 +120,24 @@ void Renderer2D::Init()
 		0.5f, -0.5f, 1.0f, 0.0f, // bottom right
 		-0.5f, -0.5f, 0.0f, 0.0f, // bottom left
 	};
+	const unsigned int lineVerts[2] = {
+		0,1
+	};
 	GLClearErrors();
+
+	// line 
+	unsigned int singleLineVBO;
+	glGenVertexArrays(1, &_SingleLineVAO);
+	glGenBuffers(1, &singleLineVBO);
+	glBindVertexArray(_SingleLineVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, singleLineVBO);
+	GLPrintErrors("Init");
+	glBufferData(GL_ARRAY_BUFFER, sizeof(lineVerts), lineVerts, GL_STATIC_DRAW);
+	GLPrintErrors("Init");
+	glVertexAttribIPointer(0,1, GL_UNSIGNED_INT,sizeof(unsigned int),NULL);
+	GLPrintErrors("Init");
+	glEnableVertexAttribArray(0);
+	GLPrintErrors("Init");
 
 	// textured square
 	unsigned int textureVBO;
@@ -165,6 +182,7 @@ void Renderer2D::Init()
 	_TextureShader.LoadFromFile("vert.glsl", "frag.glsl");
 	_WireframeShader.LoadFromFile("wireframe_vert.glsl", "wireframe_frag.glsl");
 	_ExplodeShader.LoadFromFile("explode_vert.glsl", "explode_frag.glsl");
+	_SingleLineShader.LoadFromFile("single_line_vert.glsl", "wireframe_frag.glsl");
 	GLPrintErrors("Init");
 	
 	seedExplodeDirections();
@@ -319,5 +337,18 @@ void Renderer2D::setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirect
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboHandle);
 	delete[] blockBuffer;
 	GLPrintErrors();
+}
+
+void Renderer2D::DrawLine(glm::vec2 point1, glm::vec2 point2, glm::vec4 colour, float width, const Camera2D& cam) const
+{
+	_SingleLineShader.use();
+	_SingleLineShader.setMat4("projection", cam.GetProjectionMatrix(_WindowW, _WindowH));
+	_SingleLineShader.setVec4("Colour", colour);
+	_SingleLineShader.setVec2("point1world", point1);
+	_SingleLineShader.setVec2("point2world", point2);
+	glLineWidth(width);
+	glBindVertexArray(_SingleLineVAO);
+	glDrawArrays(GL_LINES, 0, 2);
+	glLineWidth(1);
 }
 

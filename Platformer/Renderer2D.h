@@ -11,18 +11,18 @@ public:
 	Renderer2D();
 	Renderer2D(GLuint w, GLuint h);
 	~Renderer2D() { delete _Tileset; }
-	void DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam) const;
-	void DrawWireframeRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const;
-	void DrawSolidRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const;
-	void DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam, float delta_t) const;
+	// Inherited via IRenderer2D
+	virtual void DrawLine(glm::vec2 point1, glm::vec2 point2, glm::vec4 colour, float width, const Camera2D& cam) const override;
+	void DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam) const override;
+	void DrawWireframeRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const override;
+	void DrawSolidRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const override;
+	void DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam, float delta_t) const override;
 	virtual ITileset* GetTileset() override { return _Tileset; };
 	void SetW(unsigned int newW) { _WindowW = newW; }
 	void SetH(unsigned int newH) { _WindowH = newH; }
 	void Init();
 	unsigned int GetW() const { return _WindowW; };
 	unsigned int GetH() const { return _WindowH; };
-
-
 private:
 	void generateExplodeVAO();
 	void setExplodeDirectionsUniform(const Shader& explodeShader) const;
@@ -35,6 +35,7 @@ private:
 	GLuint _TextureVAO;
 	GLuint _SolidSquareVAO;
 	GLuint _ExplodeVAO;
+	GLuint _SingleLineVAO;
 	GLuint uboHandle;
 	unsigned int _WindowW = 800;
 	unsigned int _WindowH = 600;
@@ -42,11 +43,15 @@ private:
 	Shader _TextureShader;
 	Shader _WireframeShader;
 	Shader _ExplodeShader;
+	Shader _SingleLineShader;
 	void setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirections, const std::vector<float>& explodeRotations, const std::vector<float>& explodeSpeeds);
 	std::vector<glm::vec2> _ExplodeDirections;
 	std::vector<float> _ExplodeRotations;
 	std::vector<float> _ExplodeSpeeds;
 
 	
+
+	
+
 };
 

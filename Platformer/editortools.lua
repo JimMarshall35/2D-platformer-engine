@@ -125,6 +125,59 @@ function SetupCoin(pos)
 	})
 	return entityID
 end
+
+
+function SetupPhysicsTest(pos)
+	local entityID = C_CreateEntity(C_Engine,{
+		ComponentType.CT_BOX2DPHYSICS,
+		ComponentType.CT_TRANSFORM,
+		ComponentType.CT_SPRITE
+	})
+	C_SetSpriteComponent(C_Engine,entityID,10)
+	C_SetTransformComponent(C_Engine, entityID,{
+		pos = pos,
+		scale = {x=16.0,y=16.0},
+		rot = 0
+	})
+	C_CreateBox2dDynamicBoxBody(
+		C_Engine,
+		entityID,
+		8.0,
+		8.0,
+		pos.x,
+		pos.y,
+		0,
+		false
+	);
+	return entityID
+end
+
+function SetupPhysicsStatic(pos)
+	local entityID = C_CreateEntity(C_Engine,{
+		ComponentType.CT_BOX2DPHYSICS,
+		ComponentType.CT_TRANSFORM,
+		ComponentType.CT_SPRITE
+	})
+	C_SetSpriteComponent(C_Engine,entityID,10)
+	C_SetTransformComponent(C_Engine, entityID,{
+		pos = pos,
+		scale = {x=48.0,y=16.0},
+		rot = 0
+	})
+	C_CreateBox2dDynamicBoxBody(
+		C_Engine,
+		entityID,
+		24.0,
+		8.0,
+		pos.x,
+		pos.y,
+		0,
+		true
+	);
+	return entityID
+end
+
+
 EditorTools = {
 	{
 		name = "Spawn Snake",
@@ -138,10 +191,10 @@ EditorTools = {
 				end
 			end,
 			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)
-				print("keyboard")
+				--print("keyboard")
 			end,
 			[EditorToolInputRequirements.CursorPositionMove] = function(xpos,ypos, imGuiWantsMouse, camera)
-				print("move")
+				--print("move")
 			end
 		},
 		inputRequirements =   EditorToolInputRequirements.MouseButton | EditorToolInputRequirements.CursorPositionMove
@@ -158,10 +211,50 @@ EditorTools = {
 				end
 			end,
 			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)
-				print("keyboard")
+				--print("keyboard")
 			end,
 			[EditorToolInputRequirements.CursorPositionMove] = function(xpos,ypos, imGuiWantsMouse, camera)
-				print("move")
+				--print("move")
+			end
+		},
+		inputRequirements =   EditorToolInputRequirements.MouseButton 
+	},
+	{
+		name = "Physics Test Box",
+		handlers = {
+			[EditorToolInputRequirements.MouseButton] = function(button, action, mods, imGuiWantsMouse, camera, worldpos)
+				if imGuiWantsMouse then 
+					return
+				end
+				if button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS then
+					SetupPhysicsTest(worldpos)
+				end
+			end,
+			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)
+				--print("keyboard")
+			end,
+			[EditorToolInputRequirements.CursorPositionMove] = function(xpos,ypos, imGuiWantsMouse, camera)
+				--print("move")
+			end
+		},
+		inputRequirements =   EditorToolInputRequirements.MouseButton 
+	},
+	{
+		name = "Physics Test static Box",
+		handlers = {
+			[EditorToolInputRequirements.MouseButton] = function(button, action, mods, imGuiWantsMouse, camera, worldpos)
+				if imGuiWantsMouse then 
+					return
+				end
+				if button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS then
+					SetupPhysicsStatic(worldpos)
+				end
+			end,
+			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)
+				--print("keyboard")
+			end,
+			[EditorToolInputRequirements.CursorPositionMove] = function(xpos,ypos, imGuiWantsMouse, camera)
+				--print("move")
 			end
 		},
 		inputRequirements =   EditorToolInputRequirements.MouseButton 

@@ -3,8 +3,574 @@ local multiRefObjects = {
 
 } -- multiRefObjects
 local obj1 = {
+	["entities"] = {
+		[1] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 32.0;
+						["x"] = -32.0;
+					};
+					["pos"] = {
+						["y"] = 112.0;
+						["x"] = 160.27709960938;
+					};
+					["rot"] = 0.0;
+				};
+				[2] = {
+					["velocity"] = {
+						["y"] = 0.0;
+						["x"] = 0.0;
+					};
+					["collider"] = {
+						[1] = 11.0;
+						[2] = 0.0;
+						[3] = 8.0;
+						[4] = 8.0;
+					};
+				};
+				[3] = {
+				};
+				[4] = {
+					["texture"] = 137;
+				};
+				[5] = {
+					["isanimating"] = 0;
+					["timer"] = 0.042420999961905;
+					["name"] = "walk";
+					["onframe"] = 0;
+					["fps"] = 10.0;
+					["numframes"] = 4;
+					["shouldloop"] = 1;
+				};
+				[6] = {
+				};
+			};
+		};
+		[2] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 100.0;
+					};
+					["pos"] = {
+						["y"] = 200.0;
+						["x"] = 681.638671875;
+					};
+					["rot"] = 0.0;
+				};
+				[4] = {
+					["texture"] = 9;
+				};
+				[7] = {
+					["p2"] = {
+						["y"] = 200.0;
+						["x"] = 900.0;
+					};
+					["time_period"] = 12.0;
+					["timer"] = 161.33984276874;
+					["p1"] = {
+						["y"] = 200.0;
+						["x"] = 680.0;
+					};
+				};
+			};
+		};
+		[3] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 100.0;
+					};
+					["pos"] = {
+						["y"] = 850.0;
+						["x"] = 1052.7818603516;
+					};
+					["rot"] = 0.0;
+				};
+				[4] = {
+					["texture"] = 9;
+				};
+				[7] = {
+					["p2"] = {
+						["y"] = 850.0;
+						["x"] = 500.0;
+					};
+					["time_period"] = 9.0;
+					["timer"] = 161.33984276874;
+					["p1"] = {
+						["y"] = 850.0;
+						["x"] = 1400.0;
+					};
+				};
+			};
+		};
+		[4] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 32.0;
+						["x"] = 32.0;
+					};
+					["pos"] = {
+						["y"] = 64.0;
+						["x"] = 1081.4549560547;
+					};
+					["rot"] = 0.0;
+				};
+				[2] = {
+					["velocity"] = {
+						["y"] = 0.0;
+						["x"] = 20.0;
+					};
+					["collider"] = {
+						[1] = 18.0;
+						[2] = 0.0;
+						[3] = 8.0;
+						[4] = 8.0;
+					};
+				};
+				[4] = {
+					["texture"] = 209;
+				};
+				[9] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.16232969984412;
+					["name"] = "slither";
+					["onframe"] = 3;
+					["fps"] = 5.0;
+					["numframes"] = 4;
+					["shouldloop"] = 1;
+				};
+			};
+		};
+		[5] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 32.0;
+						["x"] = 32.0;
+					};
+					["pos"] = {
+						["y"] = 16.0;
+						["x"] = 764.83471679688;
+					};
+					["rot"] = 0.0;
+				};
+				[2] = {
+					["velocity"] = {
+						["y"] = 0.0;
+						["x"] = 20.0;
+					};
+					["collider"] = {
+						[1] = 18.0;
+						[2] = 0.0;
+						[3] = 8.0;
+						[4] = 8.0;
+					};
+				};
+				[4] = {
+					["texture"] = 209;
+				};
+				[9] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.16232969984412;
+					["name"] = "slither";
+					["onframe"] = 3;
+					["fps"] = 5.0;
+					["numframes"] = 4;
+					["shouldloop"] = 1;
+				};
+			};
+		};
+		[6] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 43.0;
+						["x"] = 1219.3497314453;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[7] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 55.0;
+						["x"] = 1369.3497314453;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[8] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 286.00003051758;
+						["x"] = 558.72491455078;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[9] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 282.0;
+						["x"] = 524.72491455078;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[10] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 281.0;
+						["x"] = 498.72491455078;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[11] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 280.0;
+						["x"] = 471.72491455078;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[12] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 282.0;
+						["x"] = 445.72491455078;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[13] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 63.0;
+						["x"] = 253.26669311523;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[14] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 62.0;
+						["x"] = 286.26669311523;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[15] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 62.0;
+						["x"] = 320.26669311523;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[16] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 62.0;
+						["x"] = 352.26669311523;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[17] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 62.0;
+						["x"] = 380.26669311523;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+		[18] = {
+			["components"] = {
+				[1] = {
+					["scale"] = {
+						["y"] = 16.0;
+						["x"] = 16.0;
+					};
+					["pos"] = {
+						["y"] = 63.0;
+						["x"] = 416.26669311523;
+					};
+					["rot"] = 0.0;
+				};
+				[8] = {
+				};
+				[5] = {
+					["isanimating"] = 1;
+					["timer"] = 0.044145899824798;
+					["name"] = "coin";
+					["onframe"] = 4;
+					["fps"] = 10.0;
+					["numframes"] = 7;
+					["shouldloop"] = 1;
+				};
+				[4] = {
+					["texture"] = 131;
+				};
+			};
+		};
+	};
 	["tilelayers"] = {
 		[1] = {
+			["t_type"] = 0;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -10007,11 +10573,11 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["heighttiles"] = 100;
 			["widthtiles"] = 100;
-			["t_type"] = 0;
 		};
 		[2] = {
+			["t_type"] = 1;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -20014,11 +20580,11 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["heighttiles"] = 100;
 			["widthtiles"] = 100;
-			["t_type"] = 1;
 		};
 		[3] = {
+			["t_type"] = 4;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -30021,11 +30587,11 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["heighttiles"] = 100;
 			["widthtiles"] = 100;
-			["t_type"] = 4;
 		};
 		[4] = {
+			["t_type"] = 0;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -40028,11 +40594,11 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["heighttiles"] = 100;
 			["widthtiles"] = 100;
-			["t_type"] = 0;
 		};
 		[5] = {
+			["t_type"] = 0;
+			["heighttiles"] = 100;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -50035,11 +50601,11 @@ local obj1 = {
 				[9999] = 0;
 				[10000] = 0;
 			};
-			["heighttiles"] = 100;
 			["widthtiles"] = 100;
-			["t_type"] = 0;
 		};
 		[6] = {
+			["t_type"] = 5;
+			["heighttiles"] = 50;
 			["tiles"] = {
 				[1] = 0;
 				[2] = 0;
@@ -55042,60 +55608,57 @@ local obj1 = {
 				[4999] = 0;
 				[5000] = 0;
 			};
-			["heighttiles"] = 50;
 			["widthtiles"] = 100;
-			["t_type"] = 5;
 		};
 	};
 	["animations"] = {
 		[1] = {
-			["name"] = "walk";
 			["frames"] = {
 				[1] = 137;
 				[2] = 138;
 				[3] = 139;
 				[4] = 140;
 			};
+			["name"] = "walk";
 		};
 		[2] = {
-			["name"] = "jump_up";
 			["frames"] = {
 				[1] = 144;
 				[2] = 141;
 				[3] = 142;
 			};
+			["name"] = "jump_up";
 		};
 		[3] = {
-			["name"] = "jump_down";
-			["frames"] = {
-				[1] = 143;
-			};
-		};
-		[4] = {
-			["name"] = "slither";
 			["frames"] = {
 				[1] = 206;
 				[2] = 207;
 				[3] = 208;
 				[4] = 209;
 			};
+			["name"] = "slither";
+		};
+		[4] = {
+			["frames"] = {
+				[1] = 143;
+			};
+			["name"] = "jump_down";
 		};
 		[5] = {
-			["name"] = "jump_land";
 			["frames"] = {
 				[1] = 144;
 			};
+			["name"] = "jump_land";
 		};
 		[6] = {
-			["name"] = "climb";
 			["frames"] = {
 				[1] = 155;
 				[2] = 156;
 				[3] = 157;
 			};
+			["name"] = "climb";
 		};
 		[7] = {
-			["name"] = "coin";
 			["frames"] = {
 				[1] = 127;
 				[2] = 128;
@@ -55105,1150 +55668,29 @@ local obj1 = {
 				[6] = 132;
 				[7] = 133;
 			};
+			["name"] = "coin";
 		};
 		[8] = {
-			["name"] = "stab";
 			["frames"] = {
 				[1] = 148;
 				[2] = 150;
 				[3] = 148;
 			};
+			["name"] = "stab";
 		};
 	};
 	["tileset"] = {
 		[1] = {
 			["tile_height_px"] = 16;
-			["tile_width_px"] = 16;
 			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\sheet.png";
 			["firstID"] = 1;
+			["tile_width_px"] = 16;
 		};
 		[2] = {
 			["tile_height_px"] = 32;
-			["tile_width_px"] = 32;
 			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\characters.png";
 			["firstID"] = 137;
-		};
-		[3] = {
-			["path"] = "C:\\Users\\james.marshall\\source\\repos\\Platformer\\open gunner\\OpenGunnerHeroVer2.png";
-			["named_sprites"] = {
-				["run_gun_mid_r_0"] = {
-					["topleft"] = { ["x"] = 24, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_1"] = {
-					["topleft"] = { ["x"] = 75, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_2"] = {
-					["topleft"] = { ["x"] = 126, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_3"] = {
-					["topleft"] = { ["x"] = 177, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_7"] = {
-					["topleft"] = { ["x"] = 381, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_6"] = {
-					["topleft"] = { ["x"] = 330, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_5"] = {
-					["topleft"] = { ["x"] = 279, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_r_4"] = {
-					["topleft"] = { ["x"] = 228, ["y"] = 315};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_up_angle_1_frame_0_r"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_1_r"] = {
-					["topleft"] = { ["x"] = 76, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_2_r"] = {
-					["topleft"] = { ["x"] = 127, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_3_r"] = {
-					["topleft"] = { ["x"] = 178, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_7_r"] = {
-					["topleft"] = { ["x"] = 382, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_6_r"] = {
-					["topleft"] = { ["x"] = 331, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_5_r"] = {
-					["topleft"] = { ["x"] = 280, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_4_r"] = {
-					["topleft"] = { ["x"] = 229, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_mid_l_4"] = {
-					["topleft"] = { ["x"] = 228, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_5"] = {
-					["topleft"] = { ["x"] = 279, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_6"] = {
-					["topleft"] = { ["x"] = 330, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_7"] = {
-					["topleft"] = { ["x"] = 381, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_3"] = {
-					["topleft"] = { ["x"] = 177, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_2"] = {
-					["topleft"] = { ["x"] = 126, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_1"] = {
-					["topleft"] = { ["x"] = 75, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_mid_l_0"] = {
-					["topleft"] = { ["x"] = 24, ["y"] = 375};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["run_gun_up_angle_2_frame_4_r"] = {
-					["topleft"] = { ["x"] = 229, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_5_r"] = {
-					["topleft"] = { ["x"] = 280, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_6_r"] = {
-					["topleft"] = { ["x"] = 331, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_7_r"] = {
-					["topleft"] = { ["x"] = 382, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_3_r"] = {
-					["topleft"] = { ["x"] = 178, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_2_r"] = {
-					["topleft"] = { ["x"] = 127, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_1_r"] = {
-					["topleft"] = { ["x"] = 76, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_0_r"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_0_l"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_1_l"] = {
-					["topleft"] = { ["x"] = 76, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_2_l"] = {
-					["topleft"] = { ["x"] = 127, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_3_l"] = {
-					["topleft"] = { ["x"] = 178, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_7_l"] = {
-					["topleft"] = { ["x"] = 382, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_6_l"] = {
-					["topleft"] = { ["x"] = 331, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_5_l"] = {
-					["topleft"] = { ["x"] = 280, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_1_frame_4_l"] = {
-					["topleft"] = { ["x"] = 229, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_4_l"] = {
-					["topleft"] = { ["x"] = 229, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_5_l"] = {
-					["topleft"] = { ["x"] = 280, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_6_l"] = {
-					["topleft"] = { ["x"] = 331, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_7_l"] = {
-					["topleft"] = { ["x"] = 382, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_3_l"] = {
-					["topleft"] = { ["x"] = 178, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_2_l"] = {
-					["topleft"] = { ["x"] = 127, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_1_l"] = {
-					["topleft"] = { ["x"] = 76, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_up_angle_2_frame_0_l"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_0_l"] = {
-					["topleft"] = { ["x"] = 454, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_1_l"] = {
-					["topleft"] = { ["x"] = 505, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_2_l"] = {
-					["topleft"] = { ["x"] = 556, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_3_l"] = {
-					["topleft"] = { ["x"] = 607, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_7_l"] = {
-					["topleft"] = { ["x"] = 811, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_6_l"] = {
-					["topleft"] = { ["x"] = 760, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_5_l"] = {
-					["topleft"] = { ["x"] = 709, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_4_frame_0_l"] = {
-					["topleft"] = { ["x"] = 658, ["y"] = 1063};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_4_l"] = {
-					["topleft"] = { ["x"] = 658, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_5_l"] = {
-					["topleft"] = { ["x"] = 709, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_6_l"] = {
-					["topleft"] = { ["x"] = 760, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_7_l"] = {
-					["topleft"] = { ["x"] = 811, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_3_l"] = {
-					["topleft"] = { ["x"] = 607, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_2_l"] = {
-					["topleft"] = { ["x"] = 556, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_1_l"] = {
-					["topleft"] = { ["x"] = 505, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_0_l"] = {
-					["topleft"] = { ["x"] = 454, ["y"] = 994};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_0_r"] = {
-					["topleft"] = { ["x"] = 454, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_1_r"] = {
-					["topleft"] = { ["x"] = 505, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_2_r"] = {
-					["topleft"] = { ["x"] = 556, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_3_r"] = {
-					["topleft"] = { ["x"] = 607, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_7_r"] = {
-					["topleft"] = { ["x"] = 811, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_6_r"] = {
-					["topleft"] = { ["x"] = 760, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_5_r"] = {
-					["topleft"] = { ["x"] = 709, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_2_frame_4_r"] = {
-					["topleft"] = { ["x"] = 658, ["y"] = 925};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_4_r"] = {
-					["topleft"] = { ["x"] = 658, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_5_r"] = {
-					["topleft"] = { ["x"] = 709, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_6_r"] = {
-					["topleft"] = { ["x"] = 760, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_7_r"] = {
-					["topleft"] = { ["x"] = 811, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_3_r"] = {
-					["topleft"] = { ["x"] = 607, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_2_r"] = {
-					["topleft"] = { ["x"] = 556, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_1_r"] = {
-					["topleft"] = { ["x"] = 505, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["run_gun_down_angle_1_frame_0_r"] = {
-					["topleft"] = { ["x"] = 454, ["y"] = 856};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_mid_r"] = {
-					["topleft"] = { ["x"] = 24, ["y"] = 143};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["duck_gun_mid_r"] = {
-					["topleft"] = { ["x"] = 75, ["y"] = 143};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["jump_gun_mid_r"] = {
-					["topleft"] = { ["x"] = 126, ["y"] = 143};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["jump_gun_mid_r"] = {
-					["topleft"] = { ["x"] = 126, ["y"] = 200};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["duck_gun_mid_l"] = {
-					["topleft"] = { ["x"] = 75, ["y"] = 200};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["stand_gun_mid_l"] = {
-					["topleft"] = { ["x"] = 24, ["y"] = 200};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["damage_l"] = {
-					["topleft"] = { ["x"] = 202, ["y"] = 200};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["damage_r"] = {
-					["topleft"] = { ["x"] = 202, ["y"] = 143};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["stand_gun_up_angle_1_r"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 676};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_up_angle_2_r"] = {
-					["topleft"] = { ["x"] = 81, ["y"] = 676};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_up_l"] = {
-					["topleft"] = { ["x"] = 193, ["y"] = 676};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_up_r"] = {
-					["topleft"] = { ["x"] = 137, ["y"] = 676};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_up_angle_2_l"] = {
-					["topleft"] = { ["x"] = 249, ["y"] = 676};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_up_angle_1_l"] = {
-					["topleft"] = { ["x"] = 305, ["y"] = 676};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_down_angle_1_l"] = {
-					["topleft"] = { ["x"] = 305, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_down_angle_2_l"] = {
-					["topleft"] = { ["x"] = 249, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_down_r"] = {
-					["topleft"] = { ["x"] = 137, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_down_l"] = {
-					["topleft"] = { ["x"] = 193, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_down_angle_2_r"] = {
-					["topleft"] = { ["x"] = 81, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["stand_gun_down_angle_1_r"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["ground_r"] = {
-					["topleft"] = { ["x"] = 25, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["ground_l"] = {
-					["topleft"] = { ["x"] = 96, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_r_frame_1"] = {
-					["topleft"] = { ["x"] = 261, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_r_frame_0"] = {
-					["topleft"] = { ["x"] = 190, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_r_frame_2"] = {
-					["topleft"] = { ["x"] = 332, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_r_frame_3"] = {
-					["topleft"] = { ["x"] = 403, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_l_frame_3"] = {
-					["topleft"] = { ["x"] = 403, ["y"] = 557};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_l_frame_2"] = {
-					["topleft"] = { ["x"] = 332, ["y"] = 557};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_l_frame_0"] = {
-					["topleft"] = { ["x"] = 190, ["y"] = 557};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["crawl_l_frame_1"] = {
-					["topleft"] = { ["x"] = 261, ["y"] = 557};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["dash_and_shoot_r"] = {
-					["topleft"] = { ["x"] = 574, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["dash_r"] = {
-					["topleft"] = { ["x"] = 503, ["y"] = 499};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["dash_l"] = {
-					["topleft"] = { ["x"] = 503, ["y"] = 557};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["dash_and_shoot_l"] = {
-					["topleft"] = { ["x"] = 574, ["y"] = 557};
-					["dimensions"] = { ["x"] = 70, ["y"] = 50};
-				};
-				["wall_kick_wall_r_frame_1"] = {
-					["topleft"] = { ["x"] = 491, ["y"] = 683};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["wall_kick_wall_r_frame_0"] = {
-					["topleft"] = { ["x"] = 440, ["y"] = 683};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["wall_slide_wall_l"] = {
-					["topleft"] = { ["x"] = 569, ["y"] = 683};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["wall_slide_wall_r"] = {
-					["topleft"] = { ["x"] = 569, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["wall_kick_wall_l_frame_0"] = {
-					["topleft"] = { ["x"] = 440, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["wall_kick_wall_l_frame_1"] = {
-					["topleft"] = { ["x"] = 491, ["y"] = 739};
-					["dimensions"] = { ["x"] = 50, ["y"] = 50};
-				};
-				["ladder_climb_frame_0"] = {
-					["topleft"] = { ["x"] = 479, ["y"] = 289};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["ladder_climb_frame_1"] = {
-					["topleft"] = { ["x"] = 530, ["y"] = 289};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["ladder_climb_frame_2"] = {
-					["topleft"] = { ["x"] = 581, ["y"] = 289};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["ladder_climb_frame_3"] = {
-					["topleft"] = { ["x"] = 632, ["y"] = 289};
-					["dimensions"] = { ["x"] = 50, ["y"] = 57};
-				};
-				["ladder_shoot_r"] = {
-					["topleft"] = { ["x"] = 479, ["y"] = 371};
-					["dimensions"] = { ["x"] = 67, ["y"] = 57};
-				};
-				["ladder_shoot_l"] = {
-					["topleft"] = { ["x"] = 547, ["y"] = 371};
-					["dimensions"] = { ["x"] = 67, ["y"] = 57};
-				};
-				["dust_frame_7"] = {
-					["topleft"] = { ["x"] = 710, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_6"] = {
-					["topleft"] = { ["x"] = 719, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_4"] = {
-					["topleft"] = { ["x"] = 737, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_5"] = {
-					["topleft"] = { ["x"] = 728, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_1"] = {
-					["topleft"] = { ["x"] = 764, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_0"] = {
-					["topleft"] = { ["x"] = 773, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_2"] = {
-					["topleft"] = { ["x"] = 755, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["dust_frame_3"] = {
-					["topleft"] = { ["x"] = 746, ["y"] = 562};
-					["dimensions"] = { ["x"] = 8, ["y"] = 8};
-				};
-				["wall_jump_spark"] = {
-					["topleft"] = { ["x"] = 776, ["y"] = 771};
-					["dimensions"] = { ["x"] = 14, ["y"] = 14};
-				};
-			};
-		};
-	};
-	["entities"] = {
-		[1] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 160.21630859375;
-						["y"] = 112.0;
-					};
-					["scale"] = {
-						["x"] = -32.0;
-						["y"] = 32.0;
-					};
-				};
-				[2] = {
-					["collider"] = {
-						[1] = 11.0;
-						[2] = 0.0;
-						[3] = 8.0;
-						[4] = 8.0;
-					};
-					["velocity"] = {
-						["x"] = 0.17667388916016;
-						["y"] = 0.0;
-					};
-				};
-				[3] = {
-				};
-				[4] = {
-					["texture"] = 138;
-				};
-				[5] = {
-					["timer"] = 0.042420999961905;
-					["isanimating"] = 0;
-					["fps"] = 10.0;
-					["name"] = "walk";
-					["numframes"] = 4;
-					["onframe"] = 0;
-					["shouldloop"] = 1;
-				};
-				[6] = {
-				};
-			};
-		};
-		[2] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 737.54626464844;
-						["y"] = 200.0018157959;
-					};
-					["scale"] = {
-						["x"] = 100.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 9;
-				};
-				[7] = {
-					["timer"] = 157.89866767521;
-					["time_period"] = 12.0;
-					["p2"] = {
-						["x"] = 900.0;
-						["y"] = 200.0;
-					};
-					["p1"] = {
-						["x"] = 680.0;
-						["y"] = 200.0;
-					};
-				};
-			};
-		};
-		[3] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 1395.6496582031;
-						["y"] = 849.99993896484;
-					};
-					["scale"] = {
-						["x"] = 100.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 9;
-				};
-				[7] = {
-					["timer"] = 157.89866767521;
-					["time_period"] = 9.0;
-					["p2"] = {
-						["x"] = 500.0;
-						["y"] = 850.0;
-					};
-					["p1"] = {
-						["x"] = 1400.0;
-						["y"] = 850.0;
-					};
-				};
-			};
-		};
-		[4] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 1067.4248046875;
-						["y"] = 64.0;
-					};
-					["scale"] = {
-						["x"] = -32.0;
-						["y"] = 32.0;
-					};
-				};
-				[2] = {
-					["collider"] = {
-						[1] = 18.0;
-						[2] = 0.0;
-						[3] = 8.0;
-						[4] = 8.0;
-					};
-					["velocity"] = {
-						["x"] = -20.0;
-						["y"] = 0.0;
-					};
-				};
-				[4] = {
-					["texture"] = 207;
-				};
-				[9] = {
-				};
-				[5] = {
-					["timer"] = 0.13031599926762;
-					["isanimating"] = 1;
-					["fps"] = 5.0;
-					["name"] = "slither";
-					["numframes"] = 4;
-					["onframe"] = 0;
-					["shouldloop"] = 1;
-				};
-			};
-		};
-		[5] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 709.77294921875;
-						["y"] = 16.0;
-					};
-					["scale"] = {
-						["x"] = -32.0;
-						["y"] = 32.0;
-					};
-				};
-				[2] = {
-					["collider"] = {
-						[1] = 18.0;
-						[2] = 0.0;
-						[3] = 8.0;
-						[4] = 8.0;
-					};
-					["velocity"] = {
-						["x"] = -20.0;
-						["y"] = 0.0;
-					};
-				};
-				[4] = {
-					["texture"] = 207;
-				};
-				[9] = {
-				};
-				[5] = {
-					["timer"] = 0.13031599926762;
-					["isanimating"] = 1;
-					["fps"] = 5.0;
-					["name"] = "slither";
-					["numframes"] = 4;
-					["onframe"] = 0;
-					["shouldloop"] = 1;
-				};
-			};
-		};
-		[6] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 1219.3497314453;
-						["y"] = 43.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[7] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 1369.3497314453;
-						["y"] = 55.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[8] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 558.72491455078;
-						["y"] = 286.00003051758;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[9] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 524.72491455078;
-						["y"] = 282.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[10] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 498.72491455078;
-						["y"] = 281.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[11] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 471.72491455078;
-						["y"] = 280.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[12] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 445.72491455078;
-						["y"] = 282.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[13] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 253.26669311523;
-						["y"] = 63.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[14] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 286.26669311523;
-						["y"] = 62.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[15] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 320.26669311523;
-						["y"] = 62.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[16] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 352.26669311523;
-						["y"] = 62.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[17] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 380.26669311523;
-						["y"] = 62.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
-		};
-		[18] = {
-			["components"] = {
-				[1] = {
-					["rot"] = 0.0;
-					["pos"] = {
-						["x"] = 416.26669311523;
-						["y"] = 63.0;
-					};
-					["scale"] = {
-						["x"] = 16.0;
-						["y"] = 16.0;
-					};
-				};
-				[4] = {
-					["texture"] = 132;
-				};
-				[5] = {
-					["timer"] = 0.049399199779145;
-					["isanimating"] = 1;
-					["fps"] = 10.0;
-					["name"] = "coin";
-					["numframes"] = 7;
-					["onframe"] = 4;
-					["shouldloop"] = 1;
-				};
-				[8] = {
-					["type"] = 1;
-				};
-			};
+			["tile_width_px"] = 32;
 		};
 	};
 }

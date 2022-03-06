@@ -9,14 +9,17 @@
 #include "EnemyBehaviorSystem.h"
 #include "CollectableSystem.h"
 #include "ExplodingSpriteUpdateSystem.h"
+#include "Box2dPhysicsSystem.h"
 #include "IRenderer2D.h"
 #include "AABB.h"
+
 
 
 #pragma region Update
 
 void Engine::Update(double delta_t)
 {
+	
 
 	if (_NewLvlToLoad != "") {
 		LoadLevel(_NewLvlToLoad);
@@ -238,15 +241,16 @@ void Engine::SpritesSystemDraw(const Camera2D& cam)
 		if (!value.shoulddraw)
 			continue;
 		Transform& transform = _Components.transforms[key];
+		glm::vec2 pos = transform.GetPos();
 		vec4 cameraTLBR = cam.GetTLBR(Renderer->GetW(), Renderer->GetH());
 		vec4 tileTLBR = vec4(
-			transform.pos.y - abs(transform.scale.y) * 0.5f,
-			transform.pos.x - abs(transform.scale.x) * 0.5f,
-			transform.pos.y + abs(transform.scale.y) * 0.5f,
-			transform.pos.x + abs(transform.scale.x) * 0.5f
+			pos.y - abs(transform.scale.y) * 0.5f,
+			pos.x - abs(transform.scale.x) * 0.5f,
+			pos.y + abs(transform.scale.y) * 0.5f,
+			pos.x + abs(transform.scale.x) * 0.5f
 		);
 		if (AABBCollision(cameraTLBR, tileTLBR)) {
-			Renderer->DrawWholeTexture(transform.pos, transform.scale, transform.rot, value.texture, cam);
+			Renderer->DrawWholeTexture(pos, transform.scale, transform.rot, value.texture, cam);
 		}
 	}
 }
@@ -283,6 +287,7 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRe
 	_Editor(std::unique_ptr<IEditorUserInterface>(editorUI)),
 	AudioPlayer(std::unique_ptr<IAudioPlayer>(audio))
 {
+	Box2dContext.initialize();
 	Renderer->Init();
 	_Editor->SetEngine(this);
 	_GameCam.FocusPosition = glm::vec2(32, 0);
@@ -296,12 +301,9 @@ Engine::Engine(IEditorUserInterface* editorUI, ILevelSerializer* serializer, IRe
 	_Systems.push_back(std::make_unique<EnemyBehaviorSystem>());
 	_Systems.push_back(std::make_unique<CollectableSystem>());
 	_Systems.push_back(std::make_unique<ExplodingSpriteUpdateSystem>());
+	_Systems.push_back(std::make_unique<Box2dPhysicsSystem>());
 
 	InitializeSystems();
-	//JumpAudioClip = AudioPlayer->LoadClip("262893__kwahmah-02__videogame-jump.wav");
-	//CoinAudioClip = AudioPlayer->LoadClip("341695__projectsu012__coins-1.wav");
-	//LoadLevel("test.lua");
-	//CueLevel("test.lua");
 	CueLevel("test.lua");
 }
 

@@ -1,19 +1,19 @@
 #pragma once
-
+#define SEPARATE_PHYSICS_THREAD
 #include "Tileset.h" //TODO: this needs to go... also make interface for input
 #include "Tilelayer.h"
 #include <memory>
 #include "Camera2D.h"
 #include "ECS.h"
 #include "ISystem.h"
-#include "statemachine_lib.h"
 #include "IAudioPlayer.h"
-
+#include "Box2dContextService.h"
 
 class IRenderer2D;
 class IEditorUserInterface;
 class ILevelSerializer;
 
+// these 2 enums below aren't used yet
 enum HighLevelEngineState : unsigned int {
 	NullState,
 	StartUp = 1,
@@ -46,13 +46,13 @@ enum class EngineMode {
 class Engine : public ECS
 {
 private:
+	
 	std::unique_ptr<IEditorUserInterface> _Editor;
 	std::unique_ptr<ILevelSerializer> _LevelSerializer;
 	EngineMode _CurrentMode = EngineMode::Play;
 	Camera2D _EditorCam;
 	Camera2D _GameCam;
 	std::vector<std::unique_ptr<ISystem>> _Systems;
-	PS::StateMachine<HighLevelEngineState, HighLevelEngineEvent> _StateMachine;
 	std::string _NewLvlToLoad = "";
 private:
 	void InitializeSystems();
@@ -60,13 +60,11 @@ private:
 	void ExplodingSpritesSystemDraw(const Camera2D& cam);
 	void GotoEditMode();
 	bool LoadLevel(std::string filepath);
-	void ConfigureStateMachine();
 public:
+	Box2dContextService Box2dContext = Box2dContextService(this); // temporary test spike - will add interface
 	EntityID _Player1 = 0;
 	std::unique_ptr<IRenderer2D> Renderer;
 	std::unique_ptr<IAudioPlayer> AudioPlayer;
-	AudioClipID JumpAudioClip;
-	AudioClipID CoinAudioClip;
 
 	glm::ivec2 CollidableLayerWidthAndHeight;
 	std::vector<TileLayer> TileLayers;

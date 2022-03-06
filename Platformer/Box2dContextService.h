@@ -1,0 +1,55 @@
+#pragma once
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
+#include "Box2dWorldSettings.h"
+#include <atomic>
+#include <mutex>
+#include <thread>
+#include <memory>
+#include "ECS.h"
+
+struct Box2dUserData {
+	Box2dUserData(EntityID id) : entityID(id) {
+
+	}
+	EntityID entityID;
+};
+class Engine;
+
+class b2World;
+class b2Body;
+class Box2dContextService
+{
+public:
+	Box2dContextService(Engine* e);
+	~Box2dContextService();
+	void initialize();
+	b2Body* MakeStaticPolygon(const std::vector<glm::vec2>& points, EntityID id);
+	b2Body* MakeDynamicBox(float halfwidth, float halfheight, const glm::vec2& center, float angle, EntityID id);
+	b2Body* MakeStaticBox(float halfwidth, float halfheight, const glm::vec2& center, float angle, EntityID id);
+	const Box2dWorldSettings& GetSettings() {
+		return s_settings;
+	}
+	static void Step();
+private:
+	static glm::vec2 pixelsToMeterConversion(glm::vec2 pixelsPosition);
+	static glm::vec2 metersToPixelsConversion(glm::vec2 metersPosition);
+	static float pixelsToMeterConversion(float val);
+	static float metersToPixelsConversion(float val);
+	
+	static void PhysicsWorker();
+private:
+	
+	static const float s_pixelsPerMeter;
+	static b2World* s_world;
+	static std::atomic_bool s_physicsWorkerShouldContinue;
+	static Box2dWorldSettings s_settings;
+	static Engine* s_engine;
+	std::unique_ptr<std::thread> _physicsThread;
+	static std::mutex s_b2dMutex;
+};
+
+
+
+

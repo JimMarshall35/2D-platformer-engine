@@ -12,7 +12,8 @@ ComponentType = {
 	CT_COLLECTABLE = 8,
 	CT_ENEMYBEHAVIOR = 9,
 	
-	CT_EXPLODINGSPRITE = 10
+	CT_EXPLODINGSPRITE = 10,
+	CT_BOX2DPHYSICS = 11
 }
 CollectableType = {
 	None = 0,
