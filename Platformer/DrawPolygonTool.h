@@ -2,10 +2,7 @@
 #include "EditorToolBase.h"
 #include <vector>
 #include <glm/glm.hpp>
-struct Line {
-	glm::vec2 pt1;
-	glm::vec2 pt2;
-};
+class Line;
 class DrawPolygonTool : public EditorToolBase
 {
 public:
@@ -18,6 +15,7 @@ public:
 private:
 	glm::vec2 GetSnappedPos();
 private:
+	bool _tempFinished = false;
 	bool _snappedToGrid = true;
 	glm::vec2 _currentMouse;
 	std::vector<Line> _polyUnderConstruction;

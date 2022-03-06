@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "ILevelSerializer.h"
 #include "LuaVMService.h"
+#include "Line.h"
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>
@@ -457,6 +458,14 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 		}
 	}
 	_SelectedTool->drawOverlay(renderer, camera);
+	for (const auto& poly : _physicsEdges) {
+		for (auto& line : poly) {
+			glm::vec2 point1pos(line.pt1.x, line.pt1.y);
+			glm::vec2 point2pos(line.pt2.x, line.pt2.y);
+			renderer->DrawLine(point1pos, point2pos, glm::vec4(0.980, 0.552, 0, 1.0), 4, camera);
+		}
+	}
+	
 }
 
 void EditorUserInterface::cursorPositionCallbackHandler(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera)
@@ -577,6 +586,11 @@ void EditorUserInterface::SetEngine(Engine* engine)
 	}
 	lua_pop(L, 1);
 	_EditorTools.push_back(new DrawPolygonTool(this, engine));
+}
+
+void EditorUserInterface::AddPhysicsPolygon(const std::vector<Line>& lines)
+{
+	_physicsEdges.push_back(lines);
 }
 
 

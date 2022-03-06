@@ -401,6 +401,9 @@
     <ClInclude Include="Box2dWorldSettings.h">
       <Filter>Header Files\box2d</Filter>
     </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl">

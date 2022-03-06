@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "EditorUI.h"
 #include "IRenderer2D.h"
+#include "Line.h"
 
 DrawPolygonTool::DrawPolygonTool(EditorUserInterface* ui, Engine* engine){
 	InputRequirement |= MouseButton;
@@ -104,4 +105,5 @@ void DrawPolygonTool::OnPolygonComplete()
 		
 		_Engine->_Components.box2d_physicses[entity].body = bodyPtr;
 	}
+	_UI->AddPhysicsPolygon(_polyUnderConstruction);
 }

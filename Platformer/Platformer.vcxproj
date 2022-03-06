@@ -218,6 +218,7 @@
     <ClInclude Include="FloodFillTool.h" />
     <ClInclude Include="IAudioPlayer.h" />
     <ClInclude Include="IdGenerator.h" />
+    <ClInclude Include="Line.h" />
     <ClInclude Include="LuaScriptedTool.h" />
     <ClInclude Include="macros.h" />
     <ClInclude Include="pacific_state.h" />

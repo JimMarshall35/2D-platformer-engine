@@ -28,6 +28,7 @@ class Tile;
 class Camera2D;
 class IRenderer2D;
 class LuaVMService;
+class Line;
 
 class EditorUserInterface : public IEditorUserInterface
 {
@@ -57,6 +58,8 @@ public:
 	void frameBufferSizeChangeCallbackHandler(GLFWwindow* window, int newwidth, int newheight, Camera2D& camera);
 	void SetEngine(Engine* engine);
 #pragma endregion
+
+	void AddPhysicsPolygon(const std::vector<Line>& lines);
 
 public:
 	int WindowH = 600;
@@ -96,7 +99,7 @@ private:
 	glm::vec2 _LeftMouseDragStart;
 	glm::vec2 _RightMouseDragStart;
 
-
+	std::vector<std::vector<Line>> _physicsEdges;
 private:
 	bool FileChosen(std::string path);
 };

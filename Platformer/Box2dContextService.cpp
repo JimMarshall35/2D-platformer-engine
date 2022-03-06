@@ -45,9 +45,6 @@ void Box2dContextService::initialize()
 b2Body* Box2dContextService::MakeStaticPolygon(const std::vector<glm::vec2>& points, EntityID id)
 {
 	
-	if (points.size() > b2_maxPolygonVertices) {
-		return nullptr;
-	}
 	b2PolygonShape shape;
 	std::vector<b2Vec2> transformed(points.size());
 	size_t points_size = points.size();
@@ -67,7 +64,6 @@ b2Body* Box2dContextService::MakeStaticPolygon(const std::vector<glm::vec2>& poi
 	{
 		std::lock_guard<std::mutex>lg(s_b2dMutex);
 		body = s_world->CreateBody(&bodydef);
-		//	body->CreateFixture(&shape, 0.0f);
 		for (int i = 0; i < points_size / 2; i++) {
 			auto v1 = transformed[i * 2];
 			auto v2 = transformed[(i * 2) + 1];
