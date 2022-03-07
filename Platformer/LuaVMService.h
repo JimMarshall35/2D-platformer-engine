@@ -36,8 +36,8 @@ private:
 	static int l_SetCollectableValString(lua_State* L);   // lua parameters: engine*, entityID, val | returns void
 	static int l_LoadNamedTiles(lua_State* L);            // lua parameters: engine*, filepath, (list of named tiles outputted by sprite tool)
 	static int l_SetTilesetWidthAndHeight(lua_State* L);  // lua parameters: engine*, width, height
-	static int l_CreateBox2dDynamicBoxBody(lua_State* L); // lua parameters: engine*, entityID, halfwidth, halfheight, centerx, centery, angle, static
-
+	static int l_CreateBox2dBoxBody(lua_State* L);        // lua parameters: engine*, entityID, halfwidth, halfheight, centerx, centery, angle, static
+	static int l_createBox2dCircleBody(lua_State* L);     // lua parameters: engine*, entityID, radius, centerx, centery, angle, static
 #pragma endregion
 
 	lua_State* _L;

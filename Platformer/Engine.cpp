@@ -154,6 +154,17 @@ void Engine::SaveCurrentLevel(std::string filepath)
 	_LevelSerializer->Serialize(*this, filepath);
 }
 
+bool Engine::DeleteEntity(EntityID id)
+{
+	
+	const auto& components = _Entities[id];
+	if (std::count(components.begin(), components.end(), CT_BOX2DPHYSICS)) {
+		Box2dContext.DeleteBody(_Components.box2d_physicses[id].body);
+	}
+	bool rval = ECS::DeleteEntity(id);
+	return rval;
+}
+
 #pragma endregion
 
 #pragma region switch between play and edit mode
@@ -277,7 +288,6 @@ void Engine::InitializeSystems()
 }
 
 #pragma endregion
-
 
 #pragma region ctor
 

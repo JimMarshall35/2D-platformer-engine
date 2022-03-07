@@ -137,7 +137,39 @@ void EditorUserInterface::DoLayersWindow()
 }
 
 #define M_PI           3.14159265358979323846  /* pi */
-
+#include <sstream>
+std::string buildEntityTabName(const std::vector<ComponentType>& components, EntityID id) {
+	std::stringstream r;
+	r << "ID " << id;
+	r << " size " << components.size();
+	for (auto component : components) {
+		switch (component) {
+		break; case CT_TRANSFORM:
+			r << " tr";
+		break; case CT_PHYSICS:
+			r << " ph";
+		break; case CT_HEALTH:
+			r << " he";
+		break; case CT_SPRITE:
+			r << " sp";
+		break; case CT_ANIMATION:
+			r << " an";
+		break; case CT_PLAYERBEHAVIOR:
+			r << " pb";
+		break; case CT_MOVINGPLATFORM:
+			r << " mp";
+		break; case CT_COLLECTABLE:
+			r << " co";
+		break; case CT_ENEMYBEHAVIOR:
+			r << " eb";
+		break; case CT_EXPLODINGSPRITE:
+			r << " es";
+		break; case CT_BOX2DPHYSICS:
+			r << " b2d";
+		}
+	}
+	return r.str();
+}
 
 void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelete)
 {
@@ -154,7 +186,7 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 	
 	for (auto& [id, components] : _Engine->_Entities) {
 		
-		if (ImGui::CollapsingHeader(std::to_string(id).c_str(), ImGuiTreeNodeFlags_None))
+		if (ImGui::CollapsingHeader(buildEntityTabName(components,id).c_str(), ImGuiTreeNodeFlags_None))
 		{
 			for (auto& componentType : components) {
 				switch (componentType) {

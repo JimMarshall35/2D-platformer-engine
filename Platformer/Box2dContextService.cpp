@@ -5,6 +5,7 @@
 #include <box2d/b2_settings.h>
 #include <box2d/b2_edge_shape.h>
 #include <box2d/b2_fixture.h>
+#include <box2d/b2_circle_shape.h>
 #include <algorithm>
 #include <chrono>
 #include "Engine.h"
@@ -93,18 +94,20 @@ b2Body* Box2dContextService::MakeDynamicBox(float halfwidth, float halfheight, c
 	bodyDef.awake = true;
 	bodyDef.userData.pointer = id;
 
+	b2PolygonShape dynamicBox;
+	dynamicBox.SetAsBox(PhysicsCoordsHalfWidth, PhysicsCoordsHalfHeight, b2Vec2(0, 0), angle);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &dynamicBox;
+	fixtureDef.density = 1.0f;
+	fixtureDef.friction = 0.3f;
+
+
 	b2Body* body = nullptr;
 	{
 		std::lock_guard<std::mutex>lg(s_b2dMutex);
 
-		b2PolygonShape dynamicBox;
-		dynamicBox.SetAsBox(PhysicsCoordsHalfWidth, PhysicsCoordsHalfHeight, b2Vec2(0, 0), angle);
-
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &dynamicBox;
-		fixtureDef.density = 1.0f;
-		fixtureDef.friction = 0.3f;
-
+		
 		body = s_world->CreateBody(&bodyDef);
 		body->CreateFixture(&fixtureDef);
 
@@ -129,17 +132,20 @@ b2Body* Box2dContextService::MakeStaticBox(float halfwidth, float halfheight, co
 	bodyDef.userData.pointer = id;
 	bodyDef.awake = true;
 
+
+	b2PolygonShape dynamicBox;
+	dynamicBox.SetAsBox(PhysicsCoordsHalfWidth, PhysicsCoordsHalfHeight, b2Vec2(0, 0), angle);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &dynamicBox;
+	fixtureDef.density = 0.0f;
+	fixtureDef.friction = 0.3f;
+
 	b2Body* body = nullptr;
 	{
 		std::lock_guard<std::mutex>lg(s_b2dMutex);
 
-		b2PolygonShape dynamicBox;
-		dynamicBox.SetAsBox(PhysicsCoordsHalfWidth, PhysicsCoordsHalfHeight, b2Vec2(0,0), angle);
-
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &dynamicBox;
-		fixtureDef.density = 0.0f;
-		fixtureDef.friction = 0.3f;
+		
 
 		body = s_world->CreateBody(&bodyDef);
 		body->CreateFixture(&dynamicBox, 0.0);
@@ -148,6 +154,22 @@ b2Body* Box2dContextService::MakeStaticBox(float halfwidth, float halfheight, co
 	}
 	
 	return body;
+}
+
+b2Body* Box2dContextService::MakeStaticCircle(float radius, const glm::vec2& center, EntityID id)
+{
+	return MakeCircleBase(radius, center, id, false);
+}
+
+b2Body* Box2dContextService::MakeDynamicCircle(float radius, const glm::vec2& center, EntityID id)
+{
+	return MakeCircleBase(radius, center, id, true);
+}
+
+void Box2dContextService::DeleteBody(b2Body* body)
+{
+	std::lock_guard<std::mutex>lg(s_b2dMutex);
+	s_world->DestroyBody(body);
 }
 
 glm::vec2 Box2dContextService::pixelsToMeterConversion(glm::vec2 pixelsPosition)
@@ -176,20 +198,24 @@ float Box2dContextService::metersToPixelsConversion(float val)
 
 void Box2dContextService::Step()
 {
+	int32 numbodies;
+	b2Body* bodiesList;
 	float timeStep = s_settings.m_hertz > 0.0f ? 1.0f / s_settings.m_hertz : float(0.0f);
-
-	s_world->SetAllowSleeping(s_settings.m_enableSleep);
-	s_world->SetWarmStarting(s_settings.m_enableWarmStarting);
-	s_world->SetContinuousPhysics(s_settings.m_enableContinuous);
-	s_world->SetSubStepping(s_settings.m_enableSubStepping);
-	s_world->Step(timeStep, s_settings.m_velocityIterations, s_settings.m_positionIterations);
-	auto numbodies = s_world->GetBodyCount();
-	auto bodiesList = s_world->GetBodyList();
+	{
+		std::lock_guard<std::mutex>lg(s_b2dMutex);
+		s_world->SetAllowSleeping(s_settings.m_enableSleep);
+		s_world->SetWarmStarting(s_settings.m_enableWarmStarting);
+		s_world->SetContinuousPhysics(s_settings.m_enableContinuous);
+		s_world->SetSubStepping(s_settings.m_enableSubStepping);
+		s_world->Step(timeStep, s_settings.m_velocityIterations, s_settings.m_positionIterations);
+		numbodies = s_world->GetBodyCount();
+		bodiesList = s_world->GetBodyList();
+	}
 	for (int i = 0; i < numbodies; i++) {
 		b2Body& body = bodiesList[i];
 		b2BodyType type = body.GetType();
 		if (type == b2BodyType::b2_dynamicBody) {
-			// set transforms for those which have dynamic bodies
+			// set the transforms used for rendering
 			EntityID id = (EntityID)body.GetUserData().pointer;
 
 			auto b2pos = body.GetPosition();
@@ -200,7 +226,45 @@ void Box2dContextService::Step()
 			tr.SetRot(rot);
 		}
 	}
-	s_world->ClearForces();
+	{
+		std::lock_guard<std::mutex>lg(s_b2dMutex);
+		s_world->ClearForces();
+	}
+}
+
+b2Body* Box2dContextService::MakeCircleBase(float radius, const glm::vec2& center, EntityID id, bool dynamic)
+{
+	auto PhysicsCoordsCenter = pixelsToMeterConversion(center);
+	auto PhysicsCoordsRadius = pixelsToMeterConversion(radius);
+
+	b2BodyDef bodyDef;
+	bodyDef.type = dynamic ? b2_dynamicBody : b2_staticBody;
+	bodyDef.enabled = true;
+	bodyDef.allowSleep = false;
+	//bodyDef.fixedRotation = true;
+	bodyDef.position.Set(PhysicsCoordsCenter.x, PhysicsCoordsCenter.y);
+	bodyDef.awake = true;
+	bodyDef.userData.pointer = id;
+
+
+	b2CircleShape dynamicCircle;
+	dynamicCircle.m_radius = PhysicsCoordsRadius;
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &dynamicCircle;
+	fixtureDef.density = 1.0f;
+	fixtureDef.friction = 0.3f;
+
+	b2Body* body = nullptr;
+	{
+		std::lock_guard<std::mutex>lg(s_b2dMutex);
+
+		body = s_world->CreateBody(&bodyDef);
+		body->CreateFixture(&fixtureDef);
+
+		body->SetAwake(true);
+	}
+
+	return body;
 }
 
 void Box2dContextService::PhysicsWorker()
@@ -210,10 +274,9 @@ void Box2dContextService::PhysicsWorker()
 	while (s_physicsWorkerShouldContinue) {
 		std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 		// do work
-		{
-			std::lock_guard<std::mutex>lg(s_b2dMutex);
-			Step();
-		}
+		
+		Step();
+		
 		
 		
 

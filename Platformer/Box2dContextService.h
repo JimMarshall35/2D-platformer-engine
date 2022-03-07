@@ -28,11 +28,16 @@ public:
 	b2Body* MakeStaticPolygon(const std::vector<glm::vec2>& points, EntityID id);
 	b2Body* MakeDynamicBox(float halfwidth, float halfheight, const glm::vec2& center, float angle, EntityID id);
 	b2Body* MakeStaticBox(float halfwidth, float halfheight, const glm::vec2& center, float angle, EntityID id);
+	b2Body* MakeStaticCircle(float radius, const glm::vec2& center, EntityID id);
+	b2Body* MakeDynamicCircle(float radius, const glm::vec2& center, EntityID id);
+	void DeleteBody(b2Body* body);
 	const Box2dWorldSettings& GetSettings() {
 		return s_settings;
 	}
 	static void Step();
 private:
+	b2Body* MakeCircleBase(float radius, const glm::vec2& center, EntityID id, bool dynamic);
+
 	static glm::vec2 pixelsToMeterConversion(glm::vec2 pixelsPosition);
 	static glm::vec2 metersToPixelsConversion(glm::vec2 metersPosition);
 	static float pixelsToMeterConversion(float val);

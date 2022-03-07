@@ -127,7 +127,7 @@ function SetupCoin(pos)
 end
 
 
-function SetupPhysicsTest(pos)
+function CreateDynamicBox(pos)
 	local entityID = C_CreateEntity(C_Engine,{
 		ComponentType.CT_BOX2DPHYSICS,
 		ComponentType.CT_TRANSFORM,
@@ -139,10 +139,9 @@ function SetupPhysicsTest(pos)
 		scale = {x=16.0,y=16.0},
 		rot = 0
 	})
-	C_CreateBox2dDynamicBoxBody(
+	C_CreateBox2DCircleBody(
 		C_Engine,
 		entityID,
-		8.0,
 		8.0,
 		pos.x,
 		pos.y,
@@ -164,7 +163,7 @@ function SetupPhysicsStatic(pos)
 		scale = {x=48.0,y=16.0},
 		rot = 0
 	})
-	C_CreateBox2dDynamicBoxBody(
+	C_CreateBox2dBoxBody(
 		C_Engine,
 		entityID,
 		24.0,
@@ -227,7 +226,7 @@ EditorTools = {
 					return
 				end
 				if button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS then
-					SetupPhysicsTest(worldpos)
+					CreateDynamicBox(worldpos)
 				end
 			end,
 			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)

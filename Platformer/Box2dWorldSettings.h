@@ -12,8 +12,8 @@ struct Box2dWorldSettings
 		m_windowWidth = 1600;
 		m_windowHeight = 900;
 		m_hertz = 60.0;
-		m_velocityIterations = 8;
-		m_positionIterations = 3;
+		m_velocityIterations = 10;//8;
+		m_positionIterations = 5;//3;
 		m_drawShapes = true;
 		m_drawJoints = true;
 		m_drawAABBs = false;
@@ -27,7 +27,7 @@ struct Box2dWorldSettings
 		m_enableWarmStarting = true;
 		m_enableContinuous = true;
 		m_enableSubStepping = true;
-		m_enableSleep = true;
+		m_enableSleep = false;
 		m_pause = false;
 		m_singleStep = false;
 	}

@@ -20,7 +20,8 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_LoadLevelFromLuaTable, "C_LoadLevel"); // 'deprecated'
 
     registerFunction(l_CreateEntity, "C_CreateEntity");
-    registerFunction(l_CreateBox2dDynamicBoxBody, "C_CreateBox2dDynamicBoxBody");
+    registerFunction(l_CreateBox2dBoxBody, "C_CreateBox2dBoxBody");
+    registerFunction(l_createBox2dCircleBody, "C_CreateBox2DCircleBody");
     
     registerFunction(l_LoadTilesetFile, "C_LoadTilesetFile");
     registerFunction(l_LoadTileLayer, "C_LoadTileLayer");
@@ -44,6 +45,8 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_SetAnimationComponent, "C_SetAnimationComponent");
     registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
     registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
+
+    
 }
 
 
@@ -858,11 +861,11 @@ int LuaVMService::l_SetTilesetWidthAndHeight(lua_State* L)
     return 0;
 }
 
-int LuaVMService::l_CreateBox2dDynamicBoxBody(lua_State* L)
+int LuaVMService::l_CreateBox2dBoxBody(lua_State* L)
 {
     int n = lua_gettop(L);
     if (n != 8) {
-        std::cout << "7 arguments: engine*, entityID, halfwidth, halfheight, centerx, centery, angle, static" << std::endl;
+        std::cout << "8 arguments: engine*, entityID, halfwidth, halfheight, centerx, centery, angle, static" << std::endl;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
     EntityID id = lua_tointeger(L, 2);
@@ -879,6 +882,30 @@ int LuaVMService::l_CreateBox2dDynamicBoxBody(lua_State* L)
         body = e->Box2dContext.MakeDynamicBox(hx, hy, center, angle, id);
     }
     
+    e->_Components.box2d_physicses[id].body = body;
+    return 0;
+}
+
+int LuaVMService::l_createBox2dCircleBody(lua_State* L)
+{
+    int n = lua_gettop(L);
+    if (n != 7) {
+        std::cout << "7 arguments: engine*, entityID, radius, centerx, centery, angle, static" << std::endl;
+    }
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    EntityID id = lua_tointeger(L, 2);
+    float r = lua_tonumber(L, 3);
+    auto center = glm::vec2(lua_tonumber(L, 4), lua_tonumber(L, 5));
+    float angle = lua_tonumber(L, 6);
+    bool isStatic = lua_toboolean(L, 7);
+    b2Body* body;
+    if (isStatic) {
+        body = e->Box2dContext.MakeStaticCircle(r, center, id);
+    }
+    else {
+        body = e->Box2dContext.MakeDynamicCircle(r, center, id);
+    }
+
     e->_Components.box2d_physicses[id].body = body;
     return 0;
 }

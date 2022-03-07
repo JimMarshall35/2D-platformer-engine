@@ -273,7 +273,7 @@ public:
 		componentmap.erase(id);
 	}
 	EntityID CreateEntity(std::vector<ComponentType> components);
-	bool DeleteEntity(EntityID id);
+	virtual bool DeleteEntity(EntityID id);
 	Components _Components;
 	std::unordered_map<EntityID, std::vector<ComponentType>> _Entities;
 

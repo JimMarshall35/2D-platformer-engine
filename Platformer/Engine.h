@@ -81,6 +81,7 @@ public:
 	
 	void SaveCurrentLevel(std::string filepath);
 	void CueLevel(std::string filepath) { _NewLvlToLoad = filepath; }
+	virtual bool DeleteEntity(EntityID id);
 
 	void GotoPlayMode();
 };
