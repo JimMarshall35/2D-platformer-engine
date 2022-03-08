@@ -1,9 +1,3 @@
-An engine for 2d platformers with a level editor - still a work in progress, a learning exercise in engine development
-
-ECS based
-
-Also includes a c# tool for marking frames on a sprite sheet, outputs lua code. A poor mans photoshop. Based on this library: https://github.com/mircea21S/RichCanvas
-
 
 EASY:
 - fix resizing of layers in editor (layers contents should be preserved if there is a resize)
