@@ -9,9 +9,9 @@ using TileID = unsigned int;
 
 struct Tile {
 public:
-	Tile(TextureID texture, TileID ID);
+	Tile(TextureID texture, TileID id) { Texture = texture; ID = id; }
 	Tile() {};
-	~Tile();
+	~Tile() {};
 	TextureID Texture = 0;
 	TileID ID = 0;
 };
@@ -29,10 +29,10 @@ struct NamedTileData {
 	int width;
 	int height;
 };
-class ITileset {
+class TilesetBase {
 public:
-	std::vector<ImgFileTilesetData> FilesList;
-	std::vector<Tile> Tiles;
+	
+	
 	glm::ivec2 TileWidthAndHeightPx{ 16,16 };
 	glm::ivec2 TileSetWidthAndHeightTiles{ 16,16 }; // should be in editorUI
 	int LastId = 1;
@@ -45,4 +45,7 @@ public:
 	virtual glm::ivec2 GetTileDims(unsigned int tileID) = 0;
 	virtual void ClearTiles() = 0;
 	virtual TextureID GetTextureByTileID(TileID tileId) = 0;
+	virtual void FinishLoading() = 0;
+	virtual std::vector<ImgFileTilesetData>& GetFilesListRef() = 0;
+	virtual std::vector<Tile>& GetTilesRef() = 0;
 };

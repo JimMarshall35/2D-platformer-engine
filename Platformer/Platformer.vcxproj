@@ -160,6 +160,8 @@
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="AnimationSystem.cpp" />
+    <ClCompile Include="BetterRenderer.cpp" />
+    <ClCompile Include="BetterTileset.cpp" />
     <ClCompile Include="Box2dContextService.cpp" />
     <ClCompile Include="Box2dPhysicsSystem.cpp" />
     <ClCompile Include="Camera2D.cpp" />
@@ -195,12 +197,15 @@
     <ClCompile Include="Tilelayer.cpp" />
     <ClCompile Include="Tileset.cpp" />
     <ClCompile Include="EditorUI.cpp" />
+    <ClCompile Include="TSQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="audiofile.h" />
     <ClInclude Include="AudioRingBuffer.h" />
+    <ClInclude Include="BetterRenderer.h" />
+    <ClInclude Include="BetterTileset.h" />
     <ClInclude Include="Box2dContextService.h" />
     <ClInclude Include="Box2dPhysicsSystem.h" />
     <ClInclude Include="Box2dWorldSettings.h" />
@@ -251,11 +256,15 @@
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="stb\stb_image.h" />
     <ClInclude Include="stb\stb_image_resize.h" />
+    <ClInclude Include="stb\stb_image_write.h" />
     <ClInclude Include="Tilelayer.h" />
     <ClInclude Include="Tileset.h" />
     <ClInclude Include="EditorUI.h" />
+    <ClInclude Include="TSQueue.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AtlasTileFrag.glsl" />
+    <None Include="AtlasTileVert.glsl" />
     <None Include="explode_frag.glsl" />
     <None Include="explode_vert.glsl" />
     <None Include="frag.glsl" />

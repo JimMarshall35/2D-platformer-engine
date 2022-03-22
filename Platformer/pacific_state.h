@@ -12,7 +12,6 @@
 #include <memory>
 #include <type_traits>
 
-// state machine library based on C# stateless - Jim Marshall 2022
 
 namespace PS {
 

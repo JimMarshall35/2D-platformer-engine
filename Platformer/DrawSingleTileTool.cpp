@@ -49,7 +49,7 @@ void DrawSingleTileTool::drawOverlay(const IRenderer2D* renderer, const Camera2D
 	auto yCoord = _UI->_TileIndexHovvered / width;
 	worldPos.x = (float)xCoord;
 	worldPos.y = (float)yCoord;
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	worldPos *= glm::vec2(tileset->TileWidthAndHeightPx);
 	worldPos += glm::vec2(tileset->TileWidthAndHeightPx) * 0.5f;
 	renderer->DrawWireframeRect(worldPos, glm::vec2(tileset->TileWidthAndHeightPx), 0.0, glm::vec4(1.0, 1.0, 1.0, 1.0), camera);

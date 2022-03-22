@@ -15,5 +15,5 @@ public:
 	virtual unsigned int GetW() const  = 0;
 	virtual unsigned int GetH() const = 0;
 	virtual void Init() = 0;
-	virtual ITileset* GetTileset() = 0;
+	virtual TilesetBase* GetTileset() = 0;
 };

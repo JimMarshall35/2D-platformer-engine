@@ -10,7 +10,6 @@
 #include <chrono>
 #include "Engine.h"
 
-
 Box2dWorldSettings Box2dContextService::s_settings;
 std::atomic_bool Box2dContextService::s_physicsWorkerShouldContinue = true;
 b2World* Box2dContextService::s_world = nullptr;
@@ -37,7 +36,10 @@ void Box2dContextService::initialize()
 {
 	b2Vec2 gravity(0.0f, 10.0f);
 	s_world = new b2World(gravity);
-	s_world->SetContinuousPhysics(true);
+	s_world->SetAllowSleeping(s_settings.m_enableSleep);
+	s_world->SetWarmStarting(s_settings.m_enableWarmStarting);
+	s_world->SetContinuousPhysics(s_settings.m_enableContinuous);
+	s_world->SetSubStepping(s_settings.m_enableSubStepping);
 #ifdef SEPARATE_PHYSICS_THREAD
 	_physicsThread = std::unique_ptr<std::thread>(new std::thread(PhysicsWorker));
 #endif
@@ -65,15 +67,19 @@ b2Body* Box2dContextService::MakeStaticPolygon(const std::vector<glm::vec2>& poi
 	{
 		std::lock_guard<std::mutex>lg(s_b2dMutex);
 		body = s_world->CreateBody(&bodydef);
-		for (int i = 0; i < points_size / 2; i++) {
-			auto v1 = transformed[i * 2];
-			auto v2 = transformed[(i * 2) + 1];
-			b2EdgeShape shape;
-			shape.SetTwoSided(v1, v2);
-			body->CreateFixture(&shape, 1.0f);
-		}
 	}
 	
+	for (int i = 0; i < points_size / 2; i++) {
+		auto v1 = transformed[i * 2];
+		auto v2 = transformed[(i * 2) + 1];
+		b2EdgeShape shape;
+		shape.SetTwoSided(v1, v2);
+		{
+			std::lock_guard<std::mutex>lg(s_b2dMutex);
+			body->CreateFixture(&shape, 1.0f);
+		}
+		
+	}
 
 	return body;
 }
@@ -84,14 +90,16 @@ b2Body* Box2dContextService::MakeDynamicBox(float halfwidth, float halfheight, c
 	auto PhysicsCoordsCenter = pixelsToMeterConversion(center);
 	auto PhysicsCoordsHalfHeight = pixelsToMeterConversion(halfheight);
 	auto PhysicsCoordsHalfWidth = pixelsToMeterConversion(halfwidth);
+	assert(s_engine->_Components.box2d_physicses.find(id) != s_engine->_Components.box2d_physicses.end());
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.enabled = true;
-	bodyDef.allowSleep = false;
+	//bodyDef.enabled = true;
+	//bodyDef.allowSleep = false;
 	//bodyDef.fixedRotation = true;
 	bodyDef.position.Set(PhysicsCoordsCenter.x, PhysicsCoordsCenter.y);
-	bodyDef.awake = true;
+	//bodyDef.awake = true;
+	
 	bodyDef.userData.pointer = id;
 
 	b2PolygonShape dynamicBox;
@@ -107,11 +115,11 @@ b2Body* Box2dContextService::MakeDynamicBox(float halfwidth, float halfheight, c
 	{
 		std::lock_guard<std::mutex>lg(s_b2dMutex);
 
-		
 		body = s_world->CreateBody(&bodyDef);
 		body->CreateFixture(&fixtureDef);
 
-		body->SetAwake(true);
+		//body->SetAwake(true);
+		
 	}
 
 	return body;
@@ -166,6 +174,19 @@ b2Body* Box2dContextService::MakeDynamicCircle(float radius, const glm::vec2& ce
 	return MakeCircleBase(radius, center, id, true);
 }
 
+b2Vec2 ConvertGlmToBox2D(const glm::vec2 vec2convert) {
+	return b2Vec2(vec2convert.x, vec2convert.y);
+}
+void Box2dContextService::ApplyForce(EntityID entity, const glm::vec2& force, const glm::vec2& point)
+{
+	assert(s_engine->_Components.box2d_physicses.find(entity) != s_engine->_Components.box2d_physicses.end());
+	
+	b2Body* body = s_engine->_Components.box2d_physicses[entity].body;
+	auto meterUnitsPoint = pixelsToMeterConversion(point);
+	std::lock_guard<std::mutex>lg(s_b2dMutex);
+	body->ApplyForce(ConvertGlmToBox2D(force), b2Vec2(meterUnitsPoint.x, meterUnitsPoint.y),true);
+}
+
 void Box2dContextService::DeleteBody(b2Body* body)
 {
 	std::lock_guard<std::mutex>lg(s_b2dMutex);
@@ -203,16 +224,15 @@ void Box2dContextService::Step()
 	float timeStep = s_settings.m_hertz > 0.0f ? 1.0f / s_settings.m_hertz : float(0.0f);
 	{
 		std::lock_guard<std::mutex>lg(s_b2dMutex);
-		s_world->SetAllowSleeping(s_settings.m_enableSleep);
-		s_world->SetWarmStarting(s_settings.m_enableWarmStarting);
-		s_world->SetContinuousPhysics(s_settings.m_enableContinuous);
-		s_world->SetSubStepping(s_settings.m_enableSubStepping);
+		
 		s_world->Step(timeStep, s_settings.m_velocityIterations, s_settings.m_positionIterations);
 		numbodies = s_world->GetBodyCount();
 		bodiesList = s_world->GetBodyList();
+		//s_world->ClearForces();
 	}
-	for (int i = 0; i < numbodies; i++) {
-		b2Body& body = bodiesList[i];
+	b2Body* current = bodiesList;
+	while(current != nullptr) {
+		b2Body& body = *current;
 		b2BodyType type = body.GetType();
 		if (type == b2BodyType::b2_dynamicBody) {
 			// set the transforms used for rendering
@@ -225,11 +245,9 @@ void Box2dContextService::Step()
 			tr.SetPos(metersToPixelsConversion(glmPosition));
 			tr.SetRot(rot);
 		}
+		current = current->GetNext();;
 	}
-	{
-		std::lock_guard<std::mutex>lg(s_b2dMutex);
-		s_world->ClearForces();
-	}
+
 }
 
 b2Body* Box2dContextService::MakeCircleBase(float radius, const glm::vec2& center, EntityID id, bool dynamic)
@@ -261,7 +279,7 @@ b2Body* Box2dContextService::MakeCircleBase(float radius, const glm::vec2& cente
 		body = s_world->CreateBody(&bodyDef);
 		body->CreateFixture(&fixtureDef);
 
-		body->SetAwake(true);
+		//body->SetAwake(true);
 	}
 
 	return body;

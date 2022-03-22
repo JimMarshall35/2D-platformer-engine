@@ -46,6 +46,8 @@ void LuaVMService::RegisterLuaAPI()
     registerFunction(l_SetFloorColliderComponent, "C_SetFloorColliderComponent");
     registerFunction(l_SetEntityPlayer1, "C_SetEntityPlayer1");
 
+    registerFunction(l_FinishLoadingImages, "C_FinishLoadingImages");
+
     
 }
 
@@ -63,7 +65,7 @@ int LuaVMService::l_LoadLevelFromLuaTable(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    ITileset* tileset = e->Renderer->GetTileset();
+    TilesetBase* tileset = e->Renderer->GetTileset();
     int tilesetFilesSize, tilelayersSize, animationsSize;
     std::string filepath;
     if (lua_getfield(L, 2, "tiledims") != LUA_TTABLE) goto error;
@@ -397,7 +399,7 @@ int LuaVMService::l_LoadTilesetFile(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    ITileset* tileset = e->Renderer->GetTileset();
+    TilesetBase* tileset = e->Renderer->GetTileset();
     tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
     tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
     std::string path = (std::string)luaL_checkstring(L, 4);
@@ -437,7 +439,7 @@ int LuaVMService::l_LoadAnimationFrames(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    ITileset* tileset = e->Renderer->GetTileset();
+    TilesetBase* tileset = e->Renderer->GetTileset();
     std::string name = (std::string)luaL_checkstring(L, 2);
 
     int frames_size = lua_rawlen(L, -1);
@@ -454,10 +456,10 @@ int LuaVMService::l_LoadAnimationFrames(lua_State* L)
 int LuaVMService::l_GetTileset(lua_State* L)
 {
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    ITileset* tileset = e->Renderer->GetTileset();
+    TilesetBase* tileset = e->Renderer->GetTileset();
     lua_newtable(L);
-    for (int i = 0; i < tileset->FilesList.size(); i++) {
-        const auto& file = tileset->FilesList[i];
+    for (int i = 0; i < tileset->GetFilesListRef().size(); i++) {
+        const auto& file = tileset->GetFilesListRef()[i];
         lua_newtable(L);
         lua_pushstring(L, file.path.c_str());
         lua_setfield(L, -2, "path");
@@ -632,7 +634,7 @@ int LuaVMService::l_GetEntities(lua_State* L)
 int LuaVMService::l_GetAnimations(lua_State* L)
 {
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    ITileset* tileset = e->Renderer->GetTileset();
+    TilesetBase* tileset = e->Renderer->GetTileset();
     lua_newtable(L);
     int anim_index = 1;
     for (auto& [key, val] : tileset->AnimationsMap) {
@@ -855,7 +857,7 @@ int LuaVMService::l_SetTilesetWidthAndHeight(lua_State* L)
         return 1;
     }
     Engine* e = (Engine*)lua_touserdata(L, 1);
-    ITileset* tileset = e->Renderer->GetTileset();
+    TilesetBase* tileset = e->Renderer->GetTileset();
     tileset->TileWidthAndHeightPx.x = luaL_checkinteger(L, 2);
     tileset->TileWidthAndHeightPx.y = luaL_checkinteger(L, 3);
     return 0;
@@ -907,6 +909,13 @@ int LuaVMService::l_createBox2dCircleBody(lua_State* L)
     }
 
     e->_Components.box2d_physicses[id].body = body;
+    return 0;
+}
+
+int LuaVMService::l_FinishLoadingImages(lua_State* L)
+{
+    Engine* e = (Engine*)lua_touserdata(L, 1);
+    e->Renderer->GetTileset()->FinishLoading();
     return 0;
 }
 

@@ -118,6 +118,12 @@
     <Filter Include="Header Files\box2d">
       <UniqueIdentifier>{45fdfcba-11e1-476f-915f-2c93ec33293a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\lua scripting">
+      <UniqueIdentifier>{06c6df38-8a2c-434f-8d04-0f70da1f714d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\lua scripting">
+      <UniqueIdentifier>{9fc4ea12-9ad8-4d0f-97af-d10cd381d129}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -195,9 +201,6 @@
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
-    <ClCompile Include="LuaVMService.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
     <ClCompile Include="JSONLevelSerializer.cpp">
       <Filter>Source Files\level serializer</Filter>
     </ClCompile>
@@ -230,6 +233,18 @@
     </ClCompile>
     <ClCompile Include="Box2dContextService.cpp">
       <Filter>Source Files\box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="TSQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BetterRenderer.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="BetterTileset.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaVMService.cpp">
+      <Filter>Source Files\engine\lua scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -317,9 +332,6 @@
     <ClInclude Include="Camera2D.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
-    <ClInclude Include="LuaVMService.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
     <ClInclude Include="IdGenerator.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
@@ -404,6 +416,21 @@
     <ClInclude Include="Line.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
+    <ClInclude Include="TSQueue.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BetterRenderer.h">
+      <Filter>Header Files\graphics\openGL</Filter>
+    </ClInclude>
+    <ClInclude Include="BetterTileset.h">
+      <Filter>Header Files\graphics\openGL</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaVMService.h">
+      <Filter>Header Files\engine\lua scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="stb\stb_image_write.h">
+      <Filter>Header Files\graphics\third party utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="frag.glsl">
@@ -425,6 +452,12 @@
       <Filter>Source Files\graphics\shaders</Filter>
     </None>
     <None Include="single_line_vert.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="AtlasTileFrag.glsl">
+      <Filter>Source Files\graphics\shaders</Filter>
+    </None>
+    <None Include="AtlasTileVert.glsl">
       <Filter>Source Files\graphics\shaders</Filter>
     </None>
   </ItemGroup>

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 /*
 struct UniformBufferVariable {
     std::string Name;
@@ -219,6 +220,32 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
     // ------------------------------------------------------------------------
+    void setUniformBuffer(
+        const std::vector<void*>& srcDatas,
+        const std::vector<size_t>& srcSizes,
+        const std::vector<const char*>& blockVariableNames,
+        const std::string& blockName
+    ) {
+        //doesnt work properly
+        const size_t NUM_VARS = blockVariableNames.size();
+        use();
+        GLuint blockIndex = glGetUniformBlockIndex(ID, "ParticleAttributesBlock");
+        GLint blockSize;
+        glGetActiveUniformBlockiv(ID, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+        std::vector<GLbyte> blockBuffer(blockSize);
+        std::vector<GLuint> indices(NUM_VARS);
+        glGetUniformIndices(ID, blockVariableNames.size(), blockVariableNames.data(), indices.data());
+        std::vector<GLint> offsets(NUM_VARS);
+        glGetActiveUniformsiv(ID, NUM_VARS, indices.data(), GL_UNIFORM_OFFSET, offsets.data());
+        for (int i = 0; i < NUM_VARS; i++) {
+            memcpy(blockBuffer.data() + offsets[i], (GLbyte*)srcDatas[i], srcSizes[i]);
+        }
+        GLuint uboHandle;
+        glGenBuffers(1, &uboHandle);
+        glBindBuffer(GL_UNIFORM_BUFFER, uboHandle);
+        glBufferData(GL_UNIFORM_BUFFER, blockSize, blockBuffer.data(), GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboHandle);
+    }
      /*
     void setUniformBuffer(const UniformBufferDescription& bd) {
        

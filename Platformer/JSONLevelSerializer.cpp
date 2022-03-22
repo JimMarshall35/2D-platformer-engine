@@ -15,7 +15,7 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 	Document doc;
 	doc.SetObject();
 
-	ITileset* tileset = engine.Renderer->GetTileset();
+	TilesetBase* tileset = engine.Renderer->GetTileset();
 	// tile dims
 	Value tileDims;
 	tileDims.SetObject();
@@ -27,7 +27,7 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 
 	// tileset paths, first tile ID's
 	Value tilesetPathsArray = Value(kArrayType);
-	for (auto t : tileset->FilesList) {
+	for (auto t : tileset->GetFilesListRef()) {
 		Value tileset_file;
 		tileset_file.SetObject();
 		Value path_val;
@@ -95,7 +95,7 @@ void JSONLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 bool JSONLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 {
 	using namespace rapidjson;
-	ITileset* tileset = engine.Renderer->GetTileset();
+	TilesetBase* tileset = engine.Renderer->GetTileset();
 	engine.TileLayers.clear();
 	tileset->ClearTiles();
 	tileset->AnimationsMap.clear();

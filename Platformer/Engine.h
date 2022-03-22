@@ -51,7 +51,7 @@ private:
 	std::unique_ptr<ILevelSerializer> _LevelSerializer;
 	EngineMode _CurrentMode = EngineMode::Play;
 	Camera2D _EditorCam;
-	Camera2D _GameCam;
+	
 	std::vector<std::unique_ptr<ISystem>> _Systems;
 	std::string _NewLvlToLoad = "";
 private:
@@ -61,6 +61,7 @@ private:
 	void GotoEditMode();
 	bool LoadLevel(std::string filepath);
 public:
+	Camera2D _GameCam;
 	Box2dContextService Box2dContext = Box2dContextService(this); // temporary test spike - will add interface
 	EntityID _Player1 = 0;
 	std::unique_ptr<IRenderer2D> Renderer;

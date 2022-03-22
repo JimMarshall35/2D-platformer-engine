@@ -17,9 +17,7 @@ void Renderer2D::DrawWholeTexture(glm::vec2 pos, glm::vec2 scale, float rotation
 	
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(pos, 0.0f));
-	//model = glm::translate(model, glm::vec3(0.5f * scale.x, 0.5f * scale.y, 0.0f));
 	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-	//model = glm::translate(model, glm::vec3(-0.5f * scale.x, -0.5f * scale.y, 0.0f));
 	model = glm::scale(model, glm::vec3(scale, 1.0f));
 
 	_TextureShader.use();
@@ -312,7 +310,16 @@ void Renderer2D::seedExplodeSpeeds()
 
 void Renderer2D::setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirections, const std::vector<float>& explodeRotations, const std::vector<float>& explodeSpeeds)
 {
+	//std::vector<void*> datas{ (void*)explodeDirections.data(), (void*)explodeRotations.data(), (void*)explodeSpeeds.data()};
+	//std::vector<size_t> sizes{ explodeDirections.size(), explodeRotations.size(), explodeSpeeds.size() };
+	//std::vector<const char*> names = { "directions", "rotations", "speeds" };
+	//
+
+	//_ExplodeShader.setUniformBuffer(datas, sizes, names, "ParticleAttributesBlock");
+	//_ExplodeShader.setUniformBuffer()
+	
 	// TODO: make a more general version, templated version of this code for setting ubo's and add it to Shader
+	
 	GLClearErrors();
 	_ExplodeShader.use();
 	auto programHandle = _ExplodeShader.ID;
@@ -337,6 +344,7 @@ void Renderer2D::setExplodeShaderUBO(const std::vector<glm::vec2>& explodeDirect
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboHandle);
 	delete[] blockBuffer;
 	GLPrintErrors();
+	
 }
 
 void Renderer2D::DrawLine(glm::vec2 point1, glm::vec2 point2, glm::vec4 colour, float width, const Camera2D& cam) const

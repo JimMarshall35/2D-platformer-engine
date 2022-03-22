@@ -19,8 +19,6 @@
 
 void Engine::Update(double delta_t)
 {
-	
-
 	if (_NewLvlToLoad != "") {
 		LoadLevel(_NewLvlToLoad);
 		_NewLvlToLoad = "";
@@ -119,6 +117,15 @@ void Engine::KeyBoardButtonCallbackHandler(GLFWwindow* window, int key, int scan
 				value.attackPressed = false;
 			}
 
+			float gameCamZoomSpeed = 0.2;
+			if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+				_GameCam.Zoom -= gameCamZoomSpeed;
+			}
+			else if (key == GLFW_KEY_X && action == GLFW_PRESS)
+			{
+				_GameCam.Zoom += gameCamZoomSpeed;
+			}
+
 		}
 		if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 			GotoEditMode();
@@ -211,7 +218,7 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 {
 	using namespace glm;
 	int skipped = 0;
-	ITileset* tileset = Renderer->GetTileset();
+	TilesetBase* tileset = Renderer->GetTileset();
 	vec4 cameraTLBR = camera.GetTLBR(Renderer->GetW(), Renderer->GetH());
 	for (const TileLayer& tl : TileLayers) {
 		if (!tl.Visible) continue;
@@ -238,7 +245,7 @@ void Engine::DrawBackgroundLayers(const Camera2D& camera)
 				skipped++;
 				continue;
 			}
-			Tile& t = tileset->Tiles[tileIndex - 1];
+			Tile& t = tileset->GetTilesRef()[tileIndex - 1];
 			Renderer->DrawWholeTexture(worldPos, vec2(tileset->TileWidthAndHeightPx), 0.0, t.Texture, camera);
 		}
 	}

@@ -279,6 +279,7 @@ public:
 
 	static std::set<EntityID> getKeys(ComponentType type, const Components& components);
 	static std::set<EntityID> getIntersection(const std::vector<ComponentType>& componentTypes, const Components& components);
+	EntityID _lastPhysicsId_TEST = 0;
 private:
 	IdGenerator<EntityID> _idGenerator;
 };

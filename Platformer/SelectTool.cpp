@@ -48,7 +48,7 @@ void SelectTool::drawOverlay(const IRenderer2D* renderer, const Camera2D& camera
 {
 	glm::vec2 worldPos;
 
-	ITileset* tileSet = _Engine->Renderer->GetTileset();
+	TilesetBase* tileSet = _Engine->Renderer->GetTileset();
 	TileLayer& tl = _Engine->TileLayers[_UI->_SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
@@ -73,7 +73,7 @@ void SelectTool::GetNewSelection()
 {
 	using namespace glm;
 	_SelectedTiles.clear();
-	ITileset* tileSet = _Engine->Renderer->GetTileset();
+	TilesetBase* tileSet = _Engine->Renderer->GetTileset();
 	TileLayer& tl = _Engine->TileLayers[_UI->_SelectedTileLayer];
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();

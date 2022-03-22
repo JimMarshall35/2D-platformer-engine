@@ -10,6 +10,7 @@ function luaLib_LoadLevel(path)
 			C_LoadNamedTiles(C_Engine, ts.path, ts.named_sprites)
 		end
 	end
+	C_FinishLoadingImages(C_Engine);
 	for i,tl in ipairs(level.tilelayers) do
 		C_LoadTileLayer(C_Engine, tl.widthtiles, tl.heighttiles, tl.t_type, tl.tiles)
 	end

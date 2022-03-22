@@ -32,6 +32,7 @@ EntityID ECS::CreateEntity(std::vector<ComponentType> components)
 		break; case CT_EXPLODINGSPRITE:
 			_Components.exploding_sprites[id] = ExplodingSprite();
 		break; case CT_BOX2DPHYSICS:
+			_lastPhysicsId_TEST = id;
 			auto ph = Box2dPhysics();
 
 			_Components.box2d_physicses[id] = ph;

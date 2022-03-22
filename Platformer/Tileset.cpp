@@ -1,16 +1,8 @@
 #include "Tileset.h"
 #include "stb/stb_image.h"
 #include "ErrorHandling.h"
-Tile::Tile(GLuint texture, unsigned int id)
-{
-	Texture = texture;
-	ID = id;
-}
 
-Tile::~Tile()
-{
-	//glDeleteTextures(1, &Texture);
-}
+
 
 int TileSet::LoadTilesFromPxlData(const unsigned char* data, const unsigned int img_w, const unsigned int img_h, const unsigned int numchannels)
 {
@@ -38,6 +30,7 @@ int TileSet::LoadTilesFromPxlData(const unsigned char* data, const unsigned int 
 			}
 			
 			int ind = (row * TileSetWidthAndHeightTiles.x) + col;
+			/**/
 			glGenTextures(1, &Tiles[oldsize + ind].Texture);
 			glBindTexture(GL_TEXTURE_2D, Tiles[oldsize + ind].Texture);
 
@@ -132,6 +125,21 @@ void TileSet::LoadSprite(const unsigned char* data, const unsigned int img_w, co
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, spritedata.width, spritedata.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data());
 	NamedSpritesMap[spritedata.name] = tex;
+}
+
+void TileSet::FinishLoading()
+{
+	std::cout << "FinishLoading not implemented" << std::endl;
+}
+
+std::vector<ImgFileTilesetData>& TileSet::GetFilesListRef()
+{
+	return FilesList;
+}
+
+std::vector<Tile>& TileSet::GetTilesRef()
+{
+	return Tiles;
 }
 
 GLuint TileSet::GetTextureByTileID(TileID tileId)

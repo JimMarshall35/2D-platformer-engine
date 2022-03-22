@@ -38,6 +38,7 @@ private:
 	static int l_SetTilesetWidthAndHeight(lua_State* L);  // lua parameters: engine*, width, height
 	static int l_CreateBox2dBoxBody(lua_State* L);        // lua parameters: engine*, entityID, halfwidth, halfheight, centerx, centery, angle, static
 	static int l_createBox2dCircleBody(lua_State* L);     // lua parameters: engine*, entityID, radius, centerx, centery, angle, static
+	static int l_FinishLoadingImages(lua_State* L);       // lua parameters: engine*
 #pragma endregion
 
 	lua_State* _L;

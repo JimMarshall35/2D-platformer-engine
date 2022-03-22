@@ -11,6 +11,7 @@
 #include "EditorUI.h"
 #include "Renderer2D.h"
 #include "PortAudioPlayer.h"
+#include "BetterRenderer.h"
 
 static bool wantMouseInput = false;
 static bool wantKeyboardInput = false;
@@ -72,6 +73,16 @@ int main(int argc, char* argv[])
 		new PortAudioPlayer()
 	);
 	engine_ptr = &engine;
+
+	//BetterTileset bt;
+	
+	//bt.LoadTilesetFile(48, 48, "C:\\Users\\james.marshall\\source\\repos\\Platformer\\Platformer\\batch1.png");
+
+	
+	//bt.BuildAtlas();
+	//BetterRenderer br;
+	//br.WindowH = 600;
+	//br.WindowW = 800;
 	std::chrono::duration<double> frameTime(0.0);
 	std::chrono::duration<double> sleepAdjust(0.0);
 	while (!glfwWindowShouldClose(window))
@@ -96,7 +107,9 @@ int main(int argc, char* argv[])
 		engine.Update(delta);
 		glClear(GL_COLOR_BUFFER_BIT);
 		engine.Draw();
-		
+		//br.DrawAtlasTexture(glm::vec2(0), glm::vec2(16, 16), 0, 0, engine._GameCam);
+		//br.DrawAtlasTexture(glm::vec2(0,0), glm::vec2(128,128), 0, 30, engine._GameCam);
+		//br.DrawAtlasTexture(glm::vec2(-30,-30), glm::vec2(16, 16), 0, 2, engine._GameCam);
 		
 		glfwSwapBuffers(window);
 #ifndef SEPARATE_PHYSICS_THREAD

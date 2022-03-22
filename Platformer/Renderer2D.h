@@ -17,7 +17,7 @@ public:
 	void DrawWireframeRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const override;
 	void DrawSolidRect(glm::vec2 pos, glm::vec2 scale, float rotation, glm::vec4 colour, const Camera2D& cam) const override;
 	void DrawExplodingTexture(glm::vec2 pos, glm::vec2 scale, float rotation, unsigned int texture, const Camera2D& cam, float delta_t) const override;
-	virtual ITileset* GetTileset() override { return _Tileset; };
+	virtual TilesetBase* GetTileset() override { return _Tileset; };
 	void SetW(unsigned int newW) { _WindowW = newW; }
 	void SetH(unsigned int newH) { _WindowH = newH; }
 	void Init();
@@ -30,7 +30,7 @@ private:
 	void seedExplodeRotations();
 	void seedExplodeSpeeds();
 private:
-	ITileset* _Tileset;
+	TilesetBase* _Tileset;
 	GLuint _WireFrameSquareVAO;
 	GLuint _TextureVAO;
 	GLuint _SolidSquareVAO;

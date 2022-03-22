@@ -13,7 +13,7 @@ void LuaLevelSerializer::Serialize(const Engine& engine, std::string filePath)
 
 bool LuaLevelSerializer::DeSerialize(Engine& engine, std::string filePath)
 {
-    ITileset* tileset = engine.Renderer->GetTileset();
+    TilesetBase* tileset = engine.Renderer->GetTileset();
     std::vector<EntityID> ids;
     for (auto const& element : engine._Entities) {
         ids.push_back(element.first);

@@ -8,12 +8,11 @@
 #include <thread>
 #include <memory>
 #include "ECS.h"
+#include "TSQueue.h"
+#include <functional>
 
-struct Box2dUserData {
-	Box2dUserData(EntityID id) : entityID(id) {
-
-	}
-	EntityID entityID;
+struct PhysicsCommand {
+	std::function<void()> Execute;
 };
 class Engine;
 
@@ -30,6 +29,7 @@ public:
 	b2Body* MakeStaticBox(float halfwidth, float halfheight, const glm::vec2& center, float angle, EntityID id);
 	b2Body* MakeStaticCircle(float radius, const glm::vec2& center, EntityID id);
 	b2Body* MakeDynamicCircle(float radius, const glm::vec2& center, EntityID id);
+	void ApplyForce(EntityID entity, const glm::vec2& force, const glm::vec2& point);
 	void DeleteBody(b2Body* body);
 	const Box2dWorldSettings& GetSettings() {
 		return s_settings;
@@ -53,6 +53,8 @@ private:
 	static Engine* s_engine;
 	std::unique_ptr<std::thread> _physicsThread;
 	static std::mutex s_b2dMutex;
+	static TSQueue<PhysicsCommand> _physicsCommandQueue;
+
 };
 
 

@@ -127,7 +127,7 @@ function SetupCoin(pos)
 end
 
 
-function CreateDynamicBox(pos)
+function CreateDynamicCircle(pos)
 	local entityID = C_CreateEntity(C_Engine,{
 		ComponentType.CT_BOX2DPHYSICS,
 		ComponentType.CT_TRANSFORM,
@@ -150,6 +150,31 @@ function CreateDynamicBox(pos)
 	);
 	return entityID
 end
+
+function CreateDynamicBox(pos)
+	local entityID = C_CreateEntity(C_Engine,{
+		ComponentType.CT_BOX2DPHYSICS,
+		ComponentType.CT_TRANSFORM,
+		ComponentType.CT_SPRITE
+	})
+	C_SetSpriteComponent(C_Engine,entityID,10)
+	C_SetTransformComponent(C_Engine, entityID,{
+		pos = pos,
+		scale = {x=16.0,y=16.0},
+		rot = 0
+	})
+	C_CreateBox2dBoxBody(
+		C_Engine,
+		entityID,
+		8.0, 8.0,
+		pos.x,
+		pos.y,
+		0,
+		false
+	);
+	return entityID
+end
+
 
 function SetupPhysicsStatic(pos)
 	local entityID = C_CreateEntity(C_Engine,{
@@ -227,6 +252,26 @@ EditorTools = {
 				end
 				if button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS then
 					CreateDynamicBox(worldpos)
+				end
+			end,
+			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)
+				--print("keyboard")
+			end,
+			[EditorToolInputRequirements.CursorPositionMove] = function(xpos,ypos, imGuiWantsMouse, camera)
+				--print("move")
+			end
+		},
+		inputRequirements =   EditorToolInputRequirements.MouseButton 
+	},
+	{
+		name = "Physics Test Circle",
+		handlers = {
+			[EditorToolInputRequirements.MouseButton] = function(button, action, mods, imGuiWantsMouse, camera, worldpos)
+				if imGuiWantsMouse then 
+					return
+				end
+				if button == GLFW_MOUSE_BUTTON_LEFT and action == GLFW_PRESS then
+					CreateDynamicCircle(worldpos)
 				end
 			end,
 			[EditorToolInputRequirements.KeyboardButton] = function(key, scancode, action, mods, wantKeyboardInput)

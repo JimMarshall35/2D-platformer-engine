@@ -44,12 +44,12 @@ void EditorUserInterface::PushNewTileLayer(unsigned int width_tiles, unsigned in
 
 void EditorUserInterface::DoTileButtonsWindow() {
 	unsigned int oncol = 0;
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	if (_SelectedTile) {
 		std::string selected_info = "selected texture: " + std::to_string(_SelectedTile->Texture) + " selected ID: " + std::to_string(_SelectedTile->ID);
 		ImGui::Text(selected_info.c_str());
 	}
-	for (Tile& t : tileset->Tiles) {
+	for (Tile& t : tileset->GetTilesRef()) {
 		auto dims = tileset->GetTileDims(t.ID);
 		int texWidth = dims.x;
 		int texHeight = dims.y;
@@ -342,7 +342,7 @@ void EditorUserInterface::DoEntitiesWindow(std::vector<unsigned int>& idsToDelet
 
 void EditorUserInterface::DoTileSetSelectWindow()
 {
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	ImGui::Begin("tileset");
 	ImGui::InputInt2("Tile width and height", &tileset->TileWidthAndHeightPx[0]);
 	// open Dialog Simple
@@ -404,13 +404,13 @@ EditorUserInterface::~EditorUserInterface()
 
 void EditorUserInterface::DoGui()
 {
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	DoTileSetSelectWindow();
 	DoToolSelectWindow();
-	if (tileset->Tiles.size() > 0) {
+	if (tileset->GetTilesRef().size() > 0) {
 		ImGui::Begin("tiles");
 		DoTileButtonsWindow();
 		ImGui::End();
@@ -447,7 +447,7 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 	int skipped = 0;
 	
 	TileLayer& tl = _Engine->TileLayers[_SelectedTileLayer];//_SelectedTileLayer == _Engine.TileLayers.size() ? _SelectedTileLayer-1 : _SelectedTileLayer];
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	auto width = tl.GetWidth();
 	auto height = tl.GetHeight();
 	for (int i = 0; i < tl.Tiles.size(); i++) {
@@ -502,7 +502,7 @@ void EditorUserInterface::DrawEngineOverlay(const IRenderer2D* renderer, const C
 
 void EditorUserInterface::cursorPositionCallbackHandler(double xpos, double ypos, bool imGuiWantsMouse, Camera2D& camera)
 {
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	_lastMouseRawY = ypos;
 	_lastMouseRawX = xpos;
 	if (!imGuiWantsMouse) {
@@ -582,6 +582,19 @@ void EditorUserInterface::keyboardButtonCallbackHandler(GLFWwindow* window, int 
 	if (key == GLFW_KEY_L && action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)) {
 		_Engine->CueLevel("test.lua");//LoadLevel("test.lua");
 	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+
+		_Engine->Box2dContext.ApplyForce(_Engine->_lastPhysicsId_TEST, glm::vec2(0,-500), _Engine->_Components.transforms[_Engine->_lastPhysicsId_TEST].GetPos());
+	}
+	if (key == GLFW_KEY_A) {
+
+		_Engine->Box2dContext.ApplyForce(_Engine->_lastPhysicsId_TEST, glm::vec2(-10, 0), _Engine->_Components.transforms[_Engine->_lastPhysicsId_TEST].GetPos());
+	}
+	if (key == GLFW_KEY_D) {
+
+		_Engine->Box2dContext.ApplyForce(_Engine->_lastPhysicsId_TEST, glm::vec2(10, 0), _Engine->_Components.transforms[_Engine->_lastPhysicsId_TEST].GetPos());
+	}
+
 	if (_SelectedTool->InputRequirement & KeyboardButton) {
 		_SelectedTool->handleKeyboard(window,key,scancode,action,mods,wantKeyboardInput);
 	}
@@ -629,7 +642,7 @@ void EditorUserInterface::AddPhysicsPolygon(const std::vector<Line>& lines)
 
 bool EditorUserInterface::FileChosen(std::string path)
 {
-	ITileset* tileset = _Engine->Renderer->GetTileset();
+	TilesetBase* tileset = _Engine->Renderer->GetTileset();
 	tileset->LoadTilesFromImgFile(path);
 	_SelectedTileLayer = 0;
 	
